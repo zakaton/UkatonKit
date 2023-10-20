@@ -1,7 +1,7 @@
 import Foundation
 
-struct SensorDataConfiguration<SensorDataType: Hashable & CaseIterable> {
-    var dataRates: [SensorDataType: SensorDataRate] = [:]
+struct SensorDataConfiguration {
+    var dataRates: [UInt8: SensorDataRate] = [:]
 
     func serialize() {}
 
@@ -13,23 +13,22 @@ struct SensorDataConfiguration<SensorDataType: Hashable & CaseIterable> {
 }
 
 struct SensorDataConfigurations {
-    var motionDataConfiguration: SensorDataConfiguration<MotionDataType> = .init()
-    var pressureDataConfiguration: SensorDataConfiguration<PressureDataType> = .init()
+    var deviceType: DeviceType?
 
-    var deviceType: DeviceType? = nil
+    var configurations: [SensorDataType: SensorDataConfiguration] = {
+        var _configurations: [SensorDataType: SensorDataConfiguration] = [:]
+        SensorDataType.allCases.forEach { sensorDataType in
+            _configurations[sensorDataType] = .init()
+        }
+        return _configurations
+    }()
 
     public private(set) var areConfigurationsNonZero: Bool = false
     mutating func parse(data: Data, offset: inout UInt8) {
         var _areConfigurationsNonZero = false
-        SensorDataType.allCases.forEach { sensorDataType in
-            switch sensorDataType {
-            case .motion:
-                motionDataConfiguration.parse(data: data, offset: &offset)
-                _areConfigurationsNonZero = _areConfigurationsNonZero || motionDataConfiguration.isConfigurationNonZero
-            case .pressure:
-                pressureDataConfiguration.parse(data: data, offset: &offset)
-                _areConfigurationsNonZero = _areConfigurationsNonZero || pressureDataConfiguration.isConfigurationNonZero
-            }
+        configurations.values.forEach { configuration in
+            configuration.parse(data: data, offset: &offset)
+            _areConfigurationsNonZero = _areConfigurationsNonZero || configuration.isConfigurationNonZero
         }
         areConfigurationsNonZero = _areConfigurationsNonZero
     }
@@ -40,8 +39,7 @@ struct SensorDataConfigurations {
     }
 
     func serialize() {
-        motionDataConfiguration.serialize()
-        pressureDataConfiguration.serialize()
+        configurations.values.forEach { $0.serialize() }
     }
 
     mutating func reset() {
