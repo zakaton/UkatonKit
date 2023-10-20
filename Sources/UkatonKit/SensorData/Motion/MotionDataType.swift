@@ -1,4 +1,4 @@
-enum MotionDataType: UInt8 {
+enum MotionDataType: UInt8, CaseIterable {
     case acceleration
     case gravity
     case linearAcceleration

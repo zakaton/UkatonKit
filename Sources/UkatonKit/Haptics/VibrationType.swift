@@ -1,6 +1,4 @@
-import Foundation
-
-enum VibrationType: UInt8, CaseIterable {
+enum VibrationType: UInt8 {
     case waveform
     case sequence
 }

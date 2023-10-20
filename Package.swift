@@ -12,18 +12,12 @@ let package = Package(
             name: "UkatonKit",
             targets: ["UkatonKit"]),
     ],
-    dependencies: [
-        // Dependencies declare other packages that this package depends on.
-        // .package(url: /* package url */, from: "1.0.0"),
-        .package(url: "https://github.com/Finnvoor/StaticLogger.git", from: "1.0.3"),
-    ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "UkatonKit",
-            dependencies: ["StaticLogger"]),
+            name: "UkatonKit"),
         .testTarget(
             name: "UkatonKitTests",
-            dependencies: ["UkatonKit", "StaticLogger"]),
+            dependencies: ["UkatonKit"]),
     ])

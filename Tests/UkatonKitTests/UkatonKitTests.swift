@@ -1,5 +1,5 @@
-import XCTest
 @testable import UkatonKit
+import XCTest
 
 final class UkatonKitTests: XCTestCase {
     func testExample() throws {

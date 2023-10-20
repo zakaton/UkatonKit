@@ -6,7 +6,7 @@ extension Date {
     }
 }
 
-public struct SensorDataManager {
+public struct SensorData {
     // MARK: - Timestamps
 
     public private(set) var timestamp: UInt64 = 0

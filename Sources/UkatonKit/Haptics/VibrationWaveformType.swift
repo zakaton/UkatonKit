@@ -1,5 +1,3 @@
-import Foundation
-
 /// Based on [DRV2605 Haptic Driver, section 11.2](https://www.ti.com/lit/ds/symlink/drv2605.pdf)
 enum VibrationWaveformType: UInt8 {
     case none = 0 // None

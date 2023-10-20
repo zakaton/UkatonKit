@@ -1,4 +1,4 @@
-enum SensorDataType: UInt8 {
+enum SensorDataType: UInt8, CaseIterable {
     case motion
     case pressure
 }
