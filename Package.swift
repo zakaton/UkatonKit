@@ -5,6 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "UkatonKit",
+    platforms: [.iOS(.v15), .macOS(.v10_15), .watchOS(.v8)],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
@@ -19,5 +20,4 @@ let package = Package(
         .testTarget(
             name: "UkatonKitTests",
             dependencies: ["UkatonKit"]),
-    ]
-)
+    ])
