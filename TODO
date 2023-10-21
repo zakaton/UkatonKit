@@ -1,5 +1,4 @@
 SensorDataConfigurations
-    make SensorDataType empty, and extend in PressureDataType and MotionDataType
 SensorData
 Haptics
 Missions
