@@ -57,7 +57,6 @@ struct SensorDataConfigurations {
 
     var areConfigurationsNonZero: Bool = false
     var shouldSerialize: Bool = false
-
     private mutating func onConfigurationsUpdate() {
         shouldSerialize = configurations.values.contains { $0.shouldSerialize }
         areConfigurationsNonZero = configurations.values.contains { $0.isConfigurationNonZero }
