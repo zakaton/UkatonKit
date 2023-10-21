@@ -1,6 +1,8 @@
 import Foundation
 
 struct SensorDataConfiguration {
+    let sensorType: SensorType
+
     var dataRates: [UInt8: SensorDataRate] = [:]
 
     func serialize() {}
@@ -9,19 +11,44 @@ struct SensorDataConfiguration {
 
     func parse(data: Data, offset: inout UInt8) {
         // FILL
+        sensorType.forEachDataType { dataType in
+            print(dataType)
+        }
+    }
+
+    mutating func reset() {
+        dataRates = [:]
     }
 }
 
 struct SensorDataConfigurations {
     var deviceType: DeviceType?
 
-    var configurations: [SensorDataType: SensorDataConfiguration] = {
-        var _configurations: [SensorDataType: SensorDataConfiguration] = [:]
-        SensorDataType.allCases.forEach { sensorDataType in
-            _configurations[sensorDataType] = .init()
+    var configurations: [SensorType: SensorDataConfiguration] = {
+        var _configurations: [SensorType: SensorDataConfiguration] = [:]
+        SensorType.allCases.forEach { sensorType in
+            _configurations[sensorType] = .init(sensorType: sensorType)
         }
         return _configurations
     }()
+
+    public subscript(_ motionDataType: MotionDataType) -> SensorDataRate {
+        get {
+            configurations[.motion]!.dataRates[motionDataType.rawValue] ?? .init(rate: 0)
+        }
+        set(newValue) {
+            configurations[.motion]!.dataRates[motionDataType.rawValue] = newValue
+        }
+    }
+
+    public subscript(_ pressureDataType: PressureDataType) -> SensorDataRate {
+        get {
+            configurations[.pressure]!.dataRates[pressureDataType.rawValue] ?? .init(rate: 0)
+        }
+        set(newValue) {
+            configurations[.pressure]!.dataRates[pressureDataType.rawValue] = newValue
+        }
+    }
 
     public private(set) var areConfigurationsNonZero: Bool = false
     mutating func parse(data: Data, offset: inout UInt8) {
@@ -44,5 +71,8 @@ struct SensorDataConfigurations {
 
     mutating func reset() {
         deviceType = nil
+        for var configuration in configurations.values {
+            configuration.reset()
+        }
     }
 }

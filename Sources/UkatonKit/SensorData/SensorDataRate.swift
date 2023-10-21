@@ -8,6 +8,10 @@ struct SensorDataRate {
         set { rate = roundToTens(newValue) }
     }
 
+    init(rate: UInt16) {
+        self.rate = rate
+    }
+
     private func roundToTens(_ value: UInt16) -> UInt16 {
         value - (value % 10)
     }
