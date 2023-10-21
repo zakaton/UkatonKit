@@ -5,14 +5,16 @@ struct SensorDataConfiguration {
 
     var dataRates: [UInt8: SensorDataRate] = [:]
 
-    func serialize() {}
+    func serialize() {
+        // FILL
+    }
 
     var isConfigurationNonZero: Bool = false
 
     func parse(data: Data, offset: inout UInt8) {
-        // FILL
         sensorType.forEachDataType { dataType in
             print(dataType)
+            // FILL
         }
     }
 
@@ -50,7 +52,7 @@ struct SensorDataConfigurations {
         }
     }
 
-    public private(set) var areConfigurationsNonZero: Bool = false
+    private(set) var areConfigurationsNonZero: Bool = false
     mutating func parse(data: Data, offset: inout UInt8) {
         var _areConfigurationsNonZero = false
         configurations.values.forEach { configuration in
@@ -67,6 +69,7 @@ struct SensorDataConfigurations {
 
     func serialize() {
         configurations.values.forEach { $0.serialize() }
+        // FILL
     }
 
     mutating func reset() {
