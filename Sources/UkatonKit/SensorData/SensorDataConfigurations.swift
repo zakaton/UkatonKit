@@ -1,75 +1,86 @@
 import Foundation
-
-struct SensorDataConfiguration {
-    let sensorType: SensorType
-
-    var dataRates: [UInt8: SensorDataRate] = [:]
-
-    func serialize() {
-        // FILL
-    }
-
-    var isConfigurationNonZero: Bool = false
-
-    func parse(data: Data, offset: inout UInt8) {
-        sensorType.forEachDataType { dataType in
-            print(dataType)
-            // FILL
-        }
-    }
-
-    mutating func reset() {
-        dataRates = [:]
-    }
-}
+import OSLog
 
 struct SensorDataConfigurations {
+    static let logger: Logger = .init(subsystem: Bundle.main.bundleIdentifier!, category: String(describing: Self.self))
+    var logger: Logger { Self.logger }
+
     var deviceType: DeviceType?
 
-    var configurations: [SensorType: SensorDataConfiguration] = {
-        var _configurations: [SensorType: SensorDataConfiguration] = [:]
+    typealias RawSensorDataConfigurations = [SensorType: SensorDataConfiguration]
+
+    private var configurations: RawSensorDataConfigurations = {
+        var _configurations: RawSensorDataConfigurations = [:]
         SensorType.allCases.forEach { sensorType in
             _configurations[sensorType] = .init(sensorType: sensorType)
         }
         return _configurations
     }()
 
-    public subscript(_ motionDataType: MotionDataType) -> SensorDataRate {
+    public subscript(_ sensorType: SensorType) -> SensorDataRates {
         get {
-            configurations[.motion]!.dataRates[motionDataType.rawValue] ?? .init(rate: 0)
+            configurations[sensorType]!.dataRates
         }
         set(newValue) {
-            configurations[.motion]!.dataRates[motionDataType.rawValue] = newValue
+            configurations[sensorType]!.dataRates = newValue
         }
     }
 
-    public subscript(_ pressureDataType: PressureDataType) -> SensorDataRate {
+    public subscript(motionDataType: MotionDataType) -> SensorDataRate {
         get {
-            configurations[.pressure]!.dataRates[pressureDataType.rawValue] ?? .init(rate: 0)
+            configurations[.motion]![motionDataType.rawValue]
         }
         set(newValue) {
-            configurations[.pressure]!.dataRates[pressureDataType.rawValue] = newValue
+            configurations[.motion]![motionDataType.rawValue] = newValue
         }
     }
 
-    private(set) var areConfigurationsNonZero: Bool = false
+    public subscript(pressureDataType: PressureDataType) -> SensorDataRate {
+        get {
+            configurations[.pressure]![pressureDataType.rawValue]
+        }
+        set(newValue) {
+            configurations[.pressure]![pressureDataType.rawValue] = newValue
+        }
+    }
+
+    var areConfigurationsNonZero: Bool {
+        configurations.values.contains { $0.isConfigurationNonZero }
+    }
+
+    var shouldSerialize: Bool {
+        configurations.values.contains { $0.shouldSerialize }
+    }
+
+    static let maxSerializationLength = (SensorType.allCases.count * 2) + (3 * SensorType.totalNumberOfDataTypes)
+    var serialization: Data = .init(capacity: maxSerializationLength)
+
+    mutating func serialize() {
+        serialization.removeAll(keepingCapacity: true)
+        for var configuration in configurations.values {
+            serialization.append(configuration.getSerialization())
+        }
+
+        let _self = self
+        logger.debug("serialized configurations: \(_self.serialization.debugDescription)")
+    }
+
+    mutating func getSerialization() -> Data {
+        if shouldSerialize {
+            serialize()
+        }
+        return serialization
+    }
+
     mutating func parse(data: Data, offset: inout UInt8) {
-        var _areConfigurationsNonZero = false
-        configurations.values.forEach { configuration in
+        for var configuration in configurations.values {
             configuration.parse(data: data, offset: &offset)
-            _areConfigurationsNonZero = _areConfigurationsNonZero || configuration.isConfigurationNonZero
         }
-        areConfigurationsNonZero = _areConfigurationsNonZero
     }
 
     mutating func parse(data: Data) {
         var offset: UInt8 = 0
         parse(data: data, offset: &offset)
-    }
-
-    func serialize() {
-        configurations.values.forEach { $0.serialize() }
-        // FILL
     }
 
     mutating func reset() {

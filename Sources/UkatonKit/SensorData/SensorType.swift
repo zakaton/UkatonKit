@@ -10,4 +10,21 @@ public enum SensorType: UInt8, CaseIterable {
             PressureDataType.allCases.forEach { body($0.rawValue) }
         }
     }
+
+    var numberOfDataTypes: Int {
+        switch self {
+        case .motion:
+            return MotionDataType.allCases.count
+        case .pressure:
+            return PressureDataType.allCases.count
+        }
+    }
+
+    static var maxNumberOfDataTypes: Int {
+        allCases.reduce(0) { max($0, $1.numberOfDataTypes) }
+    }
+
+    static var totalNumberOfDataTypes: Int {
+        allCases.reduce(0) { $0 + $1.numberOfDataTypes }
+    }
 }

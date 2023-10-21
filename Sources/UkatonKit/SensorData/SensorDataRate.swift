@@ -1,18 +1,23 @@
-import Foundation
+typealias SensorDataRate = UInt16
+extension SensorDataRate {
+    func toUInt8Array(littleEndian: Bool = true) -> [UInt8] {
+        let byte1: UInt8
+        let byte2: UInt8
 
-@propertyWrapper
-struct SensorDataRate {
-    private var rate: UInt16 = 0
-    var wrappedValue: UInt16 {
-        get { return rate }
-        set { rate = roundToTens(newValue) }
+        if littleEndian {
+            byte1 = UInt8(truncatingIfNeeded: self)
+            byte2 = UInt8(truncatingIfNeeded: self >> 8)
+        } else {
+            byte1 = UInt8(truncatingIfNeeded: self >> 8)
+            byte2 = UInt8(truncatingIfNeeded: self)
+        }
+
+        return [byte1, byte2]
     }
+}
 
-    init(rate: UInt16) {
-        self.rate = rate
-    }
-
-    private func roundToTens(_ value: UInt16) -> UInt16 {
-        value - (value % 10)
+extension SensorDataRate {
+    func roundToTens() -> SensorDataRate {
+        return self - (self % 10)
     }
 }

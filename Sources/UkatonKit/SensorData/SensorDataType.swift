@@ -1,0 +1,1 @@
+typealias SensorDataType = UInt8
