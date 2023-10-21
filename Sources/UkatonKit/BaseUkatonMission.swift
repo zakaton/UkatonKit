@@ -17,7 +17,9 @@ public class BaseUkatonMission: ObservableObject {
     // MARK: Initialization
 
     init() {
-        deviceInformation.onFullyInitialized = { [unowned self] in self.onDeviceInformationFullyInitialized() }
+        deviceInformation.onFullyInitialized = {
+            [unowned self] in self.onDeviceInformationFullyInitialized()
+        }
     }
 
     // MARK: Callbacks

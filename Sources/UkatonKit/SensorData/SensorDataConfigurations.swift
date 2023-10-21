@@ -1,6 +1,9 @@
 import Foundation
 import OSLog
 
+typealias MotionDataRates = [MotionDataType: SensorDataRate]
+typealias PressureDataRates = [PressureDataType: SensorDataRate]
+
 struct SensorDataConfigurations {
     // MARK: Logging
 
@@ -23,7 +26,17 @@ struct SensorDataConfigurations {
 
     // MARK: Subscripting
 
-    subscript(_ sensorType: SensorType) -> SensorDataRates {
+    public var motion: MotionDataRates {
+        get { self[.motion] as! MotionDataRates }
+        set { self[.motion] = newValue as! SensorDataRates }
+    }
+
+    public var pressure: PressureDataRates {
+        get { self[.pressure] as! PressureDataRates }
+        set { self[.pressure] = newValue as! SensorDataRates }
+    }
+
+    private subscript(_ sensorType: SensorType) -> SensorDataRates {
         get {
             configurations[sensorType]!.dataRates
         }
@@ -76,7 +89,7 @@ struct SensorDataConfigurations {
     private mutating func serialize() {
         serialization.removeAll(keepingCapacity: true)
         for var configuration in configurations.values {
-            if configuration.sensorType == .pressure, deviceType == .motionModule {
+            if deviceType?.hasSensorType(configuration.sensorType) == false {
                 continue
             }
             serialization.append(configuration.getSerialization())
