@@ -23,6 +23,7 @@ struct SensorDataConfigurations {
         }
         set(newValue) {
             configurations[sensorType]!.dataRates = newValue
+            onConfigurationsUpdate()
         }
     }
 
@@ -50,15 +51,16 @@ struct SensorDataConfigurations {
         }
         set(newValue) {
             configurations[sensorDataType.sensorType]![sensorDataType.rawValue] = newValue
+            onConfigurationsUpdate()
         }
     }
 
-    var areConfigurationsNonZero: Bool {
-        configurations.values.contains { $0.isConfigurationNonZero }
-    }
+    var areConfigurationsNonZero: Bool = false
+    var shouldSerialize: Bool = false
 
-    var shouldSerialize: Bool {
-        configurations.values.contains { $0.shouldSerialize }
+    private mutating func onConfigurationsUpdate() {
+        shouldSerialize = configurations.values.contains { $0.shouldSerialize }
+        areConfigurationsNonZero = configurations.values.contains { $0.isConfigurationNonZero }
     }
 
     static let maxSerializationLength = (SensorType.allCases.count * 2) + (3 * SensorType.totalNumberOfDataTypes)
@@ -80,6 +82,7 @@ struct SensorDataConfigurations {
     mutating func getSerialization() -> Data {
         if shouldSerialize {
             serialize()
+            shouldSerialize = false
         }
         return serialization
     }
@@ -100,5 +103,7 @@ struct SensorDataConfigurations {
         for var configuration in configurations.values {
             configuration.reset()
         }
+        shouldSerialize = false
+        areConfigurationsNonZero = false
     }
 }
