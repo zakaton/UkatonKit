@@ -4,8 +4,8 @@ import OSLog
 typealias SensorDataRates = [RawSensorDataType: SensorDataRate]
 
 struct SensorDataConfiguration {
-    static let logger: Logger = .init(subsystem: Bundle.main.bundleIdentifier!, category: String(describing: Self.self))
-    var logger: Logger { Self.logger }
+    private static let logger: Logger = .init(subsystem: Bundle.main.bundleIdentifier!, category: String(describing: Self.self))
+    private var logger: Logger { Self.logger }
 
     let sensorType: SensorType
     init(sensorType: SensorType) {
@@ -18,7 +18,7 @@ struct SensorDataConfiguration {
         }
     }
 
-    var lastSerializedDataRates: SensorDataRates?
+    private var lastSerializedDataRates: SensorDataRates?
 
     var isConfigurationNonZero: Bool = false
     public subscript(_ dataType: RawSensorDataType) -> SensorDataRate {
@@ -39,11 +39,11 @@ struct SensorDataConfiguration {
         isConfigurationNonZero = dataRates.values.contains { $0 > 0 }
     }
 
-    static let maxSerializationLength: Int = 2 * (3 * SensorType.maxNumberOfDataTypes)
-    var serialization: Data = .init(capacity: maxSerializationLength)
+    private static let maxSerializationLength: Int = 2 * (3 * SensorType.maxNumberOfDataTypes)
+    private var serialization: Data = .init(capacity: maxSerializationLength)
 
     var shouldSerialize: Bool = false
-    mutating func serialize() {
+    private mutating func serialize() {
         serialization.removeAll(keepingCapacity: true)
         dataRates.forEach { dataType, dataRate in
             serialization.append(contentsOf: [dataType])

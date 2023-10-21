@@ -2,12 +2,12 @@ import Foundation
 import OSLog
 
 struct SensorDataConfigurations {
-    static let logger: Logger = .init(subsystem: Bundle.main.bundleIdentifier!, category: String(describing: Self.self))
-    var logger: Logger { Self.logger }
+    private static let logger: Logger = .init(subsystem: Bundle.main.bundleIdentifier!, category: String(describing: Self.self))
+    private var logger: Logger { Self.logger }
 
     var deviceType: DeviceType?
 
-    typealias RawSensorDataConfigurations = [SensorType: SensorDataConfiguration]
+    private typealias RawSensorDataConfigurations = [SensorType: SensorDataConfiguration]
 
     private var configurations: RawSensorDataConfigurations = {
         var _configurations: RawSensorDataConfigurations = [:]
@@ -17,7 +17,7 @@ struct SensorDataConfigurations {
         return _configurations
     }()
 
-    public subscript(_ sensorType: SensorType) -> SensorDataRates {
+    private subscript(_ sensorType: SensorType) -> SensorDataRates {
         get {
             configurations[sensorType]!.dataRates
         }
@@ -56,16 +56,16 @@ struct SensorDataConfigurations {
     }
 
     var areConfigurationsNonZero: Bool = false
-    var shouldSerialize: Bool = false
+    private var shouldSerialize: Bool = false
     private mutating func onConfigurationsUpdate() {
         shouldSerialize = configurations.values.contains { $0.shouldSerialize }
         areConfigurationsNonZero = configurations.values.contains { $0.isConfigurationNonZero }
     }
 
-    static let maxSerializationLength = (SensorType.allCases.count * 2) + (3 * SensorType.totalNumberOfDataTypes)
-    var serialization: Data = .init(capacity: maxSerializationLength)
+    private static let maxSerializationLength = (SensorType.allCases.count * 2) + (3 * SensorType.totalNumberOfDataTypes)
+    private var serialization: Data = .init(capacity: maxSerializationLength)
 
-    mutating func serialize() {
+    private mutating func serialize() {
         serialization.removeAll(keepingCapacity: true)
         for var configuration in configurations.values {
             if configuration.sensorType == .pressure, deviceType == .motionModule {
