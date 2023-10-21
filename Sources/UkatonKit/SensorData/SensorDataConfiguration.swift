@@ -4,23 +4,29 @@ import OSLog
 typealias SensorDataRates = [RawSensorDataType: SensorDataRate]
 
 struct SensorDataConfiguration {
+    // MARK: Logging
+
     private static let logger: Logger = .init(subsystem: Bundle.main.bundleIdentifier!, category: String(describing: Self.self))
     private var logger: Logger { Self.logger }
+
+    // MARK: SensorType
 
     let sensorType: SensorType
     init(sensorType: SensorType) {
         self.sensorType = sensorType
     }
 
+    // MARK: Configuration
+
     var dataRates: SensorDataRates = [:] {
         didSet {
-            onDataRatesUpdate()
+            onConfigurationUpdate()
         }
     }
 
+    var isConfigurationNonZero: Bool = false
     private var lastSerializedDataRates: SensorDataRates?
 
-    var isConfigurationNonZero: Bool = false
     public subscript(_ dataType: RawSensorDataType) -> SensorDataRate {
         get {
             dataRates[dataType] ?? 0
@@ -29,15 +35,17 @@ struct SensorDataConfiguration {
             let newValue = _newValue.roundToTens()
             if dataRates[dataType] != newValue {
                 dataRates[dataType] = newValue
-                onDataRatesUpdate()
+                onConfigurationUpdate()
             }
         }
     }
 
-    private mutating func onDataRatesUpdate() {
+    private mutating func onConfigurationUpdate() {
         shouldSerialize = dataRates != lastSerializedDataRates
         isConfigurationNonZero = dataRates.values.contains { $0 > 0 }
     }
+
+    // MARK: Serialization
 
     private static let maxSerializationLength: Int = 2 * (3 * SensorType.maxNumberOfDataTypes)
     private var serialization: Data = .init(capacity: maxSerializationLength)
@@ -64,12 +72,24 @@ struct SensorDataConfiguration {
         return serialization
     }
 
+    // MARK: Parsing
+
     mutating func parse(data: Data, offset: inout UInt8) {
         sensorType.forEachDataType { dataType in
-            print(dataType)
-            // FILL
+            if offset + 2 < data.count {
+                var dataRate: SensorDataRate = .parse(from: data, at: &offset)
+                dataRates[dataType] = dataRate
+            }
+            else {
+                logger.error("offset out of bounds")
+            }
         }
+
+        let _self = self
+        logger.debug("parsed configuration: \(_self.dataRates.debugDescription)")
+
         lastSerializedDataRates = dataRates
+        onConfigurationUpdate()
     }
 
     mutating func reset() {

@@ -2,10 +2,14 @@ import Foundation
 import OSLog
 
 struct SensorDataConfigurations {
+    // MARK: Logging
+
     private static let logger: Logger = .init(subsystem: Bundle.main.bundleIdentifier!, category: String(describing: Self.self))
     private var logger: Logger { Self.logger }
 
     var deviceType: DeviceType?
+
+    // MARK: Configurations
 
     private typealias RawSensorDataConfigurations = [SensorType: SensorDataConfiguration]
 
@@ -17,7 +21,9 @@ struct SensorDataConfigurations {
         return _configurations
     }()
 
-    private subscript(_ sensorType: SensorType) -> SensorDataRates {
+    // MARK: Subscripting
+
+    subscript(_ sensorType: SensorType) -> SensorDataRates {
         get {
             configurations[sensorType]!.dataRates
         }
@@ -55,6 +61,8 @@ struct SensorDataConfigurations {
         }
     }
 
+    // MARK: Serialization
+
     var areConfigurationsNonZero: Bool = false
     private var shouldSerialize: Bool = false
     private mutating func onConfigurationsUpdate() {
@@ -86,6 +94,8 @@ struct SensorDataConfigurations {
         return serialization
     }
 
+    // MARK: Parsing
+
     mutating func parse(data: Data, offset: inout UInt8) {
         for var configuration in configurations.values {
             configuration.parse(data: data, offset: &offset)
@@ -95,6 +105,7 @@ struct SensorDataConfigurations {
     mutating func parse(data: Data) {
         var offset: UInt8 = 0
         parse(data: data, offset: &offset)
+        onConfigurationsUpdate()
     }
 
     mutating func reset() {

@@ -7,7 +7,7 @@ extension Date {
 }
 
 public struct SensorData {
-    // MARK: - Timestamps
+    // MARK: Timestamps
 
     public private(set) var timestamp: UInt64 = 0
     public private(set) var lastTimeReceivedSensorData: UInt64 = 0

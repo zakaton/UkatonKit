@@ -18,14 +18,14 @@ public struct DeviceInformation {
     }
 
     mutating func parseName(data: Data, offset: inout UInt8, finalOffset: UInt8) {
-        if offset >= 0, offset < finalOffset, finalOffset < data.count {
+        if offset < finalOffset, finalOffset < data.count {
             let nameDataRange = Data.Index(offset) ..< Data.Index(finalOffset)
             let nameData = data.subdata(in: nameDataRange)
             if let newName = String(data: nameData, encoding: .utf8) {
                 logger.debug("new name \(newName)")
                 name = newName
             } else {
-                logger.warning("Unable to decode the data as a string.")
+                logger.error("Unable to decode the data as a string.")
             }
         }
     }
@@ -36,7 +36,7 @@ public struct DeviceInformation {
                 logger.debug("new deviceType \(String(describing: newDeviceType))")
                 deviceType = newDeviceType
             } else {
-                logger.warning("invalid device type enum")
+                logger.error("invalid device type enum")
             }
             offset += 1
         }
