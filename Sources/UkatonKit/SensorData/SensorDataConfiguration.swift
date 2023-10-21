@@ -1,7 +1,7 @@
 import Foundation
 import OSLog
 
-typealias SensorDataRates = [SensorDataType: SensorDataRate]
+typealias SensorDataRates = [RawSensorDataType: SensorDataRate]
 
 struct SensorDataConfiguration {
     static let logger: Logger = .init(subsystem: Bundle.main.bundleIdentifier!, category: String(describing: Self.self))
@@ -21,7 +21,7 @@ struct SensorDataConfiguration {
     var lastSerializedDataRates: SensorDataRates?
 
     var isConfigurationNonZero: Bool = false
-    public subscript(_ dataType: SensorDataType) -> SensorDataRate {
+    public subscript(_ dataType: RawSensorDataType) -> SensorDataRate {
         get {
             dataRates[dataType] ?? 0
         }

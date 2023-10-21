@@ -28,19 +28,28 @@ struct SensorDataConfigurations {
 
     public subscript(motionDataType: MotionDataType) -> SensorDataRate {
         get {
-            configurations[.motion]![motionDataType.rawValue]
+            self[motionDataType as SensorDataType]
         }
         set(newValue) {
-            configurations[.motion]![motionDataType.rawValue] = newValue
+            self[motionDataType as SensorDataType] = newValue
         }
     }
 
     public subscript(pressureDataType: PressureDataType) -> SensorDataRate {
         get {
-            configurations[.pressure]![pressureDataType.rawValue]
+            self[pressureDataType as SensorDataType]
         }
         set(newValue) {
-            configurations[.pressure]![pressureDataType.rawValue] = newValue
+            self[pressureDataType as SensorDataType] = newValue
+        }
+    }
+
+    private subscript(sensorDataType: SensorDataType) -> SensorDataRate {
+        get {
+            configurations[sensorDataType.sensorType]![sensorDataType.rawValue]
+        }
+        set(newValue) {
+            configurations[sensorDataType.sensorType]![sensorDataType.rawValue] = newValue
         }
     }
 
@@ -58,6 +67,9 @@ struct SensorDataConfigurations {
     mutating func serialize() {
         serialization.removeAll(keepingCapacity: true)
         for var configuration in configurations.values {
+            if configuration.sensorType == .pressure, deviceType == .motionModule {
+                continue
+            }
             serialization.append(configuration.getSerialization())
         }
 
