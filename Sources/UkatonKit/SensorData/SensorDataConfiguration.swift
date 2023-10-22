@@ -4,19 +4,19 @@ import OSLog
 typealias SensorDataRates = [RawSensorDataType: SensorDataRate]
 
 struct SensorDataConfiguration {
-    // MARK: Logging
+    // MARK: - Logging
 
     private static let logger: Logger = .init(subsystem: Bundle.main.bundleIdentifier!, category: String(describing: Self.self))
     private var logger: Logger { Self.logger }
 
-    // MARK: SensorType
+    // MARK: - SensorType
 
     let sensorType: SensorType
     init(sensorType: SensorType) {
         self.sensorType = sensorType
     }
 
-    // MARK: Configuration
+    // MARK: - Configuration
 
     var dataRates: SensorDataRates = [:] {
         didSet {
@@ -45,7 +45,7 @@ struct SensorDataConfiguration {
         isConfigurationNonZero = dataRates.values.contains { $0 > 0 }
     }
 
-    // MARK: Serialization
+    // MARK: - Serialization
 
     private static let maxSerializationLength: Int = 2 * (3 * SensorType.maxNumberOfDataTypes)
     private var serialization: Data = .init(capacity: maxSerializationLength)
@@ -72,7 +72,7 @@ struct SensorDataConfiguration {
         return serialization
     }
 
-    // MARK: Parsing
+    // MARK: - Parsing
 
     mutating func parse(data: Data, offset: inout UInt8) {
         sensorType.forEachDataType { dataType in

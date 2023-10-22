@@ -5,14 +5,14 @@ typealias MotionDataRates = [MotionDataType: SensorDataRate]
 typealias PressureDataRates = [PressureDataType: SensorDataRate]
 
 struct SensorDataConfigurations {
-    // MARK: Logging
+    // MARK: - Logging
 
     private static let logger: Logger = .init(subsystem: Bundle.main.bundleIdentifier!, category: String(describing: Self.self))
     private var logger: Logger { Self.logger }
 
     var deviceType: DeviceType?
 
-    // MARK: Configurations
+    // MARK: - Configurations
 
     private typealias RawSensorDataConfigurations = [SensorType: SensorDataConfiguration]
 
@@ -24,7 +24,7 @@ struct SensorDataConfigurations {
         return _configurations
     }()
 
-    // MARK: Subscripting
+    // MARK: - Subscripting
 
     public var motion: MotionDataRates {
         get { self[.motion] as! MotionDataRates }
@@ -74,7 +74,7 @@ struct SensorDataConfigurations {
         }
     }
 
-    // MARK: Serialization
+    // MARK: - Serialization
 
     var areConfigurationsNonZero: Bool = false
     private var shouldSerialize: Bool = false
@@ -107,7 +107,7 @@ struct SensorDataConfigurations {
         return serialization
     }
 
-    // MARK: Parsing
+    // MARK: - Parsing
 
     mutating func parse(data: Data, offset: inout UInt8) {
         for var configuration in configurations.values {

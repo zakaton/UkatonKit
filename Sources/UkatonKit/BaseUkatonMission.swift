@@ -2,19 +2,19 @@ import Foundation
 import OSLog
 
 public class BaseUkatonMission: ObservableObject {
-    // MARK: Logging
+    // MARK: - Logging
 
     private static let logger: Logger = .init(subsystem: Bundle.main.bundleIdentifier!, category: String(describing: BaseUkatonMission.self))
     private var logger: Logger { Self.logger }
 
-    // MARK: Components
+    // MARK: - Components
 
     var deviceInformation: DeviceInformation = .init()
     var sensorDataConfigurations: SensorDataConfigurations = .init()
     var sensorData: SensorData = .init()
     var haptics: Haptics = .init()
 
-    // MARK: Initialization
+    // MARK: - Initialization
 
     init() {
         deviceInformation.onFullyInitialized = {
@@ -22,7 +22,7 @@ public class BaseUkatonMission: ObservableObject {
         }
     }
 
-    // MARK: Callbacks
+    // MARK: - Callbacks
 
     func onDeviceInformationFullyInitialized() {
         sensorDataConfigurations.deviceType = deviceInformation.deviceType

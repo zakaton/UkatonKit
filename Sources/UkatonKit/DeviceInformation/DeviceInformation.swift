@@ -5,13 +5,9 @@ public struct DeviceInformation {
     static let logger: Logger = .init(subsystem: Bundle.main.bundleIdentifier!, category: String(describing: Self.self))
     var logger: Logger { Self.logger }
 
-    public private(set) var name: String? {
-        didSet {
-            checkIsFullyInitialized()
-        }
-    }
+    // MARK: - Name
 
-    public private(set) var deviceType: DeviceType? {
+    public private(set) var name: String? {
         didSet {
             checkIsFullyInitialized()
         }
@@ -30,6 +26,14 @@ public struct DeviceInformation {
         }
     }
 
+    // MARK: - DeviceType
+
+    public private(set) var deviceType: DeviceType? {
+        didSet {
+            checkIsFullyInitialized()
+        }
+    }
+
     mutating func parseType(data: Data, offset: inout UInt8) {
         if offset < data.count {
             if let newDeviceType = DeviceType(rawValue: data[Int(offset)]) {
@@ -41,6 +45,8 @@ public struct DeviceInformation {
             offset += 1
         }
     }
+
+    // MARK: - Is Fully Initialized?
 
     private var isFullyInitialized: Bool = false {
         didSet {
@@ -56,6 +62,8 @@ public struct DeviceInformation {
     }
 
     public var onFullyInitialized: (() -> Void)?
+
+    // MARK: - Reset
 
     public mutating func reset() {
         logger.debug("resetting")
