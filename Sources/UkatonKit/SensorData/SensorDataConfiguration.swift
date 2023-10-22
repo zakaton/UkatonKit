@@ -1,13 +1,12 @@
 import Foundation
 import OSLog
+import StaticLogger
 
 typealias SensorDataRates = [RawSensorDataType: SensorDataRate]
 
+@StaticLogger
 struct SensorDataConfiguration {
-    // MARK: - Logging
-
-    private static let logger: Logger = .init(subsystem: Bundle.main.bundleIdentifier!, category: String(describing: Self.self))
-    private var logger: Logger { Self.logger }
+    var logger: Logger { Self.logger }
 
     // MARK: - SensorType
 
@@ -77,7 +76,7 @@ struct SensorDataConfiguration {
     mutating func parse(data: Data, offset: inout UInt8) {
         sensorType.forEachDataType { dataType in
             if offset + 2 < data.count {
-                var dataRate: SensorDataRate = .parse(from: data, at: &offset)
+                let dataRate: SensorDataRate = .parse(from: data, at: &offset)
                 dataRates[dataType] = dataRate
             }
             else {

@@ -2,11 +2,51 @@
 import XCTest
 
 final class UkatonKitTests: XCTestCase {
-    func testExample() throws {
-        // XCTest Documentation
-        // https://developer.apple.com/documentation/xctest
+    // MARK: - Device Informaton
 
-        // Defining Test Cases and Test Methods
-        // https://developer.apple.com/documentation/xctest/defining_test_cases_and_test_methods
+    func parseDeviceName() {
+        // FILL
+    }
+
+    func parseDeviceType() {
+        // FILL
+    }
+
+    // MARK: - Sensor Data Configuration
+
+    func parseSensorDataConfiguration() {
+        // FILL
+    }
+
+    func serializeSensorDataConfiguration() {
+        // FILL
+    }
+
+    // MARK: - Sensor Data
+
+    func parseSensorData() {
+        // FILL
+    }
+
+    // MARK: - Haptics
+
+    func serializeHapticsWaveforms() {
+        // FILL
+    }
+
+    func serializeHapticsSequence() {
+        // FILL
+    }
+
+    // MARK: - Bluetooth Connection
+
+    func connectBluetooth() {
+        // FILL
+    }
+
+    // MARK: - UDP Connection
+
+    func connectUdp() {
+        // FILL
     }
 }

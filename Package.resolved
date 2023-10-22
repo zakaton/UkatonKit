@@ -1,0 +1,23 @@
+{
+  "pins" : [
+    {
+      "identity" : "staticlogger",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Finnvoor/StaticLogger.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "761d8401e006a323bb3da706b06a0facc6a87419"
+      }
+    },
+    {
+      "identity" : "swift-syntax",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-syntax.git",
+      "state" : {
+        "revision" : "ffa3cd6fc2aa62adbedd31d3efaf7c0d86a9f029",
+        "version" : "509.0.1"
+      }
+    }
+  ],
+  "version" : 2
+}

@@ -1,11 +1,10 @@
 import Foundation
 import OSLog
+import StaticLogger
 
+@StaticLogger
 public class BaseUkatonMission: ObservableObject {
-    // MARK: - Logging
-
-    private static let logger: Logger = .init(subsystem: Bundle.main.bundleIdentifier!, category: String(describing: BaseUkatonMission.self))
-    private var logger: Logger { Self.logger }
+    var logger: Logger { Self.logger }
 
     // MARK: - Components
 

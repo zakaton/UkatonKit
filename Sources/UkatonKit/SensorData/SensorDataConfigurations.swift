@@ -1,14 +1,13 @@
 import Foundation
 import OSLog
+import StaticLogger
 
 typealias MotionDataRates = [MotionDataType: SensorDataRate]
 typealias PressureDataRates = [PressureDataType: SensorDataRate]
 
+@StaticLogger
 struct SensorDataConfigurations {
-    // MARK: - Logging
-
-    private static let logger: Logger = .init(subsystem: Bundle.main.bundleIdentifier!, category: String(describing: Self.self))
-    private var logger: Logger { Self.logger }
+    var logger: Logger { Self.logger }
 
     var deviceType: DeviceType?
 
