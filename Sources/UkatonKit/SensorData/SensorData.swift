@@ -1,4 +1,6 @@
 import Foundation
+import OSLog
+import StaticLogger
 
 extension Date {
     static var now_ms: UInt64 {
@@ -6,6 +8,7 @@ extension Date {
     }
 }
 
+@StaticLogger
 public struct SensorData {
     // MARK: - Timestamps
 
@@ -24,5 +27,5 @@ public struct SensorData {
         }
     }
 
-    func parseSensorData(data: inout Data, offset: inout UInt8) {}
+    func parseSensorData(data: Data, offset: inout UInt8) {}
 }

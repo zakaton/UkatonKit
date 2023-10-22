@@ -3,10 +3,10 @@
     {
       "identity" : "staticlogger",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Finnvoor/StaticLogger.git",
+      "location" : "https://github.com/zakaton/StaticLogger.git",
       "state" : {
         "branch" : "main",
-        "revision" : "761d8401e006a323bb3da706b06a0facc6a87419"
+        "revision" : "373d6e3c214737d67baacd235ea008f070f8367d"
       }
     },
     {

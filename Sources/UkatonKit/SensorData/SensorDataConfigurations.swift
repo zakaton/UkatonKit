@@ -7,8 +7,6 @@ typealias PressureDataRates = [PressureDataType: SensorDataRate]
 
 @StaticLogger
 struct SensorDataConfigurations {
-    var logger: Logger { Self.logger }
-
     var deviceType: DeviceType?
 
     // MARK: - Configurations
@@ -25,12 +23,12 @@ struct SensorDataConfigurations {
 
     // MARK: - Subscripting
 
-    public var motion: MotionDataRates {
+    var motion: MotionDataRates {
         get { self[.motion] as! MotionDataRates }
         set { self[.motion] = newValue as! SensorDataRates }
     }
 
-    public var pressure: PressureDataRates {
+    var pressure: PressureDataRates {
         get { self[.pressure] as! PressureDataRates }
         set { self[.pressure] = newValue as! SensorDataRates }
     }
@@ -45,7 +43,7 @@ struct SensorDataConfigurations {
         }
     }
 
-    public subscript(motionDataType: MotionDataType) -> SensorDataRate {
+    subscript(motionDataType: MotionDataType) -> SensorDataRate {
         get {
             self[motionDataType as SensorDataType]
         }
@@ -54,7 +52,7 @@ struct SensorDataConfigurations {
         }
     }
 
-    public subscript(pressureDataType: PressureDataType) -> SensorDataRate {
+    subscript(pressureDataType: PressureDataType) -> SensorDataRate {
         get {
             self[pressureDataType as SensorDataType]
         }
@@ -75,7 +73,7 @@ struct SensorDataConfigurations {
 
     // MARK: - Serialization
 
-    var areConfigurationsNonZero: Bool = false
+    private(set) var areConfigurationsNonZero: Bool = false
     private var shouldSerialize: Bool = false
     private mutating func onConfigurationsUpdate() {
         shouldSerialize = configurations.values.contains { $0.shouldSerialize }

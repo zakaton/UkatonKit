@@ -4,8 +4,6 @@ import StaticLogger
 
 @StaticLogger
 public class BaseUkatonMission: ObservableObject {
-    var logger: Logger { Self.logger }
-
     // MARK: - Components
 
     var deviceInformation: DeviceInformation = .init()
@@ -21,9 +19,12 @@ public class BaseUkatonMission: ObservableObject {
         }
     }
 
+    // MARK: - Connection
+
     // MARK: - Callbacks
 
     func onDeviceInformationFullyInitialized() {
+        logger.debug("fully initialized device information")
         sensorDataConfigurations.deviceType = deviceInformation.deviceType
     }
 }

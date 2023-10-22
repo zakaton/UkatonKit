@@ -14,7 +14,7 @@ let package = Package(
             targets: ["UkatonKit"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/Finnvoor/StaticLogger.git", branch: "main"),
+        .package(url: "https://github.com/zakaton/StaticLogger.git", branch: "main"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.

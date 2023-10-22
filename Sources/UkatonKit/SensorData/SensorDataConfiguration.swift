@@ -6,8 +6,6 @@ typealias SensorDataRates = [RawSensorDataType: SensorDataRate]
 
 @StaticLogger
 struct SensorDataConfiguration {
-    var logger: Logger { Self.logger }
-
     // MARK: - SensorType
 
     let sensorType: SensorType
