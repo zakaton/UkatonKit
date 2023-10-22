@@ -51,8 +51,8 @@ struct SensorDataConfiguration {
     private mutating func serialize() {
         serialization.removeAll(keepingCapacity: true)
         dataRates.forEach { dataType, dataRate in
-            serialization.append(contentsOf: [dataType])
-            serialization.append(contentsOf: dataRate.toUInt8Array())
+            serialization.append(dataType.data)
+            serialization.append(dataRate.data)
         }
 
         let _self = self

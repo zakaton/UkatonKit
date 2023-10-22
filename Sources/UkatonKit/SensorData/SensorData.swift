@@ -10,7 +10,7 @@ extension Date {
 
 protocol SensorDataComponent {
     var deviceType: DeviceType? { get set }
-    func parse(_ data: Data, at offset: inout UInt8, until finalOffset: UInt8)
+    mutating func parse(_ data: Data, at offset: inout UInt8, until finalOffset: UInt8)
 }
 
 @StaticLogger
