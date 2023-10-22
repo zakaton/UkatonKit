@@ -37,4 +37,13 @@ public enum SensorType: UInt8, CaseIterable {
     static var totalNumberOfDataTypes: Int {
         allCases.reduce(0) { $0 + $1.numberOfDataTypes }
     }
+
+    var name: String {
+        switch self {
+        case .motion:
+            "motion"
+        case .pressure:
+            "pressure"
+        }
+    }
 }

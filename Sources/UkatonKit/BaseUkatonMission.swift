@@ -11,6 +11,12 @@ public class BaseUkatonMission: ObservableObject {
     var sensorData: SensorData = .init()
     var haptics: Haptics = .init()
 
+    // MARK: - Convenience
+
+    var deviceType: DeviceType? {
+        deviceInformation.deviceType
+    }
+
     // MARK: - Initialization
 
     init() {
@@ -24,7 +30,13 @@ public class BaseUkatonMission: ObservableObject {
     // MARK: - Callbacks
 
     func onDeviceInformationFullyInitialized() {
+        guard deviceType != nil else {
+            logger.error("deviceType not defined, even after device is fully initialized")
+            return
+        }
         logger.debug("fully initialized device information")
-        sensorDataConfigurations.deviceType = deviceInformation.deviceType
+
+        sensorDataConfigurations.deviceType = deviceType
+        sensorData.deviceType = deviceType
     }
 }

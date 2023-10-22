@@ -23,6 +23,7 @@ extension SensorDataRate {
         }
         let bytes = data.subdata(in: Data.Index(offset) ..< Data.Index(offset + 2))
         let value = UInt16(bytes[0]) + (UInt16(bytes[1]) << 8)
+        offset += 2
         return littleEndian ? value : value.byteSwapped
     }
 }

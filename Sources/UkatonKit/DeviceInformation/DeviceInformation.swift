@@ -4,8 +4,6 @@ import StaticLogger
 
 @StaticLogger
 public struct DeviceInformation {
-    var logger: Logger { Self.logger }
-
     // MARK: - Name
 
     public private(set) var name: String? {
@@ -14,7 +12,12 @@ public struct DeviceInformation {
         }
     }
 
-    mutating func parseName(data: Data, offset: inout UInt8, finalOffset: UInt8) {
+    mutating func parseName(data: Data) {
+        var offset: UInt8 = 0
+        parseName(data: data, at: &offset, until: UInt8(data.count))
+    }
+
+    mutating func parseName(data: Data, at offset: inout UInt8, until finalOffset: UInt8) {
         if offset < finalOffset, finalOffset < data.count {
             let nameDataRange = Data.Index(offset) ..< Data.Index(finalOffset)
             let nameData = data.subdata(in: nameDataRange)
@@ -35,7 +38,7 @@ public struct DeviceInformation {
         }
     }
 
-    mutating func parseType(data: Data, offset: inout UInt8) {
+    mutating func parseType(data: Data, at offset: inout UInt8) {
         if offset < data.count {
             if let newDeviceType = DeviceType(rawValue: data[Int(offset)]) {
                 Self.logger.debug("new deviceType \(String(describing: newDeviceType))")

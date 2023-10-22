@@ -7,6 +7,8 @@ typealias PressureDataRates = [PressureDataType: SensorDataRate]
 
 @StaticLogger
 struct SensorDataConfigurations {
+    // MARK: - Device Type
+
     var deviceType: DeviceType?
 
     // MARK: - Configurations
@@ -106,15 +108,15 @@ struct SensorDataConfigurations {
 
     // MARK: - Parsing
 
-    mutating func parse(data: Data, offset: inout UInt8) {
+    mutating func parse(_ data: Data, at offset: inout UInt8) {
         for var configuration in configurations.values {
-            configuration.parse(data: data, offset: &offset)
+            configuration.parse(data, at: &offset)
         }
     }
 
-    mutating func parse(data: Data) {
+    mutating func parse(_ data: Data) {
         var offset: UInt8 = 0
-        parse(data: data, offset: &offset)
+        parse(data, at: &offset)
         onConfigurationsUpdate()
     }
 

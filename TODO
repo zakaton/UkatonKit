@@ -1,5 +1,6 @@
-SensorData
+MotionData
+PressureData
 Haptics
+BleConnection
+UdpConnection
 Missions
-BLE
-UDP
