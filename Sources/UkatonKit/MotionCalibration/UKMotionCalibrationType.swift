@@ -1,4 +1,4 @@
-public enum MotionCalibrationType: UInt8, CaseIterable {
+public enum UKMotionCalibrationType: UInt8, CaseIterable {
     case accelerometer
     case gyroscope
     case magnetometer

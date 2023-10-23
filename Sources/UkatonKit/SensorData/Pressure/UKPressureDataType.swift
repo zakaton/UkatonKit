@@ -1,11 +1,11 @@
-enum PressureDataType: UInt8, CaseIterable, SensorDataType {
+enum UKPressureDataType: UInt8, CaseIterable, UKSensorDataType {
     case pressureSingleByte
     case pressureDoubleByte
     case centerOfMass
     case mass
     case heelToToe
 
-    var sensorType: SensorType { .pressure }
+    var sensorType: UKSensorType { .pressure }
 
     var name: String {
         switch self {

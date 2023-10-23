@@ -3,7 +3,7 @@ import OSLog
 import StaticLogger
 
 @StaticLogger
-public struct DeviceInformation {
+public struct UKDeviceInformation {
     // MARK: - Name
 
     public private(set) var name: String? {
@@ -32,7 +32,7 @@ public struct DeviceInformation {
 
     // MARK: - DeviceType
 
-    public private(set) var deviceType: DeviceType? {
+    public private(set) var deviceType: UKDeviceType? {
         didSet {
             checkIsFullyInitialized()
         }
@@ -40,7 +40,7 @@ public struct DeviceInformation {
 
     mutating func parseType(data: Data, at offset: inout UInt8) {
         if offset < data.count {
-            if let newDeviceType = DeviceType(rawValue: data[Int(offset)]) {
+            if let newDeviceType = UKDeviceType(rawValue: data[Int(offset)]) {
                 Self.logger.debug("new deviceType \(String(describing: newDeviceType))")
                 deviceType = newDeviceType
             } else {

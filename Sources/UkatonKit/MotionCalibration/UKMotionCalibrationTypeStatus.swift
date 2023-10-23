@@ -1,4 +1,4 @@
-public enum MotionCalibrationTypeStatus: UInt8 {
+public enum UKMotionCalibrationTypeStatus: UInt8 {
     case unreliable
     case low
     case medium

@@ -6,6 +6,7 @@ final class UkatonKitTests: XCTestCase {
 
     func parseDeviceName() {
         // FILL
+        let mission = UKBaseMission()
     }
 
     func parseDeviceType() {

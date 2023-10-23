@@ -3,18 +3,18 @@ import OSLog
 import StaticLogger
 
 @StaticLogger
-public class BaseUkatonMission: ObservableObject {
+public class UKBaseMission: ObservableObject {
     // MARK: - Components
 
-    var deviceInformation: DeviceInformation = .init()
-    var sensorDataConfigurations: SensorDataConfigurations = .init()
-    var sensorData: SensorData = .init()
-    var motionCalibrationData: MotionCalibrationData = .init()
-    var haptics: Haptics = .init()
+    var deviceInformation: UKDeviceInformation = .init()
+    var sensorDataConfigurations: UKSensorDataConfigurations = .init()
+    var sensorData: UKSensorData = .init()
+    var motionCalibrationData: UKMotionCalibrationData = .init()
+    var haptics: UKHaptics = .init()
 
     // MARK: - Convenience
 
-    var deviceType: DeviceType? {
+    var deviceType: UKDeviceType? {
         deviceInformation.deviceType
     }
 

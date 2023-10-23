@@ -4,10 +4,10 @@ import simd
 import StaticLogger
 
 @StaticLogger
-public struct PressureData: SensorDataComponent {
+public struct UKPressureData: UKSensorDataComponent {
     // MARK: - Device Type
 
-    var deviceType: DeviceType? = nil {
+    var deviceType: UKDeviceType? = nil {
         didSet {
             if oldValue != deviceType {
                 pressureValues.deviceType = deviceType
@@ -17,7 +17,7 @@ public struct PressureData: SensorDataComponent {
 
     // MARK: - Data Scalar
 
-    typealias Scalars = [PressureDataType: Double]
+    typealias Scalars = [UKPressureDataType: Double]
     static let scalars: Scalars = [
         .mass: pow(2.0, -16.0)
     ]
@@ -27,7 +27,7 @@ public struct PressureData: SensorDataComponent {
 
     public typealias Vector2D = simd_double2
 
-    public private(set) var pressureValues: PressureValues = .init()
+    public private(set) var pressureValues: UKPressureValues = .init()
     public private(set) var centerOfMass: Vector2D = .init()
     public private(set) var mass: Double = .zero
     public private(set) var heelToToe: Float64 = .zero
@@ -38,7 +38,7 @@ public struct PressureData: SensorDataComponent {
         while offset < finalOffset {
             let rawPressureDataType = data[Data.Index(offset)]
             offset += 1
-            guard let pressureDataType: PressureDataType = .init(rawValue: rawPressureDataType) else {
+            guard let pressureDataType: UKPressureDataType = .init(rawValue: rawPressureDataType) else {
                 logger.error("undefined pressure data type \(rawPressureDataType)")
                 break
             }

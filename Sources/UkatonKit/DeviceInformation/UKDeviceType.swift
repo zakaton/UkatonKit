@@ -1,4 +1,4 @@
-public enum DeviceType: UInt8, CaseIterable {
+public enum UKDeviceType: UInt8, CaseIterable {
     case motionModule
     case leftInsole
     case rightInsole
@@ -9,12 +9,12 @@ public enum DeviceType: UInt8, CaseIterable {
         return self == .leftInsole ? .left : .right
     }
 
-    public func hasSensorType(_ sensorType: SensorType) -> Bool {
+    public func hasSensorType(_ sensorType: UKSensorType) -> Bool {
         sensorType == .motion || self.isInsole
     }
 
-    public var availableSensorTypes: [SensorType] {
-        SensorType.allCases.filter { self.hasSensorType($0) }
+    public var availableSensorTypes: [UKSensorType] {
+        UKSensorType.allCases.filter { self.hasSensorType($0) }
     }
 }
 

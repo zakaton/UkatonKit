@@ -1,6 +1,6 @@
 import Network
 
-public class UDPUkatonMission: BaseUkatonMission {
+public class UKUdpMission: UKBaseMission {
     enum MessageType: UInt8 {
         case ping
         
@@ -24,4 +24,4 @@ public class UDPUkatonMission: BaseUkatonMission {
     }
 }
 
-typealias UDPUkatonMissions = BaseUkatonMissions<UDPUkatonMission>
+typealias UDPUkatonMissions = UKBaseMissions<UKUdpMission>

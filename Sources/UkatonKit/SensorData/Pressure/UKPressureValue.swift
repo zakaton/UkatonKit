@@ -1,7 +1,7 @@
 import Foundation
 import simd
 
-public struct PressureValue {
+public struct UKPressureValue {
     public typealias Vector2D = simd_double2
 
     public var rawValue: UInt16 = 0

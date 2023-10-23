@@ -1,6 +1,6 @@
 import Foundation
 
-enum ConnectionType {
+enum UKConnectionType {
     case bluetooth
     case udp
 }

@@ -1,8 +1,8 @@
 import Foundation
 
-typealias SensorDataRate = UInt16
-extension SensorDataRate {
-    static func parse(from data: Data, at offset: inout UInt8, littleEndian: Bool = true) -> SensorDataRate {
+typealias UKSensorDataRate = UInt16
+extension UKSensorDataRate {
+    static func parse(from data: Data, at offset: inout UInt8, littleEndian: Bool = true) -> UKSensorDataRate {
         guard offset >= 0, offset + 2 <= data.count else {
             return 0
         }
@@ -13,8 +13,8 @@ extension SensorDataRate {
     }
 }
 
-extension SensorDataRate {
-    func roundToTens() -> SensorDataRate {
+extension UKSensorDataRate {
+    func roundToTens() -> UKSensorDataRate {
         return self - (self % 10)
     }
 }

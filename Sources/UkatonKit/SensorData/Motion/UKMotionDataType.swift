@@ -1,4 +1,4 @@
-enum MotionDataType: UInt8, CaseIterable, SensorDataType {
+enum UKMotionDataType: UInt8, CaseIterable, UKSensorDataType {
     case acceleration
     case gravity
     case linearAcceleration
@@ -6,7 +6,7 @@ enum MotionDataType: UInt8, CaseIterable, SensorDataType {
     case magnetometer
     case quaternion
 
-    var sensorType: SensorType { .motion }
+    var sensorType: UKSensorType { .motion }
 
     var name: String {
         switch self {

@@ -1,13 +1,13 @@
-public enum SensorType: UInt8, CaseIterable {
+public enum UKSensorType: UInt8, CaseIterable {
     case motion
     case pressure
 
-    var dataTypes: [RawSensorDataType] {
+    var dataTypes: [UKRawSensorDataType] {
         let dataTypes = switch self {
         case .motion:
-            MotionDataType.allCases.map { $0.rawValue }
+            UKMotionDataType.allCases.map { $0.rawValue }
         case .pressure:
-            PressureDataType.allCases.map { $0.rawValue }
+            UKPressureDataType.allCases.map { $0.rawValue }
         }
         return dataTypes
     }
@@ -15,18 +15,18 @@ public enum SensorType: UInt8, CaseIterable {
     func forEachDataType(_ body: (UInt8) -> Void) {
         switch self {
         case .motion:
-            MotionDataType.allCases.forEach { body($0.rawValue) }
+            UKMotionDataType.allCases.forEach { body($0.rawValue) }
         case .pressure:
-            PressureDataType.allCases.forEach { body($0.rawValue) }
+            UKPressureDataType.allCases.forEach { body($0.rawValue) }
         }
     }
 
     var numberOfDataTypes: Int {
         switch self {
         case .motion:
-            return MotionDataType.allCases.count
+            return UKMotionDataType.allCases.count
         case .pressure:
-            return PressureDataType.allCases.count
+            return UKPressureDataType.allCases.count
         }
     }
 

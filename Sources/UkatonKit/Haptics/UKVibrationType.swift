@@ -1,4 +1,4 @@
-enum VibrationType: UInt8 {
+enum UKVibrationType: UInt8 {
     case waveform
     case sequence
 }

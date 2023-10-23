@@ -3,13 +3,13 @@ import OSLog
 import StaticLogger
 
 @StaticLogger
-public struct MotionCalibrationData {
+public struct UKMotionCalibrationData {
     // MARK: - Calibration
 
-    private typealias Calibration = [MotionCalibrationType: MotionCalibrationTypeStatus]
+    private typealias Calibration = [UKMotionCalibrationType: UKMotionCalibrationTypeStatus]
     private var rawCalibration: Calibration = {
         var _calibration: Calibration = [:]
-        MotionCalibrationType.allCases.forEach { motionCalibrationType in
+        UKMotionCalibrationType.allCases.forEach { motionCalibrationType in
             _calibration[motionCalibrationType] = .none
         }
         return _calibration
@@ -26,7 +26,7 @@ public struct MotionCalibrationData {
 
     // MARK: - Conveniance Subscript
 
-    public subscript(motionCalibrationType: MotionCalibrationType) -> MotionCalibrationTypeStatus {
+    public subscript(motionCalibrationType: UKMotionCalibrationType) -> UKMotionCalibrationTypeStatus {
         rawCalibration[motionCalibrationType]!
     }
 
@@ -38,11 +38,11 @@ public struct MotionCalibrationData {
 
     mutating func parse(_ data: Data, at offset: inout UInt8) {
         var newIsFullyCalibrated = true
-        MotionCalibrationType.allCases.forEach { motionCalibrationType in
+        UKMotionCalibrationType.allCases.forEach { motionCalibrationType in
             let rawMotionCalibrationTypeStatus = data[Data.Index(offset)]
             offset += 1
 
-            let motionCalibrationTypeStatus: MotionCalibrationTypeStatus = .init(rawValue: rawMotionCalibrationTypeStatus)!
+            let motionCalibrationTypeStatus: UKMotionCalibrationTypeStatus = .init(rawValue: rawMotionCalibrationTypeStatus)!
 
             rawCalibration[motionCalibrationType] = motionCalibrationTypeStatus
             logger.debug("\(motionCalibrationType.name) calibration: \(motionCalibrationTypeStatus.name)")

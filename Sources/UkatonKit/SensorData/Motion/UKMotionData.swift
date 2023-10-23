@@ -12,14 +12,14 @@ extension BinaryFloatingPoint {
 }
 
 @StaticLogger
-public struct MotionData: SensorDataComponent {
+public struct UKMotionData: UKSensorDataComponent {
     // MARK: - Device Type
 
-    var deviceType: DeviceType? = nil
+    var deviceType: UKDeviceType? = nil
 
     // MARK: - Data Scalar
 
-    typealias Scalars = [MotionDataType: Double]
+    typealias Scalars = [UKMotionDataType: Double]
     static let scalars: Scalars = [
         .acceleration: pow(2.0, -8.0),
         .gravity: pow(2.0, -8.0),
@@ -48,7 +48,7 @@ public struct MotionData: SensorDataComponent {
         while offset < finalOffset {
             let rawMotionDataType = data[Data.Index(offset)]
             offset += 1
-            guard let motionDataType: MotionDataType = .init(rawValue: rawMotionDataType) else {
+            guard let motionDataType: UKMotionDataType = .init(rawValue: rawMotionDataType) else {
                 logger.error("undefined motion data type \(rawMotionDataType)")
                 break
             }
@@ -146,8 +146,8 @@ public struct MotionData: SensorDataComponent {
     }
 
     private var correctionQuaternion: Quaternion { Self.correctionQuaternions[deviceType ?? .motionModule]! }
-    static let correctionQuaternions: [DeviceType: Quaternion] = {
-        var _correctionQuaternions: [DeviceType: Quaternion] = [:]
+    static let correctionQuaternions: [UKDeviceType: Quaternion] = {
+        var _correctionQuaternions: [UKDeviceType: Quaternion] = [:]
 
         var rawAngles: RawAngles = .init(arrayLiteral: 0.0, 0.0, 0.0)
         var eulerAngles = Rotation3D(eulerAngles: .init(angles: rawAngles, order: .xyz))

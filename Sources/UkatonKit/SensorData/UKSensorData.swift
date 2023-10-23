@@ -8,16 +8,16 @@ extension Date {
     }
 }
 
-protocol SensorDataComponent {
-    var deviceType: DeviceType? { get set }
+protocol UKSensorDataComponent {
+    var deviceType: UKDeviceType? { get set }
     mutating func parse(_ data: Data, at offset: inout UInt8, until finalOffset: UInt8)
 }
 
 @StaticLogger
-public struct SensorData {
+public struct UKSensorData {
     // MARK: - Device Type
 
-    var deviceType: DeviceType? {
+    var deviceType: UKDeviceType? {
         didSet {
             if oldValue != deviceType {
                 for var dataComponent in sensorData.values {
@@ -29,15 +29,15 @@ public struct SensorData {
 
     // MARK: - Data
 
-    private typealias RawSensorData = [SensorType: SensorDataComponent]
+    private typealias RawSensorData = [UKSensorType: UKSensorDataComponent]
     private var sensorData: RawSensorData = {
         var _data: RawSensorData = [:]
-        SensorType.allCases.forEach { sensorType in
-            let dataComponent: SensorDataComponent = switch sensorType {
+        UKSensorType.allCases.forEach { sensorType in
+            let dataComponent: UKSensorDataComponent = switch sensorType {
             case .motion:
-                MotionData()
+                UKMotionData()
             case .pressure:
-                PressureData()
+                UKPressureData()
             }
             _data[sensorType] = dataComponent
         }
@@ -46,12 +46,12 @@ public struct SensorData {
 
     // MARK: - Subscripts
 
-    private subscript(_ sensorType: SensorType) -> SensorDataComponent {
+    private subscript(_ sensorType: UKSensorType) -> UKSensorDataComponent {
         sensorData[sensorType]!
     }
 
-    public var motion: MotionData { self[.motion] as! MotionData }
-    public var pressure: PressureData { self[.pressure] as! PressureData }
+    public var motion: UKMotionData { self[.motion] as! UKMotionData }
+    public var pressure: UKPressureData { self[.pressure] as! UKPressureData }
 
     // MARK: - Timestamps
 
@@ -83,7 +83,7 @@ public struct SensorData {
             let rawSensorType = data[Data.Index(offset)]
             offset += 1
 
-            guard let sensorType: SensorType = .init(rawValue: rawSensorType) else {
+            guard let sensorType: UKSensorType = .init(rawValue: rawSensorType) else {
                 logger.error("uncaught sensor type \(rawSensorType)")
                 break
             }

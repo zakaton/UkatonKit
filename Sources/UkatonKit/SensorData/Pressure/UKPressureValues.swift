@@ -4,8 +4,8 @@ import simd
 import StaticLogger
 
 @StaticLogger
-public struct PressureValues {
-    static let pressurePositions: [PressureValue.Vector2D] = [
+public struct UKPressureValues {
+    static let pressurePositions: [UKPressureValue.Vector2D] = [
         .init(x: 0.6385579634772724, y: 0.12185506415310729),
         .init(x: 0.3549331417480725, y: 0.15901519981589698),
         .init(x: 0.7452523671145329, y: 0.20937944459744443),
@@ -26,7 +26,7 @@ public struct PressureValues {
 
     // MARK: - DeviceType
 
-    var deviceType: DeviceType? {
+    var deviceType: UKDeviceType? {
         didSet {
             if let deviceType, deviceType != oldValue {
                 if deviceType.isInsole == true {
@@ -44,7 +44,7 @@ public struct PressureValues {
 
     // MARK: - Data Scalar
 
-    typealias Scalars = [PressureDataType: Double]
+    typealias Scalars = [UKPressureDataType: Double]
     static let scalars: Scalars = [
         .pressureSingleByte: pow(2.0, -8.0),
         .pressureDoubleByte: pow(2.0, -12.0)
@@ -55,8 +55,8 @@ public struct PressureValues {
 
     static let numberOfPressureSensors: Int = 16
     var numberOfPressureSensors: Int { Self.numberOfPressureSensors }
-    private var rawValues: [PressureValue] = .init(repeating: .init(), count: numberOfPressureSensors)
-    public subscript(index: Int) -> PressureValue {
+    private var rawValues: [UKPressureValue] = .init(repeating: .init(), count: numberOfPressureSensors)
+    public subscript(index: Int) -> UKPressureValue {
         rawValues[index]
     }
 
@@ -70,7 +70,7 @@ public struct PressureValues {
 
     // MARK: - Parsing
 
-    mutating func parse(_ data: Data, at offset: inout UInt8, for pressureDataType: PressureDataType) {
+    mutating func parse(_ data: Data, at offset: inout UInt8, for pressureDataType: UKPressureDataType) {
         let _self = self
 
         let scalar = scalars[pressureDataType]!
@@ -78,7 +78,6 @@ public struct PressureValues {
         var rawValueSum = 0
         let isSingleByte = pressureDataType == .pressureSingleByte
         let offsetIncrement: UInt8 = isSingleByte ? 1 : 2
-        // TODO: - FILL
 
         for index in 0 ..< numberOfPressureSensors {
             if isSingleByte {

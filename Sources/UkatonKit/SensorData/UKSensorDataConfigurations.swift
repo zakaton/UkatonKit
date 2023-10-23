@@ -2,22 +2,22 @@ import Foundation
 import OSLog
 import StaticLogger
 
-typealias MotionDataRates = [MotionDataType: SensorDataRate]
-typealias PressureDataRates = [PressureDataType: SensorDataRate]
+typealias MotionDataRates = [UKMotionDataType: UKSensorDataRate]
+typealias PressureDataRates = [UKPressureDataType: UKSensorDataRate]
 
 @StaticLogger
-struct SensorDataConfigurations {
+struct UKSensorDataConfigurations {
     // MARK: - Device Type
 
-    var deviceType: DeviceType?
+    var deviceType: UKDeviceType?
 
     // MARK: - Configurations
 
-    private typealias RawSensorDataConfigurations = [SensorType: SensorDataConfiguration]
+    private typealias RawSensorDataConfigurations = [UKSensorType: UKSensorDataConfiguration]
 
     private var configurations: RawSensorDataConfigurations = {
         var _configurations: RawSensorDataConfigurations = [:]
-        SensorType.allCases.forEach { sensorType in
+        UKSensorType.allCases.forEach { sensorType in
             _configurations[sensorType] = .init(sensorType: sensorType)
         }
         return _configurations
@@ -27,15 +27,15 @@ struct SensorDataConfigurations {
 
     var motion: MotionDataRates {
         get { self[.motion] as! MotionDataRates }
-        set { self[.motion] = newValue as! SensorDataRates }
+        set { self[.motion] = newValue as! UKSensorDataRates }
     }
 
     var pressure: PressureDataRates {
         get { self[.pressure] as! PressureDataRates }
-        set { self[.pressure] = newValue as! SensorDataRates }
+        set { self[.pressure] = newValue as! UKSensorDataRates }
     }
 
-    private subscript(_ sensorType: SensorType) -> SensorDataRates {
+    private subscript(_ sensorType: UKSensorType) -> UKSensorDataRates {
         get {
             configurations[sensorType]!.dataRates
         }
@@ -45,25 +45,25 @@ struct SensorDataConfigurations {
         }
     }
 
-    subscript(motionDataType: MotionDataType) -> SensorDataRate {
+    subscript(motionDataType: UKMotionDataType) -> UKSensorDataRate {
         get {
-            self[motionDataType as SensorDataType]
+            self[motionDataType as UKSensorDataType]
         }
         set(newValue) {
-            self[motionDataType as SensorDataType] = newValue
+            self[motionDataType as UKSensorDataType] = newValue
         }
     }
 
-    subscript(pressureDataType: PressureDataType) -> SensorDataRate {
+    subscript(pressureDataType: UKPressureDataType) -> UKSensorDataRate {
         get {
-            self[pressureDataType as SensorDataType]
+            self[pressureDataType as UKSensorDataType]
         }
         set(newValue) {
-            self[pressureDataType as SensorDataType] = newValue
+            self[pressureDataType as UKSensorDataType] = newValue
         }
     }
 
-    private subscript(sensorDataType: SensorDataType) -> SensorDataRate {
+    private subscript(sensorDataType: UKSensorDataType) -> UKSensorDataRate {
         get {
             configurations[sensorDataType.sensorType]![sensorDataType.rawValue]
         }
@@ -82,7 +82,7 @@ struct SensorDataConfigurations {
         areConfigurationsNonZero = configurations.values.contains { $0.isConfigurationNonZero }
     }
 
-    private static let maxSerializationLength = (SensorType.allCases.count * 2) + (3 * SensorType.totalNumberOfDataTypes)
+    private static let maxSerializationLength = (UKSensorType.allCases.count * 2) + (3 * UKSensorType.totalNumberOfDataTypes)
     private var serialization: Data = .init(capacity: maxSerializationLength)
 
     private mutating func serialize() {

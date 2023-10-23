@@ -2,29 +2,29 @@ import Foundation
 import OSLog
 import StaticLogger
 
-typealias SensorDataRates = [RawSensorDataType: SensorDataRate]
+typealias UKSensorDataRates = [UKRawSensorDataType: UKSensorDataRate]
 
 @StaticLogger
-struct SensorDataConfiguration {
+struct UKSensorDataConfiguration {
     // MARK: - SensorType
 
-    let sensorType: SensorType
-    init(sensorType: SensorType) {
+    let sensorType: UKSensorType
+    init(sensorType: UKSensorType) {
         self.sensorType = sensorType
     }
 
     // MARK: - Configuration
 
-    var dataRates: SensorDataRates = [:] {
+    var dataRates: UKSensorDataRates = [:] {
         didSet {
             onConfigurationUpdate()
         }
     }
 
     var isConfigurationNonZero: Bool = false
-    private var lastSerializedDataRates: SensorDataRates?
+    private var lastSerializedDataRates: UKSensorDataRates?
 
-    public subscript(_ dataType: RawSensorDataType) -> SensorDataRate {
+    public subscript(_ dataType: UKRawSensorDataType) -> UKSensorDataRate {
         get {
             dataRates[dataType] ?? 0
         }
@@ -44,7 +44,7 @@ struct SensorDataConfiguration {
 
     // MARK: - Serialization
 
-    private static let maxSerializationLength: Int = 2 * (3 * SensorType.maxNumberOfDataTypes)
+    private static let maxSerializationLength: Int = 2 * (3 * UKSensorType.maxNumberOfDataTypes)
     private var serialization: Data = .init(capacity: maxSerializationLength)
 
     var shouldSerialize: Bool = false
@@ -74,7 +74,7 @@ struct SensorDataConfiguration {
     mutating func parse(_ data: Data, at offset: inout UInt8) {
         sensorType.forEachDataType { dataType in
             if offset + 2 < data.count {
-                let dataRate: SensorDataRate = .parse(from: data, at: &offset)
+                let dataRate: UKSensorDataRate = .parse(from: data, at: &offset)
                 dataRates[dataType] = dataRate
             }
             else {
