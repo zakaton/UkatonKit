@@ -9,6 +9,7 @@ public class BaseUkatonMission: ObservableObject {
     var deviceInformation: DeviceInformation = .init()
     var sensorDataConfigurations: SensorDataConfigurations = .init()
     var sensorData: SensorData = .init()
+    var motionCalibrationData: MotionCalibrationData = .init()
     var haptics: Haptics = .init()
 
     // MARK: - Convenience
@@ -22,6 +23,9 @@ public class BaseUkatonMission: ObservableObject {
     init() {
         deviceInformation.onFullyInitialized = {
             [unowned self] in self.onDeviceInformationFullyInitialized()
+        }
+        motionCalibrationData.onFullyCalibrated = {
+            [unowned self] in self.onFullyCalibrated()
         }
     }
 
@@ -38,5 +42,9 @@ public class BaseUkatonMission: ObservableObject {
 
         sensorDataConfigurations.deviceType = deviceType
         sensorData.deviceType = deviceType
+    }
+
+    func onFullyCalibrated() {
+        logger.debug("fully calibrated")
     }
 }
