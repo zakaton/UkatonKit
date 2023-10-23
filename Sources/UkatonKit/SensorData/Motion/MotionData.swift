@@ -5,17 +5,17 @@ import simd
 import Spatial
 import StaticLogger
 
+extension BinaryFloatingPoint {
+    var degreesToRadians: Self {
+        self * .pi / 180
+    }
+}
+
 @StaticLogger
 public struct MotionData: SensorDataComponent {
     // MARK: - Device Type
 
-    var deviceType: DeviceType? = nil {
-        didSet {
-            if oldValue != deviceType {
-                // TODO: - FILL
-            }
-        }
-    }
+    var deviceType: DeviceType? = nil
 
     // MARK: - Data Scalar
 
@@ -34,18 +34,17 @@ public struct MotionData: SensorDataComponent {
 
     public typealias Quaternion = simd_quatd
 
-    public private(set) var acceleration: Vector3D?
-    public private(set) var gravity: Vector3D?
-    public private(set) var linearAcceleration: Vector3D?
-    public private(set) var rotationRate: Rotation3D?
-    public private(set) var magnetometer: Vector3D?
-    public private(set) var quaternion: Quaternion?
-    public private(set) var rotation3D: Rotation3D?
+    public private(set) var acceleration: Vector3D = .init()
+    public private(set) var gravity: Vector3D = .init()
+    public private(set) var linearAcceleration: Vector3D = .init()
+    public private(set) var rotationRate: Rotation3D = .init()
+    public private(set) var magnetometer: Vector3D = .init()
+    public private(set) var quaternion: Quaternion = .init()
+    public private(set) var rotation: Rotation3D = .init()
 
     // MARK: - Parsing
 
     mutating func parse(_ data: Data, at offset: inout UInt8, until finalOffset: UInt8) {
-        // TODO: - FILL
         while offset < finalOffset {
             let rawMotionDataType = data[Data.Index(offset)]
             offset += 1
@@ -69,13 +68,13 @@ public struct MotionData: SensorDataComponent {
                 magnetometer = parseVector(data: data, at: &offset, scalar: scalar)
             case .quaternion:
                 quaternion = parseQuaternion(data: data, at: &offset, scalar: scalar)
-                rotation3D = Rotation3D(quaternion!)
+                rotation = Rotation3D(quaternion)
             }
         }
     }
 
+    private typealias RawVector = simd_double3
     private func parseVector(data: Data, at offset: inout UInt8, scalar: Double) -> Vector3D {
-        // TODO: - FILL
         let rawX: Int16 = data.object(at: &offset)
         let rawY: Int16 = data.object(at: &offset)
         let rawZ: Int16 = data.object(at: &offset)
@@ -84,39 +83,84 @@ public struct MotionData: SensorDataComponent {
         let y = Double(rawY)
         let z = Double(rawZ)
 
-        var vector: Vector3D = switch deviceType {
+        var rawVector: RawVector = switch deviceType {
         case .motionModule:
-            Vector3D(x: x, y: y, z: z)
+            RawVector(arrayLiteral: -y, -z, -x)
         case .leftInsole:
-            Vector3D(x: x, y: y, z: z)
+            RawVector(arrayLiteral: -z, x, -y)
         case .rightInsole:
-            Vector3D(x: x, y: y, z: z)
+            RawVector(arrayLiteral: z, x, y)
         case nil:
-            Vector3D(x: x, y: y, z: z)
+            RawVector(arrayLiteral: x, y, z)
         }
+        rawVector *= scalar
 
-        vector.uniformlyScale(by: scalar)
+        logger.debug("parsed vector: \(rawVector.debugDescription)")
 
-        logger.debug("parsed vector: \(vector.description)")
-
-        return vector
+        return .init(vector: rawVector)
     }
 
+    private typealias RawAngles = simd_double3
     private func parseRotation(data: Data, at offset: inout UInt8, scalar: Double) -> Rotation3D {
-        // TODO: - FILL
         let rawX: Int16 = data.object(at: &offset)
         let rawY: Int16 = data.object(at: &offset)
         let rawZ: Int16 = data.object(at: &offset)
 
-        let x = Double(rawX)
-        let y = Double(rawY)
-        let z = Double(rawZ)
+        let x = Double(rawX).degreesToRadians
+        let y = Double(rawY).degreesToRadians
+        let z = Double(rawZ).degreesToRadians
 
-        return .init()
+        var rawAngles: RawAngles = switch deviceType {
+        case .motionModule:
+            RawAngles(arrayLiteral: y, -z, x)
+        case .leftInsole:
+            RawAngles(arrayLiteral: -z, y, -x)
+        case .rightInsole:
+            RawAngles(arrayLiteral: z, y, x)
+        case nil:
+            RawAngles(arrayLiteral: x, y, z)
+        }
+        rawAngles *= scalar
+
+        let eulerAngles: EulerAngles = .init(angles: rawAngles, order: .xyz)
+        return .init(eulerAngles: eulerAngles)
     }
 
     private func parseQuaternion(data: Data, at offset: inout UInt8, scalar: Double) -> Quaternion {
-        // TODO: - FILL
-        return .init()
+        let rawW: Int16 = data.object(at: &offset)
+        let rawX: Int16 = data.object(at: &offset)
+        let rawY: Int16 = data.object(at: &offset)
+        let rawZ: Int16 = data.object(at: &offset)
+
+        let w = Double(rawW)
+        let x = Double(rawX)
+        let y = Double(rawY)
+        let z = Double(rawZ)
+
+        var quaternion: Quaternion = .init(ix: x, iy: -z, iz: -y, r: -w)
+        if deviceType?.isInsole == true {
+            quaternion *= correctionQuaternion
+        }
+
+        return quaternion
     }
+
+    private var correctionQuaternion: Quaternion { Self.correctionQuaternions[deviceType ?? .motionModule]! }
+    static let correctionQuaternions: [DeviceType: Quaternion] = {
+        var _correctionQuaternions: [DeviceType: Quaternion] = [:]
+
+        var rawAngles: RawAngles = .init(arrayLiteral: 0.0, 0.0, 0.0)
+        var eulerAngles = Rotation3D(eulerAngles: .init(angles: rawAngles, order: .xyz))
+        _correctionQuaternions[.motionModule] = eulerAngles.quaternion
+
+        rawAngles = .init(arrayLiteral: -(.pi / 2.0), .pi / 2.0, 0.0)
+        eulerAngles = Rotation3D(eulerAngles: .init(angles: rawAngles, order: .xyz))
+        _correctionQuaternions[.leftInsole] = eulerAngles.quaternion
+
+        rawAngles = .init(arrayLiteral: -(.pi / 2.0), -(.pi / 2.0), 0.0)
+        eulerAngles = Rotation3D(eulerAngles: .init(angles: rawAngles, order: .xyz))
+        _correctionQuaternions[.rightInsole] = eulerAngles.quaternion
+
+        return _correctionQuaternions
+    }()
 }

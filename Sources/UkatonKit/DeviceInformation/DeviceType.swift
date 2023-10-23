@@ -3,17 +3,17 @@ public enum DeviceType: UInt8, CaseIterable {
     case leftInsole
     case rightInsole
 
-    var isInsole: Bool { self != .motionModule }
-    var insoleSide: InsoleSide? {
+    public var isInsole: Bool { self != .motionModule }
+    public var insoleSide: InsoleSide? {
         guard self.isInsole else { return nil }
         return self == .leftInsole ? .left : .right
     }
 
-    func hasSensorType(_ sensorType: SensorType) -> Bool {
+    public func hasSensorType(_ sensorType: SensorType) -> Bool {
         sensorType == .motion || self.isInsole
     }
 
-    var availableSensorTypes: [SensorType] {
+    public var availableSensorTypes: [SensorType] {
         SensorType.allCases.filter { self.hasSensorType($0) }
     }
 }

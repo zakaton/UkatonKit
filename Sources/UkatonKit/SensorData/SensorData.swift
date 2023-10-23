@@ -76,6 +76,9 @@ public struct SensorData {
         lastTimeReceivedSensorData = Date.now_ms
         rawTimestamp = UInt16.parse(from: data, at: &offset)
 
+        let _self = self
+        logger.debug("sensor data timestamp: \(_self.timestamp)ms")
+
         while offset < data.count {
             let rawSensorType = data[Data.Index(offset)]
             offset += 1
