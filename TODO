@@ -1,7 +1,5 @@
-PressureValues
-    parsing
-Haptics
 MotionCalibration
+Haptics
 BleConnection
 UdpConnection
 Missions

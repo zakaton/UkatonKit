@@ -1,6 +1,9 @@
 import Foundation
+import OSLog
 import simd
+import StaticLogger
 
+@StaticLogger
 public struct PressureValues {
     static let pressurePositions: [PressureValue.Vector2D] = [
         .init(x: 0.6385579634772724, y: 0.12185506415310729),
@@ -26,7 +29,6 @@ public struct PressureValues {
     var deviceType: DeviceType? {
         didSet {
             if let deviceType, deviceType != oldValue {
-                // TODO: - update pressure positions
                 if deviceType.isInsole == true {
                     for index in 0 ..< numberOfPressureSensors {
                         rawValues[index].position = Self.pressurePositions[index]
@@ -34,6 +36,7 @@ public struct PressureValues {
                             rawValues[index].position.x = 1 - rawValues[index].position.x
                         }
                     }
+                    logger.debug("updated pressure value positions")
                 }
             }
         }
@@ -61,14 +64,54 @@ public struct PressureValues {
 
     public typealias Vector2D = simd_double2
 
-    public private(set) var centerOfMass: Vector2D = .init()
+    public private(set) var centerOfMass: Vector2D = .zero
     public private(set) var mass: Double = .zero
     public private(set) var heelToToe: Float64 = .zero
 
     // MARK: - Parsing
 
     mutating func parse(_ data: Data, at offset: inout UInt8, for pressureDataType: PressureDataType) {
+        let _self = self
+
         let scalar = scalars[pressureDataType]!
+
+        var rawValueSum = 0
+        let isSingleByte = pressureDataType == .pressureSingleByte
+        let offsetIncrement: UInt8 = isSingleByte ? 1 : 2
         // TODO: - FILL
+
+        for index in 0 ..< numberOfPressureSensors {
+            if isSingleByte {
+                rawValues[index].rawValue = UInt16(data[Data.Index(offset)])
+            }
+            else {
+                rawValues[index].rawValue = data.object(at: &offset)
+            }
+
+            rawValueSum += Int(rawValues[index].rawValue)
+            rawValues[index].normalizedValue = Double(rawValues[index].rawValue) * scalar
+            offset += offsetIncrement
+        }
+
+        logger.debug("rawValueSum: \(rawValueSum)")
+
+        centerOfMass = .zero
+        heelToToe = .zero
+
+        if rawValueSum > 0 {
+            for index in 0 ..< numberOfPressureSensors {
+                rawValues[index].weightedValue = Double(rawValues[index].rawValue) / Double(rawValueSum)
+            }
+
+            logger.debug("pressure sensors: \(_self.rawValues.debugDescription)")
+
+            centerOfMass.y = 1 - centerOfMass.y
+            logger.debug("centerOfMass: \(_self.centerOfMass.debugDescription)")
+            heelToToe = centerOfMass.y
+            logger.debug("heelToToe: \(_self.heelToToe.debugDescription)")
+        }
+
+        mass = Double(rawValueSum) * scalar / Double(numberOfPressureSensors)
+        logger.debug("mass: \(_self.mass)")
     }
 }
