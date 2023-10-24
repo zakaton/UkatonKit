@@ -3,12 +3,29 @@ import OSLog
 import StaticLogger
 
 @StaticLogger
-public struct UKDeviceInformation {
+struct UKDeviceInformationManager {
     // MARK: - Name
 
-    public private(set) var name: String? {
+    private var name: String? {
         didSet {
+            onNameUpdated?(name)
             checkIsFullyInitialized()
+        }
+    }
+
+    mutating func parseName(data: Data, at offset: inout UInt8, until finalOffset: UInt8) {
+        if offset < finalOffset, finalOffset <= data.count {
+            let nameDataRange = Data.Index(offset) ..< Data.Index(finalOffset)
+            let nameData = data.subdata(in: nameDataRange)
+            if let newName = String(data: nameData, encoding: .utf8) {
+                Self.logger.debug("new device name \"\(newName)\"")
+                name = newName
+            } else {
+                Self.logger.error("Unable to decode the data as a string.")
+            }
+        } else {
+            let _offset = offset
+            Self.logger.error("offset \(_offset)...\(finalOffset) out of range for data \(data.count)")
         }
     }
 
@@ -17,37 +34,31 @@ public struct UKDeviceInformation {
         parseName(data: data, at: &offset, until: UInt8(data.count))
     }
 
-    mutating func parseName(data: Data, at offset: inout UInt8, until finalOffset: UInt8) {
-        if offset < finalOffset, finalOffset < data.count {
-            let nameDataRange = Data.Index(offset) ..< Data.Index(finalOffset)
-            let nameData = data.subdata(in: nameDataRange)
-            if let newName = String(data: nameData, encoding: .utf8) {
-                Self.logger.debug("new name \(newName)")
-                name = newName
-            } else {
-                Self.logger.error("Unable to decode the data as a string.")
-            }
-        }
-    }
-
     // MARK: - DeviceType
 
-    public private(set) var deviceType: UKDeviceType? {
+    private var type: UKDeviceType? {
         didSet {
+            onTypeUpdated?(type)
             checkIsFullyInitialized()
         }
     }
 
     mutating func parseType(data: Data, at offset: inout UInt8) {
         if offset < data.count {
-            if let newDeviceType = UKDeviceType(rawValue: data[Int(offset)]) {
-                Self.logger.debug("new deviceType \(String(describing: newDeviceType))")
-                deviceType = newDeviceType
-            } else {
-                Self.logger.error("invalid device type enum")
-            }
+            let newTypeRawValue = data[Int(offset)]
             offset += 1
+            if let newType = UKDeviceType(rawValue: newTypeRawValue) {
+                Self.logger.debug("new type \(newType.name)")
+                type = newType
+            } else {
+                Self.logger.error("invalid device type enum \(newTypeRawValue)")
+            }
         }
+    }
+
+    mutating func parseType(data: Data) {
+        var offset: UInt8 = 0
+        parseType(data: data, at: &offset)
     }
 
     // MARK: - Is Fully Initialized?
@@ -62,16 +73,20 @@ public struct UKDeviceInformation {
     }
 
     private mutating func checkIsFullyInitialized() {
-        isFullyInitialized = name != nil && deviceType != nil
+        isFullyInitialized = name != nil && type != nil
     }
 
+    // MARK: - Callbacks
+
     public var onFullyInitialized: (() -> Void)?
+    public var onTypeUpdated: ((UKDeviceType?) -> Void)?
+    public var onNameUpdated: ((String?) -> Void)?
 
     // MARK: - Reset
 
     public mutating func reset() {
         logger.debug("resetting")
         name = nil
-        deviceType = nil
+        type = nil
     }
 }

@@ -1,4 +1,4 @@
-enum UKMotionDataType: UInt8, CaseIterable, UKSensorDataType {
+public enum UKMotionDataType: UInt8, CaseIterable, UKSensorDataType {
     case acceleration
     case gravity
     case linearAcceleration

@@ -6,24 +6,34 @@ import StaticLogger
 public class UKBaseMission: ObservableObject {
     // MARK: - Components
 
-    var deviceInformation: UKDeviceInformation = .init()
-    var sensorDataConfigurations: UKSensorDataConfigurations = .init()
+    var deviceInformationManager: UKDeviceInformationManager = .init()
+    var sensorDataConfigurationsManager: UKSensorDataConfigurationsManager = .init()
     var sensorData: UKSensorData = .init()
     var motionCalibrationData: UKMotionCalibrationData = .init()
     var haptics: UKHaptics = .init()
 
     // MARK: - Convenience
 
-    var deviceType: UKDeviceType? {
-        deviceInformation.deviceType
-    }
+    public private(set) var deviceType: UKDeviceType?
+    public private(set) var deviceName: String?
 
     // MARK: - Initialization
 
     init() {
-        deviceInformation.onFullyInitialized = {
+        // MARK: - Device Information Callbacks
+
+        deviceInformationManager.onTypeUpdated = {
+            [unowned self] deviceType in self.onDeviceTypeUpdated(deviceType)
+        }
+        deviceInformationManager.onNameUpdated = {
+            [unowned self] deviceName in self.onDeviceNameUpdated(deviceName)
+        }
+        deviceInformationManager.onFullyInitialized = {
             [unowned self] in self.onDeviceInformationFullyInitialized()
         }
+
+        // MARK: - Motion Calibration Callbacks
+
         motionCalibrationData.onFullyCalibrated = {
             [unowned self] in self.onFullyCalibrated()
         }
@@ -31,7 +41,17 @@ public class UKBaseMission: ObservableObject {
 
     // MARK: - Connection
 
-    // MARK: - Callbacks
+    // MARK: - Device Information Callbacks
+
+    func onDeviceTypeUpdated(_ newDeviceType: UKDeviceType?) {
+        deviceType = newDeviceType
+        sensorDataConfigurationsManager.deviceType = deviceType
+        sensorData.deviceType = deviceType
+    }
+
+    func onDeviceNameUpdated(_ newDeviceName: String?) {
+        deviceName = newDeviceName
+    }
 
     func onDeviceInformationFullyInitialized() {
         guard deviceType != nil else {
@@ -39,10 +59,9 @@ public class UKBaseMission: ObservableObject {
             return
         }
         logger.debug("fully initialized device information")
-
-        sensorDataConfigurations.deviceType = deviceType
-        sensorData.deviceType = deviceType
     }
+
+    // MARK: - Motion Calibration Callbacks
 
     func onFullyCalibrated() {
         logger.debug("fully calibrated")

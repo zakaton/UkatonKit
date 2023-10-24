@@ -2,45 +2,60 @@ import Foundation
 import OSLog
 import StaticLogger
 
-typealias MotionDataRates = [UKMotionDataType: UKSensorDataRate]
-typealias PressureDataRates = [UKPressureDataType: UKSensorDataRate]
+typealias UKSensorDataConfigurationManagers = [UKSensorType: UKSensorDataConfigurationManager]
+
+public typealias UKMotionDataRates = [UKMotionDataType: UKSensorDataRate]
+public typealias UKPressureDataRates = [UKPressureDataType: UKSensorDataRate]
+
+public struct UKSensorDataConfigurations: Equatable {
+    public var motion: UKMotionDataRates = .init()
+    public var pressure: UKPressureDataRates = .init()
+}
 
 @StaticLogger
-struct UKSensorDataConfigurations {
+struct UKSensorDataConfigurationsManager {
     // MARK: - Device Type
 
     var deviceType: UKDeviceType?
 
     // MARK: - Configurations
 
-    private typealias RawSensorDataConfigurations = [UKSensorType: UKSensorDataConfiguration]
-
-    private var configurations: RawSensorDataConfigurations = {
-        var _configurations: RawSensorDataConfigurations = [:]
+    private var configurationManagers: UKSensorDataConfigurationManagers = {
+        var _configurationManagers: UKSensorDataConfigurationManagers = [:]
         UKSensorType.allCases.forEach { sensorType in
-            _configurations[sensorType] = .init(sensorType: sensorType)
+            _configurationManagers[sensorType] = .init(sensorType: sensorType)
         }
-        return _configurations
+        return _configurationManagers
     }()
+
+    public var configurations: UKSensorDataConfigurations {
+        get {
+            .init(motion: motion, pressure: pressure)
+        }
+        set {
+            motion = newValue.motion
+            pressure = newValue.pressure
+        }
+    }
 
     // MARK: - Subscripting
 
-    var motion: MotionDataRates {
-        get { self[.motion] as! MotionDataRates }
-        set { self[.motion] = newValue as! UKSensorDataRates }
+    var motion: UKMotionDataRates {
+        get { .from(sensorDataRates: self[.motion]) }
+        set { self[.motion] = newValue.toSensorDataRates() }
     }
 
-    var pressure: PressureDataRates {
-        get { self[.pressure] as! PressureDataRates }
-        set { self[.pressure] = newValue as! UKSensorDataRates }
+    var pressure: UKPressureDataRates {
+        get { .from(sensorDataRates: self[.pressure]) }
+        set { self[.pressure] = newValue.toSensorDataRates() }
     }
 
     private subscript(_ sensorType: UKSensorType) -> UKSensorDataRates {
         get {
-            configurations[sensorType]!.dataRates
+            configurationManagers[sensorType]!.dataRates
         }
         set(newValue) {
-            configurations[sensorType]!.dataRates = newValue
+            configurationManagers[sensorType]!.dataRates = newValue
             onConfigurationsUpdate()
         }
     }
@@ -65,10 +80,10 @@ struct UKSensorDataConfigurations {
 
     private subscript(sensorDataType: UKSensorDataType) -> UKSensorDataRate {
         get {
-            configurations[sensorDataType.sensorType]![sensorDataType.rawValue]
+            configurationManagers[sensorDataType.sensorType]![sensorDataType.rawValue]
         }
         set(newValue) {
-            configurations[sensorDataType.sensorType]![sensorDataType.rawValue] = newValue
+            configurationManagers[sensorDataType.sensorType]![sensorDataType.rawValue] = newValue
             onConfigurationsUpdate()
         }
     }
@@ -78,8 +93,8 @@ struct UKSensorDataConfigurations {
     private(set) var areConfigurationsNonZero: Bool = false
     private var shouldSerialize: Bool = false
     private mutating func onConfigurationsUpdate() {
-        shouldSerialize = configurations.values.contains { $0.shouldSerialize }
-        areConfigurationsNonZero = configurations.values.contains { $0.isConfigurationNonZero }
+        shouldSerialize = configurationManagers.values.contains { $0.shouldSerialize }
+        areConfigurationsNonZero = configurationManagers.values.contains { $0.isConfigurationNonZero }
     }
 
     private static let maxSerializationLength = (UKSensorType.allCases.count * 2) + (3 * UKSensorType.totalNumberOfDataTypes)
@@ -87,7 +102,7 @@ struct UKSensorDataConfigurations {
 
     private mutating func serialize() {
         serialization.removeAll(keepingCapacity: true)
-        for var configuration in configurations.values {
+        for var configuration in configurationManagers.values {
             if deviceType?.hasSensorType(configuration.sensorType) == false {
                 continue
             }
@@ -109,7 +124,7 @@ struct UKSensorDataConfigurations {
     // MARK: - Parsing
 
     mutating func parse(_ data: Data, at offset: inout UInt8) {
-        for var configuration in configurations.values {
+        for var configuration in configurationManagers.values {
             configuration.parse(data, at: &offset)
         }
     }
@@ -122,7 +137,7 @@ struct UKSensorDataConfigurations {
 
     mutating func reset() {
         deviceType = nil
-        for var configuration in configurations.values {
+        for var configuration in configurationManagers.values {
             configuration.reset()
         }
         shouldSerialize = false

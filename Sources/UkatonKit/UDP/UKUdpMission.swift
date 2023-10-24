@@ -23,5 +23,3 @@ public class UKUdpMission: UKBaseMission {
         case setRemoteReceivePort
     }
 }
-
-typealias UDPUkatonMissions = UKBaseMissions<UKUdpMission>

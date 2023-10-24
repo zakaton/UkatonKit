@@ -4,8 +4,24 @@ import StaticLogger
 
 typealias UKSensorDataRates = [UKRawSensorDataType: UKSensorDataRate]
 
+extension Dictionary where Key: RawRepresentable, Key.RawValue == UInt8, Value == UKSensorDataRate {
+    static func from(sensorDataRates: UKSensorDataRates) -> Self {
+        let result = Self(uniqueKeysWithValues: sensorDataRates.map { key, value in
+            (Key(rawValue: key)!, value)
+        })
+        return result
+    }
+
+    func toSensorDataRates() -> UKSensorDataRates {
+        let result = UKSensorDataRates(uniqueKeysWithValues: map { key, value in
+            (key.rawValue, value)
+        })
+        return result
+    }
+}
+
 @StaticLogger
-struct UKSensorDataConfiguration {
+struct UKSensorDataConfigurationManager {
     // MARK: - SensorType
 
     let sensorType: UKSensorType
@@ -17,6 +33,9 @@ struct UKSensorDataConfiguration {
 
     var dataRates: UKSensorDataRates = [:] {
         didSet {
+            for (key, value) in dataRates {
+                dataRates[key] = value.roundToTens()
+            }
             onConfigurationUpdate()
         }
     }

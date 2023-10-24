@@ -16,6 +16,17 @@ public enum UKDeviceType: UInt8, CaseIterable {
     public var availableSensorTypes: [UKSensorType] {
         UKSensorType.allCases.filter { self.hasSensorType($0) }
     }
+
+    public var name: String {
+        switch self {
+        case .motionModule:
+            "motion module"
+        case .leftInsole:
+            "left insole"
+        case .rightInsole:
+            "right insole"
+        }
+    }
 }
 
 public enum InsoleSide: UInt8, CaseIterable {

@@ -1,4 +1,4 @@
-enum UKPressureDataType: UInt8, CaseIterable, UKSensorDataType {
+public enum UKPressureDataType: UInt8, CaseIterable, UKSensorDataType {
     case pressureSingleByte
     case pressureDoubleByte
     case centerOfMass

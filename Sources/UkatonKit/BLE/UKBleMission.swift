@@ -5,5 +5,3 @@ public class UKBleMission: UKBaseMission {
         super.init()
     }
 }
-
-typealias BLEUkatonMissions = UKBaseMissions<UKBleMission>

@@ -2,52 +2,63 @@
 import XCTest
 
 final class UkatonKitTests: XCTestCase {
+    let mission: UKBaseMission = .init()
+
     // MARK: - Device Informaton
 
-    func parseDeviceName() {
-        // FILL
-        let mission = UKBaseMission()
+    func testParseDeviceName() {
+        let deviceName = "My Ukaton Mission"
+        let data: Data = .init(deviceName.utf8)
+        mission.deviceInformationManager.parseName(data: data)
+        XCTAssertEqual(deviceName, mission.deviceName, "names don't match")
     }
 
-    func parseDeviceType() {
-        // FILL
+    func testParseDeviceType() {
+        UKDeviceType.allCases.forEach { deviceType in
+            let data: Data = .init([deviceType.rawValue])
+            mission.deviceInformationManager.parseType(data: data)
+            XCTAssertEqual(deviceType, mission.deviceType, "types don't match")
+        }
     }
 
     // MARK: - Sensor Data Configuration
 
-    func parseSensorDataConfiguration() {
-        // TODO: - FILL
-    }
-
-    func serializeSensorDataConfiguration() {
-        // TODO: - FILL
+    func testSensorDataConfiguration() {
+        let sensorDataConfigurations: UKSensorDataConfigurations = .init(
+            motion: [.quaternion: 40],
+            pressure: [.centerOfMass: 40]
+        )
+        mission.sensorDataConfigurationsManager.configurations = sensorDataConfigurations
+        let serializedSensorDataConfiguration = mission.sensorDataConfigurationsManager.getSerialization()
+        serializedSensorDataConfiguration.forEach { value in print(value) }
+        XCTAssertEqual(sensorDataConfigurations, mission.sensorDataConfigurationsManager.configurations, "configurations don't match")
     }
 
     // MARK: - Sensor Data
 
-    func parseSensorData() {
+    func testParseSensorData() {
         // TODO: - FILL
     }
 
     // MARK: - Haptics
 
-    func serializeHapticsWaveforms() {
+    func testSerializeHapticsWaveforms() {
         // TODO: - FILL
     }
 
-    func serializeHapticsSequence() {
+    func testSerializeHapticsSequence() {
         // TODO: - FILL
     }
 
     // MARK: - Bluetooth Connection
 
-    func connectBluetooth() {
+    func testConnectBluetooth() {
         // TODO: - FILL
     }
 
     // MARK: - UDP Connection
 
-    func connectUdp() {
+    func testConnectUdp() {
         // TODO: - FILL
     }
 }

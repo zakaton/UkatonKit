@@ -1,6 +1,6 @@
 import Foundation
 
-typealias UKSensorDataRate = UInt16
+public typealias UKSensorDataRate = UInt16
 extension UKSensorDataRate {
     static func parse(from data: Data, at offset: inout UInt8, littleEndian: Bool = true) -> UKSensorDataRate {
         guard offset >= 0, offset + 2 <= data.count else {
