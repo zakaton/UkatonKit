@@ -25,12 +25,18 @@ final class UkatonKitTests: XCTestCase {
 
     func testSensorDataConfiguration() {
         let sensorDataConfigurations: UKSensorDataConfigurations = .init(
-            motion: [.quaternion: 40],
-            pressure: [.centerOfMass: 40]
+            motion: [
+                .quaternion: 40,
+            ]
         )
         mission.sensorDataConfigurationsManager.configurations = sensorDataConfigurations
         let serializedSensorDataConfiguration = mission.sensorDataConfigurationsManager.getSerialization()
+
+        mission.sensorDataConfigurationsManager.configurations = .init()
         serializedSensorDataConfiguration.forEach { value in print(value) }
+        mission.sensorDataConfigurationsManager.parse(Data([UInt8](arrayLiteral: 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)))
+        print(mission.sensorDataConfigurationsManager.configurations)
+
         XCTAssertEqual(sensorDataConfigurations, mission.sensorDataConfigurationsManager.configurations, "configurations don't match")
     }
 

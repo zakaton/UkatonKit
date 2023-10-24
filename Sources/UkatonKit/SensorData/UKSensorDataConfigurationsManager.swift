@@ -41,16 +41,16 @@ struct UKSensorDataConfigurationsManager {
     // MARK: - Subscripting
 
     var motion: UKMotionDataRates {
-        get { .from(sensorDataRates: self[.motion]) }
-        set { self[.motion] = newValue.toSensorDataRates() }
+        get { .from(genericSensorDataRates: self[.motion]) }
+        set { self[.motion] = newValue.toGenericSensorDataRates() }
     }
 
     var pressure: UKPressureDataRates {
-        get { .from(sensorDataRates: self[.pressure]) }
-        set { self[.pressure] = newValue.toSensorDataRates() }
+        get { .from(genericSensorDataRates: self[.pressure]) }
+        set { self[.pressure] = newValue.toGenericSensorDataRates() }
     }
 
-    private subscript(_ sensorType: UKSensorType) -> UKSensorDataRates {
+    private subscript(_ sensorType: UKSensorType) -> UKGenericSensorDataRates {
         get {
             configurationManagers[sensorType]!.dataRates
         }
@@ -124,15 +124,15 @@ struct UKSensorDataConfigurationsManager {
     // MARK: - Parsing
 
     mutating func parse(_ data: Data, at offset: inout UInt8) {
-        for var configuration in configurationManagers.values {
-            configuration.parse(data, at: &offset)
+        UKSensorType.allCases.forEach { sensorType in
+            configurationManagers[sensorType]?.parse(data, at: &offset)
         }
+        onConfigurationsUpdate()
     }
 
     mutating func parse(_ data: Data) {
         var offset: UInt8 = 0
         parse(data, at: &offset)
-        onConfigurationsUpdate()
     }
 
     mutating func reset() {

@@ -2,18 +2,18 @@ import Foundation
 import OSLog
 import StaticLogger
 
-typealias UKSensorDataRates = [UKRawSensorDataType: UKSensorDataRate]
+typealias UKGenericSensorDataRates = [UKRawSensorDataType: UKSensorDataRate]
 
 extension Dictionary where Key: RawRepresentable, Key.RawValue == UInt8, Value == UKSensorDataRate {
-    static func from(sensorDataRates: UKSensorDataRates) -> Self {
-        let result = Self(uniqueKeysWithValues: sensorDataRates.map { key, value in
+    static func from(genericSensorDataRates: UKGenericSensorDataRates) -> Self {
+        let result = Self(uniqueKeysWithValues: genericSensorDataRates.map { key, value in
             (Key(rawValue: key)!, value)
         })
         return result
     }
 
-    func toSensorDataRates() -> UKSensorDataRates {
-        let result = UKSensorDataRates(uniqueKeysWithValues: map { key, value in
+    func toGenericSensorDataRates() -> UKGenericSensorDataRates {
+        let result = UKGenericSensorDataRates(uniqueKeysWithValues: map { key, value in
             (key.rawValue, value)
         })
         return result
@@ -31,7 +31,7 @@ struct UKSensorDataConfigurationManager {
 
     // MARK: - Configuration
 
-    var dataRates: UKSensorDataRates = [:] {
+    var dataRates: UKGenericSensorDataRates = [:] {
         didSet {
             for (key, value) in dataRates {
                 dataRates[key] = value.roundToTens()
@@ -41,7 +41,7 @@ struct UKSensorDataConfigurationManager {
     }
 
     var isConfigurationNonZero: Bool = false
-    private var lastSerializedDataRates: UKSensorDataRates?
+    private var lastSerializedDataRates: UKGenericSensorDataRates?
 
     public subscript(_ dataType: UKRawSensorDataType) -> UKSensorDataRate {
         get {
@@ -92,7 +92,7 @@ struct UKSensorDataConfigurationManager {
 
     mutating func parse(_ data: Data, at offset: inout UInt8) {
         sensorType.forEachDataType { dataType in
-            if offset + 2 < data.count {
+            if offset + 2 <= data.count {
                 let dataRate: UKSensorDataRate = .parse(from: data, at: &offset)
                 dataRates[dataType] = dataRate
             }
@@ -102,7 +102,7 @@ struct UKSensorDataConfigurationManager {
         }
 
         let _self = self
-        logger.debug("parsed configuration: \(_self.dataRates.debugDescription)")
+        logger.debug("parsed configuration for \(_self.sensorType.name): \(_self.dataRates.debugDescription)")
 
         lastSerializedDataRates = dataRates
         onConfigurationUpdate()
