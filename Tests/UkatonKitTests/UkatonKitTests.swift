@@ -33,7 +33,6 @@ final class UkatonKitTests: XCTestCase {
         let serializedSensorDataConfiguration = mission.sensorDataConfigurationsManager.getSerialization()
 
         mission.sensorDataConfigurationsManager.configurations = .init()
-        serializedSensorDataConfiguration.forEach { value in print(value) }
         mission.sensorDataConfigurationsManager.parse(Data([UInt8](arrayLiteral: 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)))
         print(mission.sensorDataConfigurationsManager.configurations)
 

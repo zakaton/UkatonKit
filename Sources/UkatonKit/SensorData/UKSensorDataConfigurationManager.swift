@@ -3,7 +3,6 @@ import OSLog
 import StaticLogger
 
 typealias UKGenericSensorDataRates = [UKRawSensorDataType: UKSensorDataRate]
-
 extension Dictionary where Key: RawRepresentable, Key.RawValue == UInt8, Value == UKSensorDataRate {
     static func from(genericSensorDataRates: UKGenericSensorDataRates) -> Self {
         let result = Self(uniqueKeysWithValues: genericSensorDataRates.map { key, value in
@@ -17,6 +16,19 @@ extension Dictionary where Key: RawRepresentable, Key.RawValue == UInt8, Value =
             (key.rawValue, value)
         })
         return result
+    }
+
+    public static func ==(lhs: Self, rhs: Self) -> Bool {
+        for (key, value1) in lhs {
+            if let value2 = rhs[key], value1 != value2 {
+                return false
+            }
+        }
+        return true
+    }
+
+    public static func !=(lhs: Self, rhs: Self) -> Bool {
+        !(lhs == rhs)
     }
 }
 

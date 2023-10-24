@@ -10,6 +10,17 @@ public typealias UKPressureDataRates = [UKPressureDataType: UKSensorDataRate]
 public struct UKSensorDataConfigurations: Equatable {
     public var motion: UKMotionDataRates = .init()
     public var pressure: UKPressureDataRates = .init()
+
+    public static func ==(lhs: Self, rhs: Self) -> Bool {
+        if lhs.motion != rhs.motion {
+            return false
+        }
+        if lhs.pressure != rhs.pressure {
+            return false
+        }
+
+        return true
+    }
 }
 
 @StaticLogger
