@@ -3,7 +3,7 @@ import OSLog
 import StaticLogger
 
 @StaticLogger
-struct UKHaptics {
+struct UKHapticsManager {
     // MARK: - Serialization
 
     func serialize(waveforms: [UKVibrationWaveformType]) -> Data {

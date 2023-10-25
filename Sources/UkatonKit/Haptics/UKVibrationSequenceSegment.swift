@@ -5,21 +5,31 @@ extension Comparable {
 }
 
 public struct UKVibrationSequenceSegment {
-    /// vibration amplitude [0, 1]
-    public var amplitude: Double {
+    /// vibration intensity [0, 1]
+    public var intensity: Double = 0 {
         didSet {
-            amplitude = amplitude.clamped(to: 0 ... 1)
+            intensity = intensity.clamped(to: 0 ... 1)
         }
     }
 
     /// vibration delay (ms) [0, 2560]
-    public var delay: UInt16 {
+    public var delay: UInt16 = 0 {
         didSet {
             delay = delay.clamped(to: 0 ... 2560)
         }
     }
 
     var flat: [UInt8] {
-        [UInt8(amplitude * 126), UInt8(delay / 10)]
+        [UInt8(intensity * 126), UInt8(delay / 10)]
+    }
+
+    /// - Parameters:
+    ///     - intensity: vibration intensity [0, 1]
+    ///     - delay: vibration delay (ms)
+    init(intensity: Double, delay: UInt16) {
+        defer {
+            self.intensity = intensity
+            self.delay = delay
+        }
     }
 }

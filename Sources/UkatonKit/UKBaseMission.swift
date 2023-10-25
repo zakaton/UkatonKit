@@ -10,7 +10,7 @@ public class UKBaseMission: ObservableObject {
     var sensorDataConfigurationsManager: UKSensorDataConfigurationsManager = .init()
     var sensorData: UKSensorData = .init()
     var motionCalibrationData: UKMotionCalibrationData = .init()
-    var haptics: UKHaptics = .init()
+    var hapticsManager: UKHapticsManager = .init()
 
     // MARK: - Convenience
 
