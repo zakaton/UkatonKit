@@ -21,3 +21,19 @@ extension Numeric {
         return withUnsafeBytes(of: &source) { Data($0) }
     }
 }
+
+// MARK: - Data to [UInt8]
+
+extension Data {
+    var bytes: [UInt8] {
+        return [UInt8](self)
+    }
+}
+
+// MARK: - [UInt8] to Data
+
+extension Array where Element == UInt8 {
+    var data: Data {
+        return .init(self)
+    }
+}

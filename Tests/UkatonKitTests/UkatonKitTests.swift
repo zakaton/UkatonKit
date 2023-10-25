@@ -31,6 +31,9 @@ final class UkatonKitTests: XCTestCase {
         )
         mission.sensorDataConfigurationsManager.configurations = sensorDataConfigurations
 
+        let serializedConfigurations = mission.sensorDataConfigurationsManager.getSerialization()
+        print("serialization: \(serializedConfigurations.bytes)")
+
         mission.sensorDataConfigurationsManager.configurations = .init()
         mission.sensorDataConfigurationsManager.parse(Data([UInt8](arrayLiteral: 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)))
         print(mission.sensorDataConfigurationsManager.configurations)
@@ -48,23 +51,23 @@ final class UkatonKitTests: XCTestCase {
 
     func testSerializeHapticsWaveforms() {
         let waveformSerialization = mission.hapticsManager.serialize(waveforms: [.longDoubleSharpTick80, .doubleClick100])
-        waveformSerialization.forEach { value in print(value) }
+        print(waveformSerialization.bytes)
     }
 
     func testSerializeHapticsSequence() {
         let sequenceSerialization = mission.hapticsManager.serialize(sequence: [.init(intensity: 1, delay: 20)])
-        sequenceSerialization.forEach { value in print(value) }
+        print(sequenceSerialization.bytes)
     }
 
     // MARK: - Bluetooth Connection
 
-    func testConnectBluetooth() {
+    func testBluetoothConnection() {
         // TODO: - FILL
     }
 
     // MARK: - UDP Connection
 
-    func testConnectUdp() {
+    func testUdpConnection() {
         // TODO: - FILL
     }
 }
