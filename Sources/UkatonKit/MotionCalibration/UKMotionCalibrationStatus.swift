@@ -1,7 +1,7 @@
 import UkatonMacros
 
 @EnumName
-public enum UKMotionCalibrationTypeStatus: UInt8 {
+public enum UKMotionCalibrationStatus: UInt8 {
     case unreliable
     case low
     case medium

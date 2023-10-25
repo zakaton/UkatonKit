@@ -98,10 +98,20 @@ final class UkatonKitTests: XCTestCase {
         print(mission.sensorDataManager.pressure.pressureValues)
     }
 
-    // MARK: - Motion Calibration
+    // MARK: - Motion Calibration Data
 
-    func testMotionCalibration() {
-        // TODO: -
+    func testMotionCalibrationData() {
+        let motionCalibrationData: UKMotionCalibrationData = [
+            .accelerometer: .high,
+            .gyroscope: .high,
+            .magnetometer: .high,
+            .quaternion: .high,
+        ]
+        let rawMotionCalibrationData = UKMotionCalibrationType.allCases.map { motionCalibrationData[$0]!.rawValue }
+        print(rawMotionCalibrationData)
+        mission.motionCalibrationDataManager.parse(rawMotionCalibrationData.data)
+        print(mission.motionCalibrationDataManager.calibration)
+        XCTAssertEqual(mission.motionCalibrationDataManager.calibration, motionCalibrationData, "calibrations don't match")
     }
 
     // MARK: - Haptics

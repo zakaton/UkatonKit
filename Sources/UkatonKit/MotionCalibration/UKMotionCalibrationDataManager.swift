@@ -2,13 +2,14 @@ import Foundation
 import OSLog
 import StaticLogger
 
+public typealias UKMotionCalibrationData = [UKMotionCalibrationType: UKMotionCalibrationStatus]
+
 @StaticLogger
 public struct UKMotionCalibrationDataManager {
     // MARK: - Calibration
 
-    private typealias Calibration = [UKMotionCalibrationType: UKMotionCalibrationTypeStatus]
-    private var calibration: Calibration = {
-        var _calibration: Calibration = [:]
+    public private(set) var calibration: UKMotionCalibrationData = {
+        var _calibration: UKMotionCalibrationData = [:]
         UKMotionCalibrationType.allCases.forEach { motionCalibrationType in
             _calibration[motionCalibrationType] = .none
         }
@@ -23,7 +24,7 @@ public struct UKMotionCalibrationDataManager {
 
     // MARK: - Conveniance Subscript
 
-    public subscript(motionCalibrationType: UKMotionCalibrationType) -> UKMotionCalibrationTypeStatus {
+    public subscript(motionCalibrationType: UKMotionCalibrationType) -> UKMotionCalibrationStatus {
         calibration[motionCalibrationType]!
     }
 
@@ -39,7 +40,7 @@ public struct UKMotionCalibrationDataManager {
             let rawMotionCalibrationTypeStatus = data[Data.Index(offset)]
             offset += 1
 
-            let motionCalibrationTypeStatus: UKMotionCalibrationTypeStatus = .init(rawValue: rawMotionCalibrationTypeStatus)!
+            let motionCalibrationTypeStatus: UKMotionCalibrationStatus = .init(rawValue: rawMotionCalibrationTypeStatus)!
 
             calibration[motionCalibrationType] = motionCalibrationTypeStatus
             logger.debug("\(motionCalibrationType.name) calibration: \(motionCalibrationTypeStatus.name)")
@@ -47,6 +48,7 @@ public struct UKMotionCalibrationDataManager {
             newIsFullyCalibrated = newIsFullyCalibrated && motionCalibrationTypeStatus == .high
         }
 
+        logger.debug("isFullyCalibrated? \(newIsFullyCalibrated)")
         isFullyCalibrated = newIsFullyCalibrated
     }
 
