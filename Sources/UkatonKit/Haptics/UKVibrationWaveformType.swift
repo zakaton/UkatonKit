@@ -1,4 +1,7 @@
+import UkatonMacros
+
 /// Based on [DRV2605 Haptic Driver, section 11.2](https://www.ti.com/lit/ds/symlink/drv2605.pdf)
+@EnumName
 public enum UKVibrationWaveformType: UInt8 {
     /// None
     case none = 0

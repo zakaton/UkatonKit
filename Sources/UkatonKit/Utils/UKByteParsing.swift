@@ -22,6 +22,14 @@ extension Numeric {
     }
 }
 
+extension FixedWidthInteger {
+    func data(littleEndian: Bool) -> Data {
+        var source = littleEndian ? self.littleEndian : self.bigEndian
+        // return Data(bytes: &source, count: MemoryLayout<Self>.size)
+        return withUnsafeBytes(of: &source) { Data($0) }
+    }
+}
+
 // MARK: - Data to [UInt8]
 
 extension Data {

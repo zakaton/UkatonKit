@@ -67,8 +67,8 @@ struct UKDeviceInformationManager {
         didSet {
             if isFullyInitialized, oldValue != isFullyInitialized {
                 Self.logger.debug("Fully Initialized!")
-                onFullyInitialized?()
             }
+            onIsFullyInitialized?(isFullyInitialized)
         }
     }
 
@@ -78,7 +78,7 @@ struct UKDeviceInformationManager {
 
     // MARK: - Callbacks
 
-    public var onFullyInitialized: (() -> Void)?
+    public var onIsFullyInitialized: ((Bool) -> Void)?
     public var onTypeUpdated: ((UKDeviceType?) -> Void)?
     public var onNameUpdated: ((String?) -> Void)?
 

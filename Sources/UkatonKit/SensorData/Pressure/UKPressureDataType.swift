@@ -1,3 +1,6 @@
+import UkatonMacros
+
+@EnumName
 public enum UKPressureDataType: UInt8, CaseIterable, UKSensorDataType {
     case pressureSingleByte
     case pressureDoubleByte
@@ -6,19 +9,4 @@ public enum UKPressureDataType: UInt8, CaseIterable, UKSensorDataType {
     case heelToToe
 
     var sensorType: UKSensorType { .pressure }
-
-    var name: String {
-        switch self {
-        case .pressureSingleByte:
-            "pressure (single byte)"
-        case .pressureDoubleByte:
-            "pressure (double byte)"
-        case .centerOfMass:
-            "center of mass"
-        case .mass:
-            "mass"
-        case .heelToToe:
-            "heel-to-toe"
-        }
-    }
 }

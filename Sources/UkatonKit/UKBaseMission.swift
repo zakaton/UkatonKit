@@ -8,14 +8,38 @@ public class UKBaseMission: ObservableObject {
 
     var deviceInformationManager: UKDeviceInformationManager = .init()
     var sensorDataConfigurationsManager: UKSensorDataConfigurationsManager = .init()
-    var sensorData: UKSensorData = .init()
-    var motionCalibrationData: UKMotionCalibrationData = .init()
+    var sensorDataManager: UKSensorDataManager = .init()
+    var motionCalibrationDataManager: UKMotionCalibrationDataManager = .init()
     var hapticsManager: UKHapticsManager = .init()
 
-    // MARK: - Convenience
+    // MARK: - Device Information
 
-    public private(set) var deviceType: UKDeviceType?
+    public private(set) var deviceType: UKDeviceType? {
+        didSet {
+            sensorDataConfigurationsManager.deviceType = deviceType
+            sensorDataManager.deviceType = deviceType
+        }
+    }
+
     public private(set) var deviceName: String?
+
+    public private(set) var isFullyInitialized: Bool = false {
+        didSet {
+            if isFullyInitialized {
+                logger.debug("Fully initialized!")
+            }
+        }
+    }
+
+    // MARK: - Motion Calibration
+
+    public private(set) var isMotionSensorFullyCalibrated: Bool = false {
+        didSet {
+            if isMotionSensorFullyCalibrated {
+                logger.debug("Motion Sensor is fully calibrated!")
+            }
+        }
+    }
 
     // MARK: - Initialization
 
@@ -23,47 +47,21 @@ public class UKBaseMission: ObservableObject {
         // MARK: - Device Information Callbacks
 
         deviceInformationManager.onTypeUpdated = {
-            [unowned self] deviceType in self.onDeviceTypeUpdated(deviceType)
+            [unowned self] in self.deviceType = $0
         }
         deviceInformationManager.onNameUpdated = {
-            [unowned self] deviceName in self.onDeviceNameUpdated(deviceName)
+            [unowned self] in self.deviceName = $0
         }
-        deviceInformationManager.onFullyInitialized = {
-            [unowned self] in self.onDeviceInformationFullyInitialized()
+        deviceInformationManager.onIsFullyInitialized = {
+            [unowned self] in self.isFullyInitialized = $0
         }
 
         // MARK: - Motion Calibration Callbacks
 
-        motionCalibrationData.onFullyCalibrated = {
-            [unowned self] in self.onFullyCalibrated()
+        motionCalibrationDataManager.onIsFullyCalibrated = {
+            [unowned self] in self.isMotionSensorFullyCalibrated = $0
         }
     }
 
     // MARK: - Connection
-
-    // MARK: - Device Information Callbacks
-
-    func onDeviceTypeUpdated(_ newDeviceType: UKDeviceType?) {
-        deviceType = newDeviceType
-        sensorDataConfigurationsManager.deviceType = deviceType
-        sensorData.deviceType = deviceType
-    }
-
-    func onDeviceNameUpdated(_ newDeviceName: String?) {
-        deviceName = newDeviceName
-    }
-
-    func onDeviceInformationFullyInitialized() {
-        guard deviceType != nil else {
-            logger.error("deviceType not defined, even after device is fully initialized")
-            return
-        }
-        logger.debug("fully initialized device information")
-    }
-
-    // MARK: - Motion Calibration Callbacks
-
-    func onFullyCalibrated() {
-        logger.debug("fully calibrated")
-    }
 }

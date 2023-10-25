@@ -3,11 +3,11 @@ import OSLog
 import StaticLogger
 
 @StaticLogger
-public struct UKMotionCalibrationData {
+public struct UKMotionCalibrationDataManager {
     // MARK: - Calibration
 
     private typealias Calibration = [UKMotionCalibrationType: UKMotionCalibrationTypeStatus]
-    private var rawCalibration: Calibration = {
+    private var calibration: Calibration = {
         var _calibration: Calibration = [:]
         UKMotionCalibrationType.allCases.forEach { motionCalibrationType in
             _calibration[motionCalibrationType] = .none
@@ -17,22 +17,19 @@ public struct UKMotionCalibrationData {
 
     public private(set) var isFullyCalibrated: Bool = false {
         didSet {
-            if isFullyCalibrated, isFullyCalibrated != oldValue {
-                logger.debug("fully calibrated")
-                onFullyCalibrated?()
-            }
+            onIsFullyCalibrated?(isFullyCalibrated)
         }
     }
 
     // MARK: - Conveniance Subscript
 
     public subscript(motionCalibrationType: UKMotionCalibrationType) -> UKMotionCalibrationTypeStatus {
-        rawCalibration[motionCalibrationType]!
+        calibration[motionCalibrationType]!
     }
 
     // MARK: - Callback
 
-    public var onFullyCalibrated: (() -> Void)?
+    public var onIsFullyCalibrated: ((Bool) -> Void)?
 
     // MARK: - Parsing
 
@@ -44,12 +41,17 @@ public struct UKMotionCalibrationData {
 
             let motionCalibrationTypeStatus: UKMotionCalibrationTypeStatus = .init(rawValue: rawMotionCalibrationTypeStatus)!
 
-            rawCalibration[motionCalibrationType] = motionCalibrationTypeStatus
+            calibration[motionCalibrationType] = motionCalibrationTypeStatus
             logger.debug("\(motionCalibrationType.name) calibration: \(motionCalibrationTypeStatus.name)")
 
             newIsFullyCalibrated = newIsFullyCalibrated && motionCalibrationTypeStatus == .high
         }
 
         isFullyCalibrated = newIsFullyCalibrated
+    }
+
+    mutating func parse(_ data: Data) {
+        var offset: UInt8 = 0
+        parse(data, at: &offset)
     }
 }

@@ -1,9 +1,9 @@
 @testable import UkatonKit
 import XCTest
 
-final class UkatonKitTests: XCTestCase {
-    let mission: UKBaseMission = .init()
+let mission: UKBaseMission = .init()
 
+final class UkatonKitTests: XCTestCase {
     // MARK: - Device Informaton
 
     func testParseDeviceName() {
@@ -19,6 +19,11 @@ final class UkatonKitTests: XCTestCase {
             mission.deviceInformationManager.parseType(data: data)
             XCTAssertEqual(deviceType, mission.deviceType, "types don't match")
         }
+    }
+
+    func testParseDeviceInformation() {
+        testParseDeviceName()
+        testParseDeviceType()
     }
 
     // MARK: - Sensor Data Configuration
@@ -44,7 +49,59 @@ final class UkatonKitTests: XCTestCase {
     // MARK: - Sensor Data
 
     func testParseSensorData() {
-        // TODO: - FILL
+        let quaternionData: [UInt8] = [
+            166,
+            119,
+            0,
+            9,
+            5,
+            128,
+            13,
+            203,
+            250,
+            152,
+            2,
+            182,
+            193,
+            1,
+            0,
+        ]
+        let pressureData: [UInt8] = [
+            74,
+            175,
+            0,
+            0,
+            1,
+            17,
+            0,
+            107,
+            0,
+            0,
+            0,
+            79,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+        ]
+        mission.sensorDataManager.parse(quaternionData.data)
+        mission.sensorDataManager.deviceType = .leftInsole
+        mission.sensorDataManager.parse(pressureData.data)
+        print(mission.sensorDataManager.motion.quaternion)
+        print(mission.sensorDataManager.pressure.pressureValues)
+    }
+
+    // MARK: - Motion Calibration
+
+    func testMotionCalibration() {
+        // TODO: -
     }
 
     // MARK: - Haptics

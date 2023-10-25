@@ -1,6 +1,7 @@
-SensorDataConfigurations
-    public version of UKSensorDataConfiguration
-Unit Tests
+SensorData Parsing endianess
 BleConnection
+    Unit Tests
 UdpConnection
+    Unit Tests
 Missions
+    Unit Tests

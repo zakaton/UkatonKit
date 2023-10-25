@@ -14,7 +14,7 @@ protocol UKSensorDataComponent {
 }
 
 @StaticLogger
-public struct UKSensorData {
+public struct UKSensorDataManager {
     // MARK: - Device Type
 
     var deviceType: UKDeviceType? {
@@ -29,9 +29,9 @@ public struct UKSensorData {
 
     // MARK: - Data
 
-    private typealias RawSensorData = [UKSensorType: UKSensorDataComponent]
-    private var sensorData: RawSensorData = {
-        var _data: RawSensorData = [:]
+    typealias SensorData = [UKSensorType: UKSensorDataComponent]
+    var sensorData: SensorData = {
+        var _sensorData: SensorData = [:]
         UKSensorType.allCases.forEach { sensorType in
             let dataComponent: UKSensorDataComponent = switch sensorType {
             case .motion:
@@ -39,9 +39,9 @@ public struct UKSensorData {
             case .pressure:
                 UKPressureData()
             }
-            _data[sensorType] = dataComponent
+            _sensorData[sensorType] = dataComponent
         }
-        return _data
+        return _sensorData
     }()
 
     // MARK: - Subscripts
@@ -74,7 +74,7 @@ public struct UKSensorData {
 
     mutating func parse(_ data: Data, at offset: inout UInt8) {
         lastTimeReceivedSensorData = Date.now_ms
-        rawTimestamp = UInt16.parse(from: data, at: &offset)
+        rawTimestamp = .parse(from: data, at: &offset, littleEndian: true)
 
         let _self = self
         logger.debug("sensor data timestamp: \(_self.timestamp)ms")
