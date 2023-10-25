@@ -14,28 +14,30 @@ extension Data {
 
 extension FixedWidthInteger {
     static func parse(from data: Data, at offset: inout UInt8, littleEndian: Bool = true) -> Self {
-        let size = MemoryLayout<Self>.size
-        let value = data.subdata(in: Data.Index(offset) ..< data.index(Data.Index(offset), offsetBy: size))
-            .withUnsafeBytes { $0.load(as: Self.self) }
-        offset += UInt8(size)
-
+        let value: Self = data.object(at: &offset)
         return littleEndian ? value.littleEndian : value.bigEndian
     }
 }
 
-// TODO: - FIX!
-extension BinaryFloatingPoint {
+extension Float32 {
     static func parse(from data: Data, at offset: inout UInt8, littleEndian: Bool = true) -> Self {
-        let size = MemoryLayout<Self>.size
-        let value = data.subdata(in: Data.Index(offset) ..< data.index(Data.Index(offset), offsetBy: size))
-            .withUnsafeBytes { $0.load(as: Self.self) }
-        offset += UInt8(size)
+        var value: Self = data.object(at: &offset)
 
-        if littleEndian {
-            return value
-        } else {
-            return value
+        if littleEndian != (UInt32(littleEndian: 1) == 1) {
+            value = .init(bitPattern: value.bitPattern.byteSwapped)
         }
+        return value
+    }
+}
+
+extension Float64 {
+    static func parse(from data: Data, at offset: inout UInt8, littleEndian: Bool = true) -> Self {
+        var value: Self = data.object(at: &offset)
+
+        if littleEndian != (UInt64(littleEndian: 1) == 1) {
+            value = .init(bitPattern: value.bitPattern.byteSwapped)
+        }
+        return value
     }
 }
 

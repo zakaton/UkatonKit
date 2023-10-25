@@ -43,8 +43,6 @@ public struct UKPressureData: UKSensorDataComponent {
                 break
             }
 
-            let _self = self
-
             switch pressureDataType {
             case .pressureSingleByte, .pressureDoubleByte:
                 pressureValues.parse(data, at: &offset, for: pressureDataType)
@@ -53,12 +51,15 @@ public struct UKPressureData: UKSensorDataComponent {
                 heelToToe = pressureValues.heelToToe
             case .centerOfMass:
                 centerOfMass = parseCenterOfMass(data: data, at: &offset)
+                let _self = self
                 logger.debug("\(pressureDataType.name): \(_self.centerOfMass.debugDescription)")
             case .mass:
                 mass = Double(parseMass(data: data, at: &offset)) * scalars[pressureDataType]!
+                let _self = self
                 logger.debug("\(pressureDataType.name): \(_self.mass.debugDescription)")
             case .heelToToe:
                 heelToToe = parseHeelToToe(data: data, at: &offset)
+                let _self = self
                 logger.debug("\(pressureDataType.name): \(_self.heelToToe.debugDescription)")
             }
         }
@@ -66,8 +67,8 @@ public struct UKPressureData: UKSensorDataComponent {
 
     private mutating func parseCenterOfMass(data: Data, at offset: inout UInt8) -> Vector2D {
         .init(
-            x: .parse(from: data, at: &offset),
-            y: .parse(from: data, at: &offset)
+            x: Double(Float32.parse(from: data, at: &offset)),
+            y: Double(Float32.parse(from: data, at: &offset))
         )
     }
 

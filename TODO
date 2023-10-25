@@ -1,5 +1,3 @@
-SensorData Parsing endianess
-change from struct to class
 BleConnection
     Unit Tests
 UdpConnection
