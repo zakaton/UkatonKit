@@ -12,6 +12,32 @@ extension Data {
     }
 }
 
+extension FixedWidthInteger {
+    static func parse(from data: Data, at offset: inout UInt8, littleEndian: Bool) -> Self {
+        let size = MemoryLayout<Self>.size
+        let value = data.subdata(in: Data.Index(offset) ..< data.index(Data.Index(offset), offsetBy: size))
+            .withUnsafeBytes { $0.load(as: Self.self) }
+        offset += UInt8(size)
+
+        return littleEndian ? value.littleEndian : value.bigEndian
+    }
+}
+
+extension BinaryFloatingPoint {
+    static func parse(from data: Data, at offset: inout UInt8, littleEndian: Bool) -> Self {
+        let size = MemoryLayout<Self>.size
+        let value = data.subdata(in: Data.Index(offset) ..< data.index(Data.Index(offset), offsetBy: size))
+            .withUnsafeBytes { $0.load(as: Self.self) }
+        offset += UInt8(size)
+
+        if littleEndian {
+            return value
+        } else {
+            return value
+        }
+    }
+}
+
 // MARK: - Data to Number
 
 extension Numeric {

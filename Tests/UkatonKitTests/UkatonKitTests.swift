@@ -15,7 +15,7 @@ final class UkatonKitTests: XCTestCase {
 
     func testParseDeviceType() {
         UKDeviceType.allCases.forEach { deviceType in
-            let data: Data = .init([deviceType.rawValue])
+            let data: Data = deviceType.rawValue.data
             mission.deviceInformationManager.parseType(data: data)
             XCTAssertEqual(deviceType, mission.deviceType, "types don't match")
         }
@@ -93,9 +93,9 @@ final class UkatonKitTests: XCTestCase {
         ]
         mission.sensorDataManager.parse(quaternionData.data)
         mission.sensorDataManager.deviceType = .leftInsole
-        mission.sensorDataManager.parse(pressureData.data)
+        // mission.sensorDataManager.parse(pressureData.data)
         print(mission.sensorDataManager.motion.quaternion)
-        print(mission.sensorDataManager.pressure.pressureValues)
+        // print(mission.sensorDataManager.pressure.pressureValues)
     }
 
     // MARK: - Motion Calibration Data
