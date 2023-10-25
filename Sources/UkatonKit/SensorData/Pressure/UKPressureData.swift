@@ -65,14 +65,17 @@ public struct UKPressureData: UKSensorDataComponent {
     }
 
     private mutating func parseCenterOfMass(data: Data, at offset: inout UInt8) -> Vector2D {
-        .init(x: data.object(at: &offset), y: data.object(at: &offset))
+        .init(
+            x: .parse(from: data, at: &offset),
+            y: .parse(from: data, at: &offset)
+        )
     }
 
     private mutating func parseMass(data: Data, at offset: inout UInt8) -> UInt32 {
-        data.object(at: &offset)
+        .parse(from: data, at: &offset)
     }
 
     private mutating func parseHeelToToe(data: Data, at offset: inout UInt8) -> Float64 {
-        data.object(at: &offset)
+        .parse(from: data, at: &offset)
     }
 }

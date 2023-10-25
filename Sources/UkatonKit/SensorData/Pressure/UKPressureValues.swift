@@ -26,7 +26,7 @@ public struct UKPressureValues {
 
     // MARK: - DeviceType
 
-    var deviceType: UKDeviceType? {
+    var deviceType: UKDeviceType? = nil {
         didSet {
             if let deviceType, deviceType != oldValue {
                 if deviceType.isInsole == true {
@@ -56,6 +56,7 @@ public struct UKPressureValues {
     static let numberOfPressureSensors: Int = 16
     var numberOfPressureSensors: Int { Self.numberOfPressureSensors }
     private var rawValues: [UKPressureValue] = .init(repeating: .init(), count: numberOfPressureSensors)
+
     public subscript(index: Int) -> UKPressureValue {
         rawValues[index]
     }
@@ -71,25 +72,21 @@ public struct UKPressureValues {
     // MARK: - Parsing
 
     mutating func parse(_ data: Data, at offset: inout UInt8, for pressureDataType: UKPressureDataType) {
-        let _self = self
-
         let scalar = scalars[pressureDataType]!
 
         var rawValueSum = 0
         let isSingleByte = pressureDataType == .pressureSingleByte
-        let offsetIncrement: UInt8 = isSingleByte ? 1 : 2
 
         for index in 0 ..< numberOfPressureSensors {
             if isSingleByte {
-                rawValues[index].rawValue = UInt16(data[Data.Index(offset)])
+                rawValues[index].rawValue = UInt16(UInt8.parse(from: data, at: &offset))
             }
             else {
-                rawValues[index].rawValue = data.object(at: &offset)
+                rawValues[index].rawValue = UInt16.parse(from: data, at: &offset)
             }
 
             rawValueSum += Int(rawValues[index].rawValue)
             rawValues[index].normalizedValue = Double(rawValues[index].rawValue) * scalar
-            offset += offsetIncrement
         }
 
         logger.debug("rawValueSum: \(rawValueSum)")
@@ -100,17 +97,19 @@ public struct UKPressureValues {
         if rawValueSum > 0 {
             for index in 0 ..< numberOfPressureSensors {
                 rawValues[index].weightedValue = Double(rawValues[index].rawValue) / Double(rawValueSum)
+                centerOfMass += rawValues[index].position * rawValues[index].weightedValue
             }
 
-            logger.debug("pressure sensors: \(_self.rawValues.debugDescription)")
-
-            centerOfMass.y = 1 - centerOfMass.y
-            logger.debug("centerOfMass: \(_self.centerOfMass.debugDescription)")
+            centerOfMass.y = 1.0 - centerOfMass.y
             heelToToe = centerOfMass.y
-            logger.debug("heelToToe: \(_self.heelToToe.debugDescription)")
         }
 
         mass = Double(rawValueSum) * scalar / Double(numberOfPressureSensors)
+
+        let _self = self
+        logger.debug("pressure sensors: \(_self.rawValues.debugDescription)")
+        logger.debug("centerOfMass: \(_self.centerOfMass.debugDescription)")
+        logger.debug("heelToToe: \(_self.heelToToe.debugDescription)")
         logger.debug("mass: \(_self.mass)")
     }
 }

@@ -13,7 +13,7 @@ extension Data {
 }
 
 extension FixedWidthInteger {
-    static func parse(from data: Data, at offset: inout UInt8, littleEndian: Bool) -> Self {
+    static func parse(from data: Data, at offset: inout UInt8, littleEndian: Bool = true) -> Self {
         let size = MemoryLayout<Self>.size
         let value = data.subdata(in: Data.Index(offset) ..< data.index(Data.Index(offset), offsetBy: size))
             .withUnsafeBytes { $0.load(as: Self.self) }
@@ -23,8 +23,9 @@ extension FixedWidthInteger {
     }
 }
 
+// TODO: - FIX!
 extension BinaryFloatingPoint {
-    static func parse(from data: Data, at offset: inout UInt8, littleEndian: Bool) -> Self {
+    static func parse(from data: Data, at offset: inout UInt8, littleEndian: Bool = true) -> Self {
         let size = MemoryLayout<Self>.size
         let value = data.subdata(in: Data.Index(offset) ..< data.index(Data.Index(offset), offsetBy: size))
             .withUnsafeBytes { $0.load(as: Self.self) }

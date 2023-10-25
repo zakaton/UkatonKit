@@ -50,35 +50,35 @@ final class UkatonKitTests: XCTestCase {
 
     func testParseSensorData() {
         let quaternionData: [UInt8] = [
-            166,
-            119,
+            102,
+            205,
             0,
             9,
             5,
-            128,
-            13,
-            203,
-            250,
-            152,
-            2,
-            182,
+            86,
+            14,
+            176,
+            251,
+            84,
+            1,
+            202,
             193,
             1,
             0,
         ]
         let pressureData: [UInt8] = [
-            74,
-            175,
+            118,
+            234,
             0,
             0,
             1,
             17,
             0,
-            107,
+            17,
+            20,
             0,
             0,
             0,
-            79,
             0,
             0,
             0,
@@ -92,10 +92,8 @@ final class UkatonKitTests: XCTestCase {
             0,
         ]
         mission.sensorDataManager.parse(quaternionData.data)
-        mission.sensorDataManager.deviceType = .leftInsole
-        // mission.sensorDataManager.parse(pressureData.data)
-        print(mission.sensorDataManager.motion.quaternion)
-        // print(mission.sensorDataManager.pressure.pressureValues)
+        mission.sensorDataManager.deviceType = .rightInsole
+        mission.sensorDataManager.parse(pressureData.data)
     }
 
     // MARK: - Motion Calibration Data

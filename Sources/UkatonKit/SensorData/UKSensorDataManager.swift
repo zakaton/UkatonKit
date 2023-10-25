@@ -17,11 +17,11 @@ protocol UKSensorDataComponent {
 public struct UKSensorDataManager {
     // MARK: - Device Type
 
-    var deviceType: UKDeviceType? {
+    var deviceType: UKDeviceType? = nil {
         didSet {
             if oldValue != deviceType {
-                for var dataComponent in sensorData.values {
-                    dataComponent.deviceType = deviceType
+                for sensorType in sensorData.keys {
+                    sensorData[sensorType]?.deviceType = deviceType
                 }
             }
         }
@@ -74,7 +74,7 @@ public struct UKSensorDataManager {
 
     mutating func parse(_ data: Data, at offset: inout UInt8) {
         lastTimeReceivedSensorData = Date.now_ms
-        rawTimestamp = .parse(from: data, at: &offset, littleEndian: true)
+        rawTimestamp = .parse(from: data, at: &offset)
 
         let _self = self
         logger.debug("sensor data timestamp: \(_self.timestamp)ms")

@@ -119,6 +119,12 @@ struct UKSensorDataConfigurationsManager {
             }
             serialization.append(configuration.getSerialization())
         }
+        for sensorType in configurationManagers.keys {
+            if deviceType?.hasSensorType(sensorType) == false {
+                continue
+            }
+            serialization.append(configurationManagers[sensorType]!.getSerialization())
+        }
 
         let _self = self
         logger.debug("serialized configurations: \(_self.serialization.debugDescription)")
@@ -148,8 +154,8 @@ struct UKSensorDataConfigurationsManager {
 
     mutating func reset() {
         deviceType = nil
-        for var configuration in configurationManagers.values {
-            configuration.reset()
+        for sensorType in configurationManagers.keys {
+            configurationManagers[sensorType]?.reset()
         }
         shouldSerialize = false
         areConfigurationsNonZero = false

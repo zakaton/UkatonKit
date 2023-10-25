@@ -75,9 +75,9 @@ public struct UKMotionData: UKSensorDataComponent {
 
     private typealias RawVector = simd_double3
     private func parseVector(data: Data, at offset: inout UInt8, scalar: Double) -> Vector3D {
-        let rawX: Int16 = data.object(at: &offset)
-        let rawY: Int16 = data.object(at: &offset)
-        let rawZ: Int16 = data.object(at: &offset)
+        let rawX: Int16 = .parse(from: data, at: &offset)
+        let rawY: Int16 = .parse(from: data, at: &offset)
+        let rawZ: Int16 = .parse(from: data, at: &offset)
 
         let x = Double(rawX)
         let y = Double(rawY)
@@ -102,9 +102,9 @@ public struct UKMotionData: UKSensorDataComponent {
 
     private typealias RawAngles = simd_double3
     private func parseRotation(data: Data, at offset: inout UInt8, scalar: Double) -> Rotation3D {
-        let rawX: Int16 = data.object(at: &offset)
-        let rawY: Int16 = data.object(at: &offset)
-        let rawZ: Int16 = data.object(at: &offset)
+        let rawX: Int16 = .parse(from: data, at: &offset)
+        let rawY: Int16 = .parse(from: data, at: &offset)
+        let rawZ: Int16 = .parse(from: data, at: &offset)
 
         let x = Double(rawX).degreesToRadians
         let y = Double(rawY).degreesToRadians
@@ -127,10 +127,10 @@ public struct UKMotionData: UKSensorDataComponent {
     }
 
     private func parseQuaternion(data: Data, at offset: inout UInt8, scalar: Double) -> Quaternion {
-        let rawW: Int16 = data.object(at: &offset)
-        let rawX: Int16 = data.object(at: &offset)
-        let rawY: Int16 = data.object(at: &offset)
-        let rawZ: Int16 = data.object(at: &offset)
+        let rawW: Int16 = .parse(from: data, at: &offset)
+        let rawX: Int16 = .parse(from: data, at: &offset)
+        let rawY: Int16 = .parse(from: data, at: &offset)
+        let rawZ: Int16 = .parse(from: data, at: &offset)
 
         let w = Double(rawW)
         let x = Double(rawX)
@@ -138,6 +138,9 @@ public struct UKMotionData: UKSensorDataComponent {
         let z = Double(rawZ)
 
         var quaternion: Quaternion = .init(ix: x, iy: -z, iz: -y, r: -w)
+        quaternion *= scalar
+        quaternion = quaternion.normalized
+
         if deviceType?.isInsole == true {
             quaternion *= correctionQuaternion
         }
