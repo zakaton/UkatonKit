@@ -1,7 +1,12 @@
 import CoreBluetooth
 import Foundation
+import UkatonMacros
 
-class UKBluetoothManager: UKConnectionManager {
-    let type: UKConnectionType = .bluetooth
-    var status: UKConnectionStatus = .notConnected
+class UKBluetoothManager: NSObject, ObservableObject {
+    private var centralManager: CBCentralManager!
+
+    override init() {
+        super.init()
+        self.centralManager = .init(delegate: self, queue: .main)
+    }
 }

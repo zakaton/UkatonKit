@@ -1,7 +1,7 @@
 import Foundation
 import Network
 
-class UKUdpManager: UKConnectionManager {
+class UKUdpConnectionManager: UKConnectionManager {
     let type: UKConnectionType = .udp
     var status: UKConnectionStatus = .notConnected
 }
