@@ -88,9 +88,9 @@ struct UKDeviceInformationManager {
 
     // MARK: - Callbacks
 
-    public var onIsFullyInitialized: ((Bool) -> Void)?
     public var onTypeUpdated: ((UKDeviceType?) -> Void)?
     public var onNameUpdated: ((String?) -> Void)?
+    public var onIsFullyInitialized: ((Bool) -> Void)?
     public var onBatteryLevelUpdated: ((UKBatteryLevel?) -> Void)?
 
     // MARK: - Reset
