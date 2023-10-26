@@ -1,7 +1,7 @@
 @testable import UkatonKit
 import XCTest
 
-let mission: UKBaseMission = .init()
+let mission: UKMission = .init()
 
 final class UkatonKitTests: XCTestCase {
     // MARK: - Device Informaton

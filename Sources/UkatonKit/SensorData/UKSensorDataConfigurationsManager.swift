@@ -140,7 +140,7 @@ struct UKSensorDataConfigurationsManager {
 
     // MARK: - Parsing
 
-    mutating func parse(_ data: Data, at offset: inout UInt8) {
+    mutating func parse(_ data: Data, at offset: inout Data.Index) {
         UKSensorType.allCases.forEach { sensorType in
             configurationManagers[sensorType]?.parse(data, at: &offset)
         }
@@ -148,7 +148,7 @@ struct UKSensorDataConfigurationsManager {
     }
 
     mutating func parse(_ data: Data) {
-        var offset: UInt8 = 0
+        var offset: Data.Index = 0
         parse(data, at: &offset)
     }
 

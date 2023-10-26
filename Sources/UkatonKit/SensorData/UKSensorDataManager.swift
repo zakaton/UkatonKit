@@ -10,7 +10,7 @@ extension Date {
 
 protocol UKSensorDataComponent {
     var deviceType: UKDeviceType? { get set }
-    mutating func parse(_ data: Data, at offset: inout UInt8, until finalOffset: UInt8)
+    mutating func parse(_ data: Data, at offset: inout Data.Index, until finalOffset: Data.Index)
 }
 
 @StaticLogger
@@ -72,7 +72,7 @@ public struct UKSensorDataManager {
 
     // MARK: - Parsing
 
-    mutating func parse(_ data: Data, at offset: inout UInt8) {
+    mutating func parse(_ data: Data, at offset: inout Data.Index) {
         lastTimeReceivedSensorData = Date.now_ms
         rawTimestamp = .parse(from: data, at: &offset)
 
@@ -80,26 +80,24 @@ public struct UKSensorDataManager {
         logger.debug("sensor data timestamp: \(_self.timestamp)ms")
 
         while offset < data.count {
-            let rawSensorType = data[Data.Index(offset)]
-            offset += 1
+            let rawSensorType: UKSensorType.RawValue = data.parse(at: &offset)
 
             guard let sensorType: UKSensorType = .init(rawValue: rawSensorType) else {
                 logger.error("uncaught sensor type \(rawSensorType)")
                 break
             }
 
-            let sensorDataSize = data[Data.Index(offset)]
-            offset += 1
+            let sensorDataSize: UInt8 = data.parse(at: &offset)
 
             logger.debug("received \(sensorDataSize) bytes for sensor type \(sensorType.name)")
 
-            let finalOffset = offset + sensorDataSize
+            let finalOffset = offset + Data.Index(sensorDataSize)
             sensorData[sensorType]?.parse(data, at: &offset, until: finalOffset)
         }
     }
 
     mutating func parse(_ data: Data) {
-        var offset: UInt8 = 0
+        var offset: Data.Index = 0
         parse(data, at: &offset)
     }
 }

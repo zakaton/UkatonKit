@@ -2,6 +2,8 @@ import Foundation
 import OSLog
 import StaticLogger
 
+public typealias UKBatteryLevel = UInt8
+
 @StaticLogger
 struct UKDeviceInformationManager {
     // MARK: - Name
@@ -13,25 +15,15 @@ struct UKDeviceInformationManager {
         }
     }
 
-    mutating func parseName(data: Data, at offset: inout UInt8, until finalOffset: UInt8) {
-        if offset < finalOffset, finalOffset <= data.count {
-            let nameDataRange = Data.Index(offset) ..< Data.Index(finalOffset)
-            let nameData = data.subdata(in: nameDataRange)
-            if let newName = String(data: nameData, encoding: .utf8) {
-                Self.logger.debug("new device name \"\(newName)\"")
-                name = newName
-            } else {
-                Self.logger.error("Unable to decode the data as a string.")
-            }
-        } else {
-            let _offset = offset
-            Self.logger.error("offset \(_offset)...\(finalOffset) out of range for data \(data.count)")
-        }
+    mutating func parseName(data: Data, at offset: inout Data.Index, until finalOffset: Data.Index) {
+        let newName = data.parseString(offset: &offset, until: finalOffset)
+        logger.debug("new device name \"\(newName)\"")
+        name = newName
     }
 
     mutating func parseName(data: Data) {
-        var offset: UInt8 = 0
-        parseName(data: data, at: &offset, until: UInt8(data.count))
+        var offset: Data.Index = 0
+        parseName(data: data, at: &offset, until: data.count)
     }
 
     // MARK: - DeviceType
@@ -43,22 +35,40 @@ struct UKDeviceInformationManager {
         }
     }
 
-    mutating func parseType(data: Data, at offset: inout UInt8) {
+    mutating func parseType(data: Data, at offset: inout Data.Index) {
         if offset < data.count {
-            let newTypeRawValue = data[Int(offset)]
-            offset += 1
+            let newTypeRawValue: UKDeviceType.RawValue = .parse(from: data, at: &offset)
             if let newType = UKDeviceType(rawValue: newTypeRawValue) {
-                Self.logger.debug("new type \(newType.name)")
+                logger.debug("new type \(newType.name)")
                 type = newType
             } else {
-                Self.logger.error("invalid device type enum \(newTypeRawValue)")
+                logger.error("invalid device type enum \(newTypeRawValue)")
             }
         }
     }
 
     mutating func parseType(data: Data) {
-        var offset: UInt8 = 0
+        var offset: Data.Index = 0
         parseType(data: data, at: &offset)
+    }
+
+    // MARK: - Battery Level
+
+    private var batteryLevel: UKBatteryLevel? {
+        didSet {
+            onBatteryLevelUpdated?(batteryLevel)
+        }
+    }
+
+    mutating func parseBatteryLevel(data: Data, at offset: inout Data.Index) {
+        if offset < data.count {
+            batteryLevel = data.parse(at: &offset)
+        }
+    }
+
+    mutating func parseBatteryLevel(data: Data) {
+        var offset: Data.Index = 0
+        parseBatteryLevel(data: data, at: &offset)
     }
 
     // MARK: - Is Fully Initialized?
@@ -66,7 +76,7 @@ struct UKDeviceInformationManager {
     private var isFullyInitialized: Bool = false {
         didSet {
             if isFullyInitialized, oldValue != isFullyInitialized {
-                Self.logger.debug("Fully Initialized!")
+                logger.debug("Fully Initialized!")
             }
             onIsFullyInitialized?(isFullyInitialized)
         }
@@ -81,6 +91,7 @@ struct UKDeviceInformationManager {
     public var onIsFullyInitialized: ((Bool) -> Void)?
     public var onTypeUpdated: ((UKDeviceType?) -> Void)?
     public var onNameUpdated: ((String?) -> Void)?
+    public var onBatteryLevelUpdated: ((UKBatteryLevel?) -> Void)?
 
     // MARK: - Reset
 
@@ -88,5 +99,6 @@ struct UKDeviceInformationManager {
         logger.debug("resetting")
         name = nil
         type = nil
+        batteryLevel = nil
     }
 }

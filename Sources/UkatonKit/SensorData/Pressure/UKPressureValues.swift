@@ -71,7 +71,7 @@ public struct UKPressureValues {
 
     // MARK: - Parsing
 
-    mutating func parse(_ data: Data, at offset: inout UInt8, for pressureDataType: UKPressureDataType) {
+    mutating func parse(_ data: Data, at offset: inout Data.Index, for pressureDataType: UKPressureDataType) {
         let scalar = scalars[pressureDataType]!
 
         var rawValueSum = 0

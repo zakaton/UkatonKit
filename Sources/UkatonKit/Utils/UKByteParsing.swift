@@ -3,25 +3,25 @@ import Foundation
 // MARK: - Number to Data
 
 extension Data {
-    func object<T>(at offset: inout UInt8) -> T {
+    func parse<T>(at offset: inout Data.Index) -> T {
         let size = MemoryLayout<T>.size
         let value = subdata(in: Data.Index(offset) ..< self.index(Data.Index(offset), offsetBy: size))
             .withUnsafeBytes { $0.load(as: T.self) }
-        offset += UInt8(size)
+        offset += size
         return value
     }
 }
 
 extension FixedWidthInteger {
-    static func parse(from data: Data, at offset: inout UInt8, littleEndian: Bool = true) -> Self {
-        let value: Self = data.object(at: &offset)
+    static func parse(from data: Data, at offset: inout Data.Index, littleEndian: Bool = true) -> Self {
+        let value: Self = data.parse(at: &offset)
         return littleEndian ? value.littleEndian : value.bigEndian
     }
 }
 
 extension Float32 {
-    static func parse(from data: Data, at offset: inout UInt8, littleEndian: Bool = true) -> Self {
-        var value: Self = data.object(at: &offset)
+    static func parse(from data: Data, at offset: inout Data.Index, littleEndian: Bool = true) -> Self {
+        var value: Self = data.parse(at: &offset)
 
         if littleEndian != (UInt32(littleEndian: 1) == 1) {
             value = .init(bitPattern: value.bitPattern.byteSwapped)
@@ -31,8 +31,8 @@ extension Float32 {
 }
 
 extension Float64 {
-    static func parse(from data: Data, at offset: inout UInt8, littleEndian: Bool = true) -> Self {
-        var value: Self = data.object(at: &offset)
+    static func parse(from data: Data, at offset: inout Data.Index, littleEndian: Bool = true) -> Self {
+        var value: Self = data.parse(at: &offset)
 
         if littleEndian != (UInt64(littleEndian: 1) == 1) {
             value = .init(bitPattern: value.bitPattern.byteSwapped)
@@ -56,6 +56,26 @@ extension FixedWidthInteger {
         var source = littleEndian ? self.littleEndian : self.bigEndian
         // return Data(bytes: &source, count: MemoryLayout<Self>.size)
         return withUnsafeBytes(of: &source) { Data($0) }
+    }
+}
+
+// MARK: - Data to String
+
+extension Data {
+    func parseString(offset: inout Data.Index, until finalOffset: Data.Index) -> String {
+        defer {
+            offset = finalOffset
+        }
+        guard offset < finalOffset, finalOffset <= count else {
+            return ""
+        }
+
+        let nameDataRange = Data.Index(offset) ..< Data.Index(finalOffset)
+        let nameData = subdata(in: nameDataRange)
+        guard let newName = String(data: nameData, encoding: .utf8) else {
+            return ""
+        }
+        return newName
     }
 }
 

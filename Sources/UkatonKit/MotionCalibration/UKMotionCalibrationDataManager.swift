@@ -34,13 +34,10 @@ public struct UKMotionCalibrationDataManager {
 
     // MARK: - Parsing
 
-    mutating func parse(_ data: Data, at offset: inout UInt8) {
+    mutating func parse(_ data: Data, at offset: inout Data.Index) {
         var newIsFullyCalibrated = true
         UKMotionCalibrationType.allCases.forEach { motionCalibrationType in
-            let rawMotionCalibrationTypeStatus = data[Data.Index(offset)]
-            offset += 1
-
-            let motionCalibrationTypeStatus: UKMotionCalibrationStatus = .init(rawValue: rawMotionCalibrationTypeStatus)!
+            let motionCalibrationTypeStatus = UKMotionCalibrationStatus(rawValue: data.parse(at: &offset))!
 
             calibration[motionCalibrationType] = motionCalibrationTypeStatus
             logger.debug("\(motionCalibrationType.name) calibration: \(motionCalibrationTypeStatus.name)")
@@ -53,7 +50,7 @@ public struct UKMotionCalibrationDataManager {
     }
 
     mutating func parse(_ data: Data) {
-        var offset: UInt8 = 0
+        var offset: Data.Index = 0
         parse(data, at: &offset)
     }
 }

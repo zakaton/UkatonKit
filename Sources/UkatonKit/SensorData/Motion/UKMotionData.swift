@@ -44,10 +44,9 @@ public struct UKMotionData: UKSensorDataComponent {
 
     // MARK: - Parsing
 
-    mutating func parse(_ data: Data, at offset: inout UInt8, until finalOffset: UInt8) {
+    mutating func parse(_ data: Data, at offset: inout Data.Index, until finalOffset: Data.Index) {
         while offset < finalOffset {
-            let rawMotionDataType = data[Data.Index(offset)]
-            offset += 1
+            let rawMotionDataType: UKMotionDataType.RawValue = data.parse(at: &offset)
             guard let motionDataType: UKMotionDataType = .init(rawValue: rawMotionDataType) else {
                 logger.error("undefined motion data type \(rawMotionDataType)")
                 break
@@ -74,7 +73,7 @@ public struct UKMotionData: UKSensorDataComponent {
     }
 
     private typealias RawVector = simd_double3
-    private func parseVector(data: Data, at offset: inout UInt8, scalar: Double) -> Vector3D {
+    private func parseVector(data: Data, at offset: inout Data.Index, scalar: Double) -> Vector3D {
         let rawX: Int16 = .parse(from: data, at: &offset)
         let rawY: Int16 = .parse(from: data, at: &offset)
         let rawZ: Int16 = .parse(from: data, at: &offset)
@@ -101,7 +100,7 @@ public struct UKMotionData: UKSensorDataComponent {
     }
 
     private typealias RawAngles = simd_double3
-    private func parseRotation(data: Data, at offset: inout UInt8, scalar: Double) -> Rotation3D {
+    private func parseRotation(data: Data, at offset: inout Data.Index, scalar: Double) -> Rotation3D {
         let rawX: Int16 = .parse(from: data, at: &offset)
         let rawY: Int16 = .parse(from: data, at: &offset)
         let rawZ: Int16 = .parse(from: data, at: &offset)
@@ -126,7 +125,7 @@ public struct UKMotionData: UKSensorDataComponent {
         return .init(eulerAngles: eulerAngles)
     }
 
-    private func parseQuaternion(data: Data, at offset: inout UInt8, scalar: Double) -> Quaternion {
+    private func parseQuaternion(data: Data, at offset: inout Data.Index, scalar: Double) -> Quaternion {
         let rawW: Int16 = .parse(from: data, at: &offset)
         let rawX: Int16 = .parse(from: data, at: &offset)
         let rawY: Int16 = .parse(from: data, at: &offset)

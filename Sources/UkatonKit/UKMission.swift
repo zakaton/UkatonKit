@@ -3,7 +3,7 @@ import OSLog
 import StaticLogger
 
 @StaticLogger
-public class UKBaseMission: ObservableObject {
+public class UKMission: ObservableObject {
     // MARK: - Components
 
     var deviceInformationManager: UKDeviceInformationManager = .init()
@@ -11,6 +11,13 @@ public class UKBaseMission: ObservableObject {
     var sensorDataManager: UKSensorDataManager = .init()
     var motionCalibrationDataManager: UKMotionCalibrationDataManager = .init()
     var hapticsManager: UKHapticsManager = .init()
+    var connectionManager: UKConnectionManager? = nil {
+        didSet {
+            if connectionManager != nil {
+                // TODO: - add callbacks for connection and data updates
+            }
+        }
+    }
 
     // MARK: - Device Information
 
@@ -28,6 +35,13 @@ public class UKBaseMission: ObservableObject {
             if isFullyInitialized {
                 logger.debug("Fully initialized!")
             }
+        }
+    }
+
+    public private(set) var batteryLevel: UKBatteryLevel? {
+        didSet {
+            sensorDataConfigurationsManager.deviceType = deviceType
+            sensorDataManager.deviceType = deviceType
         }
     }
 
@@ -54,6 +68,9 @@ public class UKBaseMission: ObservableObject {
         }
         deviceInformationManager.onIsFullyInitialized = {
             [unowned self] in self.isFullyInitialized = $0
+        }
+        deviceInformationManager.onBatteryLevelUpdated = {
+            [unowned self] in self.batteryLevel = $0
         }
 
         // MARK: - Motion Calibration Callbacks

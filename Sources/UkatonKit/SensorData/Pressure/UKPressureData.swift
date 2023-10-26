@@ -34,10 +34,9 @@ public struct UKPressureData: UKSensorDataComponent {
 
     // MARK: - Parsing
 
-    mutating func parse(_ data: Data, at offset: inout UInt8, until finalOffset: UInt8) {
+    mutating func parse(_ data: Data, at offset: inout Data.Index, until finalOffset: Data.Index) {
         while offset < finalOffset {
-            let rawPressureDataType = data[Data.Index(offset)]
-            offset += 1
+            let rawPressureDataType: UKPressureDataType.RawValue = data.parse(at: &offset)
             guard let pressureDataType: UKPressureDataType = .init(rawValue: rawPressureDataType) else {
                 logger.error("undefined pressure data type \(rawPressureDataType)")
                 break
@@ -65,18 +64,18 @@ public struct UKPressureData: UKSensorDataComponent {
         }
     }
 
-    private mutating func parseCenterOfMass(data: Data, at offset: inout UInt8) -> Vector2D {
+    private mutating func parseCenterOfMass(data: Data, at offset: inout Data.Index) -> Vector2D {
         .init(
             x: Double(Float32.parse(from: data, at: &offset)),
             y: Double(Float32.parse(from: data, at: &offset))
         )
     }
 
-    private mutating func parseMass(data: Data, at offset: inout UInt8) -> UInt32 {
+    private mutating func parseMass(data: Data, at offset: inout Data.Index) -> UInt32 {
         .parse(from: data, at: &offset)
     }
 
-    private mutating func parseHeelToToe(data: Data, at offset: inout UInt8) -> Float64 {
+    private mutating func parseHeelToToe(data: Data, at offset: inout Data.Index) -> Float64 {
         .parse(from: data, at: &offset)
     }
 }

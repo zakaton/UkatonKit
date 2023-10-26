@@ -102,7 +102,7 @@ struct UKSensorDataConfigurationManager {
 
     // MARK: - Parsing
 
-    mutating func parse(_ data: Data, at offset: inout UInt8) {
+    mutating func parse(_ data: Data, at offset: inout Data.Index) {
         sensorType.forEachDataType { dataType in
             if offset + 2 <= data.count {
                 let dataRate: UKSensorDataRate = .parse(from: data, at: &offset)
