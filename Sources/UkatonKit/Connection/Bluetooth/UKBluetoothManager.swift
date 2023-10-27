@@ -36,7 +36,7 @@ class UKBluetoothManager: NSObject, ObservableObject {
     func scanForDevices() {
         if centralManager.state == .poweredOn {
             discoveredPeripherals.removeAll()
-            centralManager.scanForPeripherals(withServices: UKServiceUUID.uuids)
+            centralManager.scanForPeripherals(withServices: UKBluetoothServiceIdentifier.allUUIDs)
             logger.debug("scanning for devices...")
         }
         else {
@@ -75,15 +75,21 @@ extension UKBluetoothManager: CBCentralManagerDelegate {
 
     // MARK: - Scanning
 
-    func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String: Any], rssi RSSI: NSNumber) {
+    func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: UKBluetoothPeripheralAdvertisementData, rssi RSSI: NSNumber) {
         discoveredPeripherals.replaceOrAppend(.init(peripheral: peripheral, RSSI: RSSI, advertisementData: advertisementData), firstMatchingKeyPath: \.peripheral.identifier)
     }
 
+    // MARK: - Connection
+
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
-        // TODO: - Find device
+        if let bluetoothConnectionManager = peripheral.delegate as? UKBluetoothConnectionManager {
+            bluetoothConnectionManager.onConnection()
+        }
     }
 
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
-        // TODO: - FILL
+        if let bluetoothConnectionManager = peripheral.delegate as? UKBluetoothConnectionManager {
+            bluetoothConnectionManager.onDisconnection()
+        }
     }
 }

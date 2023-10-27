@@ -1,8 +1,7 @@
 BluetoothConnectionManager
-    subscribe and notify
-    parse data
+    data callbacks
 BluetoothManager
-    array of discovered devices (clear when rescanning)
-    connect/disconnect, creating BluetoothConnectionManager
+    storing discovered devices
+    creating bluetoothmanager from discovered device
 UdpConnectionManager
 Missions

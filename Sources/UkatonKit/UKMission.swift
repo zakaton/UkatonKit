@@ -11,10 +11,19 @@ public class UKMission: ObservableObject {
     var sensorDataManager: UKSensorDataManager = .init()
     var motionCalibrationDataManager: UKMotionCalibrationDataManager = .init()
     var hapticsManager: UKHapticsManager = .init()
-    var connectionManager: UKConnectionManager? = nil {
+    var connectionManager: UKConnectionManager? {
+        willSet {
+            if var connectionManager {
+                // TODO: - remove callbacks
+                connectionManager.onDeviceType = nil
+            }
+        }
         didSet {
-            if connectionManager != nil {
-                // TODO: - add callbacks for connection and data updates
+            if var connectionManager {
+                // TODO: - add callbacks
+                connectionManager.onDeviceType = { [unowned self] data in
+                    self.deviceInformationManager.parseType(data: data)
+                }
             }
         }
     }
@@ -80,7 +89,7 @@ public class UKMission: ObservableObject {
         }
     }
 
-    // MARK: - Connection
+    // MARK: - Bluetooth Connection
 
     static let bluetoothManager: UKBluetoothManager = .shared
 
@@ -91,4 +100,6 @@ public class UKMission: ObservableObject {
     public static func stopScanningForBluetoothDevices() {
         bluetoothManager.stopScanningForDevices()
     }
+
+    // MARK: - ConnectionManager Setters
 }

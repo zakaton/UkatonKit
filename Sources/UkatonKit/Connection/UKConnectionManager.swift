@@ -5,4 +5,5 @@ protocol UKConnectionManager {
     var status: UKConnectionStatus { get }
 
     // TODO: - get/set device info, sensor data, etc
+    var onDeviceType: ((Data) -> Void)? { get set }
 }
