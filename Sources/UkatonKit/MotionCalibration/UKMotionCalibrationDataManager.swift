@@ -1,6 +1,6 @@
 import Foundation
 import OSLog
-import StaticLogger
+import UkatonMacros
 
 public typealias UKMotionCalibrationData = [UKMotionCalibrationType: UKMotionCalibrationStatus]
 

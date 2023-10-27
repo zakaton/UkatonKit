@@ -1,4 +1,8 @@
-Scan for Bluetooth Connections
+BluetoothConnectionManager
+    subscribe and notify
+    parse data
 BluetoothManager
-UdpManager
+    array of discovered devices (clear when rescanning)
+    connect/disconnect, creating BluetoothConnectionManager
+UdpConnectionManager
 Missions

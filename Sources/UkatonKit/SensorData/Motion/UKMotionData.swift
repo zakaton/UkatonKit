@@ -3,7 +3,7 @@ import Foundation
 import OSLog
 import simd
 import Spatial
-import StaticLogger
+import UkatonMacros
 
 extension BinaryFloatingPoint {
     var degreesToRadians: Self {

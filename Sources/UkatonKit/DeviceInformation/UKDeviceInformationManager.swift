@@ -1,6 +1,6 @@
 import Foundation
 import OSLog
-import StaticLogger
+import UkatonMacros
 
 public typealias UKBatteryLevel = UInt8
 

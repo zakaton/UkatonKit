@@ -14,7 +14,6 @@ let package = Package(
             targets: ["UkatonKit"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/zakaton/StaticLogger.git", branch: "main"),
         .package(name: "UkatonMacros", url: "/Users/zakaton/Documents/GitHub/UkatonSwiftMacros", branch: "main"),
     ],
     targets: [
@@ -22,7 +21,7 @@ let package = Package(
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
             name: "UkatonKit",
-            dependencies: ["StaticLogger", "UkatonMacros"]),
+            dependencies: ["UkatonMacros"]),
         .testTarget(
             name: "UkatonKitTests",
             dependencies: ["UkatonKit"]),

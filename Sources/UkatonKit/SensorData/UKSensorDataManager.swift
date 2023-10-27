@@ -1,6 +1,6 @@
 import Foundation
 import OSLog
-import StaticLogger
+import UkatonMacros
 
 extension Date {
     static var now_ms: UInt64 {

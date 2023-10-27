@@ -1,6 +1,6 @@
 import Foundation
 import OSLog
-import StaticLogger
+import UkatonMacros
 
 typealias UKGenericSensorDataRates = [UKRawSensorDataType: UKSensorDataRate]
 extension Dictionary where Key: RawRepresentable, Key.RawValue == UInt8, Value == UKSensorDataRate {

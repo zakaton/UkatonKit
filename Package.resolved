@@ -1,15 +1,6 @@
 {
   "pins" : [
     {
-      "identity" : "staticlogger",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/zakaton/StaticLogger.git",
-      "state" : {
-        "branch" : "main",
-        "revision" : "373d6e3c214737d67baacd235ea008f070f8367d"
-      }
-    },
-    {
       "identity" : "swift-syntax",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-syntax.git",
@@ -24,7 +15,7 @@
       "location" : "/Users/zakaton/Documents/GitHub/UkatonSwiftMacros",
       "state" : {
         "branch" : "main",
-        "revision" : "519b4bace0927ec3f318030db38203fb5975f038"
+        "revision" : "95462fb044e3068ab4bf1b23503b6561fe5b4a7f"
       }
     }
   ],

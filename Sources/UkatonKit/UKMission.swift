@@ -1,6 +1,6 @@
 import Foundation
 import OSLog
-import StaticLogger
+import UkatonMacros
 
 @StaticLogger
 public class UKMission: ObservableObject {
@@ -81,4 +81,14 @@ public class UKMission: ObservableObject {
     }
 
     // MARK: - Connection
+
+    static let bluetoothManager: UKBluetoothManager = .shared
+
+    public static func scanForBluetoothDevices() {
+        bluetoothManager.scanForDevices()
+    }
+
+    public static func stopScanningForBluetoothDevices() {
+        bluetoothManager.stopScanningForDevices()
+    }
 }

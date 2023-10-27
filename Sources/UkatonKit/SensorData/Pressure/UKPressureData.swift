@@ -1,7 +1,7 @@
 import Foundation
 import OSLog
 import simd
-import StaticLogger
+import UkatonMacros
 
 @StaticLogger
 public struct UKPressureData: UKSensorDataComponent {
