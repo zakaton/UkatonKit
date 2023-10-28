@@ -30,7 +30,8 @@ enum UKBluetoothServiceIdentifier: String, CaseIterable, UKBluetoothContainerIde
                 .deviceName, .deviceType,
                 .motionCalibration,
                 .sensorDataConfiguration, .sensorData,
-                .wifiSSID, .wifiPassword, .wifiConnect, .wifiIsConnected, .wifiIPAddress
+                .wifiSSID, .wifiPassword, .wifiConnect, .wifiIsConnected, .wifiIPAddress,
+                .hapticsVibration
             ]
         case .batteryLevel:
             return [.batteryLevel]

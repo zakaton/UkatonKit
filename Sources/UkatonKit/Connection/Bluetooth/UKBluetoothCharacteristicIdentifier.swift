@@ -25,7 +25,7 @@ enum UKBluetoothCharacteristicIdentifier: String, CaseIterable, UKBluetoothConta
     case wifiIsConnected = "7004"
     case wifiIPAddress = "7005"
 
-    case haptics = "d000"
+    case hapticsVibration = "d000"
 
     init?(characteristic: CBCharacteristic) {
         guard let characteristicCase = Self.allCases.first(where: { $0.uuid == characteristic.uuid }) else {

@@ -2,8 +2,6 @@ import Foundation
 import OSLog
 import UkatonMacros
 
-public typealias UKBatteryLevel = UInt8
-
 @StaticLogger
 struct UKDeviceInformationManager {
     // MARK: - Name
@@ -14,6 +12,8 @@ struct UKDeviceInformationManager {
             checkIsFullyInitialized()
         }
     }
+
+    public var onNameUpdated: ((String?) -> Void)?
 
     mutating func parseName(data: Data, at offset: inout Data.Index, until finalOffset: Data.Index) {
         let newName = data.parseString(offset: &offset, until: finalOffset)
@@ -35,6 +35,8 @@ struct UKDeviceInformationManager {
         }
     }
 
+    public var onTypeUpdated: ((UKDeviceType?) -> Void)?
+
     mutating func parseType(data: Data, at offset: inout Data.Index) {
         if offset < data.count {
             let newTypeRawValue: UKDeviceType.RawValue = .parse(from: data, at: &offset)
@@ -52,25 +54,6 @@ struct UKDeviceInformationManager {
         parseType(data: data, at: &offset)
     }
 
-    // MARK: - Battery Level
-
-    private var batteryLevel: UKBatteryLevel? {
-        didSet {
-            onBatteryLevelUpdated?(batteryLevel)
-        }
-    }
-
-    mutating func parseBatteryLevel(data: Data, at offset: inout Data.Index) {
-        if offset < data.count {
-            batteryLevel = data.parse(at: &offset)
-        }
-    }
-
-    mutating func parseBatteryLevel(data: Data) {
-        var offset: Data.Index = 0
-        parseBatteryLevel(data: data, at: &offset)
-    }
-
     // MARK: - Is Fully Initialized?
 
     private var isFullyInitialized: Bool = false {
@@ -82,16 +65,11 @@ struct UKDeviceInformationManager {
         }
     }
 
+    public var onIsFullyInitialized: ((Bool) -> Void)?
+
     private mutating func checkIsFullyInitialized() {
         isFullyInitialized = name != nil && type != nil
     }
-
-    // MARK: - Callbacks
-
-    public var onTypeUpdated: ((UKDeviceType?) -> Void)?
-    public var onNameUpdated: ((String?) -> Void)?
-    public var onIsFullyInitialized: ((Bool) -> Void)?
-    public var onBatteryLevelUpdated: ((UKBatteryLevel?) -> Void)?
 
     // MARK: - Reset
 
@@ -99,6 +77,5 @@ struct UKDeviceInformationManager {
         logger.debug("resetting")
         name = nil
         type = nil
-        batteryLevel = nil
     }
 }

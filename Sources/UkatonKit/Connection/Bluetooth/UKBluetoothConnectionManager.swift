@@ -174,6 +174,8 @@ class UKBluetoothConnectionManager: NSObject, UKConnectionManager, ObservableObj
             switch characteristicIdentifier {
             case .deviceType:
                 onMessageReceived(.getDeviceType, data)
+            case .deviceName:
+                onMessageReceived(.getDeviceName, data)
             default:
                 logger.error("uncaught data handler for characteristic \(characteristicIdentifier.name)")
             }

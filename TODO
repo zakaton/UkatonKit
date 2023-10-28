@@ -1,6 +1,6 @@
-ConnectionMessageType enum
 BluetoothConnectionManager onReceived
 Mission onConnectionMessage
+
 Mission sendMessage
 BluetoothConnectionManager sendMessgae
 
