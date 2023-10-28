@@ -19,11 +19,11 @@ enum UKBluetoothCharacteristicIdentifier: String, CaseIterable, UKBluetoothConta
     case sensorDataConfiguration = "6001"
     case sensorData = "6002"
 
-    case wifiSSID = "7001"
+    case wifiSsid = "7001"
     case wifiPassword = "7002"
-    case wifiConnect = "7003"
+    case wifiShouldConnect = "7003"
     case wifiIsConnected = "7004"
-    case wifiIPAddress = "7005"
+    case wifiIpAddress = "7005"
 
     case hapticsVibration = "d000"
 

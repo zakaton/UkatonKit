@@ -3,6 +3,37 @@ import Foundation
 import OSLog
 import UkatonMacros
 
+extension UKBluetoothCharacteristicIdentifier {
+    var connectionMessageType: UKConnectionMessageType {
+        switch self {
+        case .deviceName:
+            return .getDeviceName
+        case .batteryLevel:
+            return .batteryLevel
+        case .deviceType:
+            return .getDeviceType
+        case .motionCalibration:
+            return .motionCalibration
+        case .sensorDataConfiguration:
+            return .getSensorDataConfiguration
+        case .sensorData:
+            return .sensorData
+        case .wifiSsid:
+            return .getWifiSsid
+        case .wifiPassword:
+            return .getWifiPassword
+        case .wifiShouldConnect:
+            return .getWifiShouldConnect
+        case .wifiIsConnected:
+            return .wifiIsConnected
+        case .wifiIpAddress:
+            return .getWifiIpAddress
+        case .hapticsVibration:
+            return .setHapticsVibration
+        }
+    }
+}
+
 @StaticLogger
 class UKBluetoothConnectionManager: NSObject, UKConnectionManager, ObservableObject, CBPeripheralDelegate {
     let type: UKConnectionType = .bluetooth
@@ -171,14 +202,7 @@ class UKBluetoothConnectionManager: NSObject, UKConnectionManager, ObservableObj
         logger.debug("received \(data.count) bytes from characteristic \(characteristicIdentifier.name)")
 
         if let onMessageReceived {
-            switch characteristicIdentifier {
-            case .deviceType:
-                onMessageReceived(.getDeviceType, data)
-            case .deviceName:
-                onMessageReceived(.getDeviceName, data)
-            default:
-                logger.error("uncaught data handler for characteristic \(characteristicIdentifier.name)")
-            }
+            onMessageReceived(characteristicIdentifier.connectionMessageType, data)
         }
     }
 }

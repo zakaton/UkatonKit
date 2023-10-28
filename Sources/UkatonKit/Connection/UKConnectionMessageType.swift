@@ -13,5 +13,5 @@ enum UKConnectionMessageType {
     case getWifiShouldConnect, setWifiShouldConnect
     case wifiIsConnected
     case getWifiIpAddress, setWifiIpAddress
-    case vibrate
+    case setHapticsVibration
 }

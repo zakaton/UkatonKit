@@ -9,9 +9,9 @@ public class UKMission: ObservableObject {
     var batteryLevelManager: UKBatteryLevelManager = .init()
     var deviceInformationManager: UKDeviceInformationManager = .init()
     var wifiInformationManager: UKWifiInformationManager = .init()
+    var motionCalibrationDataManager: UKMotionCalibrationDataManager = .init()
     var sensorDataConfigurationsManager: UKSensorDataConfigurationsManager = .init()
     var sensorDataManager: UKSensorDataManager = .init()
-    var motionCalibrationDataManager: UKMotionCalibrationDataManager = .init()
     var hapticsManager: UKHapticsManager = .init()
 
     // MARK: - Connection
@@ -54,12 +54,7 @@ public class UKMission: ObservableObject {
         }
     }
 
-    public private(set) var batteryLevel: UKBatteryLevel? {
-        didSet {
-            sensorDataConfigurationsManager.deviceType = deviceType
-            sensorDataManager.deviceType = deviceType
-        }
-    }
+    public private(set) var batteryLevel: UKBatteryLevel?
 
     // MARK: - Motion Calibration
 
@@ -111,6 +106,14 @@ public class UKMission: ObservableObject {
         motionCalibrationDataManager.onIsFullyCalibrated = {
             [unowned self] in self.isMotionSensorFullyCalibrated = $0
         }
+
+        // MARK: - Sensor Data Configurations Callbacks
+
+        // TODO: - FILL
+
+        // MARK: - Sensor Data Callbacks
+
+        // TODO: - FILL
     }
 
     // MARK: - Bluetooth Connection
@@ -125,7 +128,7 @@ public class UKMission: ObservableObject {
         bluetoothManager.stopScanningForDevices()
     }
 
-    // MARK: - ConnectionManager Setters
+    // MARK: - ConnectionManager Parsing
 
     func onConnectionMessage(type messageType: UKConnectionMessageType, data: Data) {
         switch messageType {
@@ -153,7 +156,7 @@ public class UKMission: ObservableObject {
             sensorDataManager.parse(data)
 
         default:
-            logger.debug("uncaught connection message \(messageType.name)")
+            logger.error("uncaught connection message type \(messageType.name)")
         }
     }
 }
