@@ -5,10 +5,6 @@ import UkatonMacros
 
 @StaticLogger
 class UKBluetoothConnectionManager: NSObject, UKConnectionManager, ObservableObject, CBPeripheralDelegate {
-    var onDeviceType: ((Data) -> Void)?
-
-    // MARK: - UKConnectionManager Protocol
-
     let type: UKConnectionType = .bluetooth
     var status: UKConnectionStatus {
         switch peripheral?.state {
@@ -19,6 +15,14 @@ class UKBluetoothConnectionManager: NSObject, UKConnectionManager, ObservableObj
         case .some:
             .notConnected
         }
+    }
+
+    // MARK: - Messaging
+
+    var onMessageReceived: ((UKConnectionMessageType, Data) -> Void)?
+
+    func sendMessage(type: UKConnectionMessageType, data: Data) {
+        // TODO: - FILL
     }
 
     // MARK: - UKBluetoothManager
@@ -166,11 +170,13 @@ class UKBluetoothConnectionManager: NSObject, UKConnectionManager, ObservableObj
     func onReceived(data: Data, from characteristic: CBCharacteristic, withIdentifier characteristicIdentifier: UKBluetoothCharacteristicIdentifier) {
         logger.debug("received \(data.count) bytes from characteristic \(characteristicIdentifier.name)")
 
-        switch characteristicIdentifier {
-        case .deviceType:
-            onDeviceType?(data)
-        default:
-            logger.error("uncaught data handler for characteristic \(characteristicIdentifier.name)")
+        if let onMessageReceived {
+            switch characteristicIdentifier {
+            case .deviceType:
+                onMessageReceived(.getDeviceType, data)
+            default:
+                logger.error("uncaught data handler for characteristic \(characteristicIdentifier.name)")
+            }
         }
     }
 }

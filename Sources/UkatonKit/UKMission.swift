@@ -11,21 +11,27 @@ public class UKMission: ObservableObject {
     var sensorDataManager: UKSensorDataManager = .init()
     var motionCalibrationDataManager: UKMotionCalibrationDataManager = .init()
     var hapticsManager: UKHapticsManager = .init()
+
+    // MARK: - Connection
+
     var connectionManager: UKConnectionManager? {
         willSet {
             if var connectionManager {
                 // TODO: - remove callbacks
-                connectionManager.onDeviceType = nil
+                connectionManager.onMessageReceived = nil
             }
         }
         didSet {
             if var connectionManager {
-                // TODO: - add callbacks
-                connectionManager.onDeviceType = { [unowned self] data in
-                    self.deviceInformationManager.parseType(data: data)
+                connectionManager.onMessageReceived = { [unowned self] type, data in
+                    self.onConnectionMessage(type: type, data: data)
                 }
             }
         }
+    }
+
+    var connectionType: UKConnectionType? {
+        connectionManager?.type
     }
 
     // MARK: - Device Information
@@ -102,4 +108,12 @@ public class UKMission: ObservableObject {
     }
 
     // MARK: - ConnectionManager Setters
+
+    func onConnectionMessage(type: UKConnectionMessageType, data: Data) {
+        // TODO: - FILL
+        switch type {
+        case .getDeviceType, .setDeviceType:
+            deviceInformationManager.parseType(data: data)
+        }
+    }
 }

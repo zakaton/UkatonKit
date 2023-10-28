@@ -1,5 +1,9 @@
-BluetoothConnectionManager
-    data callbacks
+ConnectionMessageType enum
+BluetoothConnectionManager onReceived
+Mission onConnectionMessage
+Mission sendMessage
+BluetoothConnectionManager sendMessgae
+
 BluetoothManager
     storing discovered devices
     creating bluetoothmanager from discovered device

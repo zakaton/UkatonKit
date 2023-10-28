@@ -4,6 +4,6 @@ protocol UKConnectionManager {
     var type: UKConnectionType { get }
     var status: UKConnectionStatus { get }
 
-    // TODO: - get/set device info, sensor data, etc
-    var onDeviceType: ((Data) -> Void)? { get set }
+    var onMessageReceived: ((UKConnectionMessageType, Data) -> Void)? { get set }
+    func sendMessage(type: UKConnectionMessageType, data: Data)
 }
