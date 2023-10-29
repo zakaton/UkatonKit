@@ -14,12 +14,17 @@ public class UKMission: ObservableObject {
     var sensorDataManager: UKSensorDataManager = .init()
     var hapticsManager: UKHapticsManager = .init()
 
+    // MARK: - Connected
+
+    @Published public var isConnected: Bool = false
+
     // MARK: - Connection
 
     var connectionManager: UKConnectionManager? {
         willSet {
             if var connectionManager {
                 connectionManager.onMessageReceived = nil
+                connectionType = nil
             }
         }
         didSet {
@@ -27,34 +32,63 @@ public class UKMission: ObservableObject {
                 connectionManager.onMessageReceived = { [unowned self] type, data in
                     self.onConnectionMessage(type: type, data: data)
                 }
+                connectionManager.onStatusUpdated = { [unowned self] in
+                    self.connectionStatus = $0
+                }
+                connectionType = connectionManager.type
             }
         }
     }
 
-    var connectionType: UKConnectionType? {
-        connectionManager?.type
+    @Published public var connectionType: UKConnectionType? = nil
+    @Published public var connectionStatus: UKConnectionStatus = .notConnected
+
+    func sendMessage(type messageType: UKConnectionMessageType, data: Data) throws {
+        guard let connectionManager else {
+            throw UKConnectionManagerMessageError.noConnectionManager
+        }
+        guard connectionManager.status == .connected else {
+            throw UKConnectionManagerMessageError.notConnected
+        }
+
+        guard connectionManager.allowedMessageTypes.contains(messageType) else {
+            throw UKConnectionManagerMessageError.messageTypeNotImplemented(messageType)
+        }
+
+        try connectionManager.sendMessage(type: messageType, data: data)
     }
 
     // MARK: - Device Information
 
-    public private(set) var deviceType: UKDeviceType? {
+    @Published public private(set) var deviceType: UKDeviceType? {
         didSet {
             sensorDataConfigurationsManager.deviceType = deviceType
             sensorDataManager.deviceType = deviceType
         }
     }
 
-    public private(set) var deviceName: String?
+    @Published public private(set) var deviceName: String?
 
-    public private(set) var isFullyInitialized: Bool = false {
+    @Published public private(set) var isFullyInitialized: Bool = false {
         didSet {
             if isFullyInitialized {
                 logger.debug("Fully initialized!")
+                isConnected = true
             }
         }
     }
 
-    public private(set) var batteryLevel: UKBatteryLevel?
+    @Published public private(set) var batteryLevel: UKBatteryLevel?
+
+    public func setDeviceType(newDeviceType: UKDeviceType) async throws {
+        try sendMessage(type: .setDeviceType, data: newDeviceType.rawValue.data)
+        // TODO: - wait for deviceType event
+    }
+
+    public func setDeviceName(newDeviceName: String) async throws {
+        try sendMessage(type: .setDeviceName, data: newDeviceName.data)
+        // TODO: - wait for deviceType event
+    }
 
     // MARK: - Motion Calibration
 
@@ -66,10 +100,25 @@ public class UKMission: ObservableObject {
         }
     }
 
-    // MARK: - Device Information
+    // MARK: - Wifi Information
 
-    public private(set) var wifiSsid: String?
-    public private(set) var wifiPassword: String?
+    @Published public private(set) var wifiSsid: String?
+    @Published public private(set) var wifiPassword: String?
+
+    public func setWifiSsid(newWifiSsid: String) async throws {
+        try sendMessage(type: .setWifiSsid, data: newWifiSsid.data)
+        // TODO: - wait for wifiSsid event
+    }
+
+    public func setWifiPassword(newWifiPassword: String) async throws {
+        try sendMessage(type: .setWifiPassword, data: newWifiPassword.data)
+        // TODO: - wait for wifiPassword event
+    }
+
+    public func setWifiShouldConnect(newShouldConnect: Bool) async throws {
+        try sendMessage(type: .setWifiShouldConnect, data: newShouldConnect.data)
+        // TODO: - wait for shouldConnect event
+    }
 
     // MARK: - Initialization
 

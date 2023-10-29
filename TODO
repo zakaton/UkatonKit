@@ -1,8 +1,8 @@
-Mission sendMessage
-BluetoothConnectionManager sendMessgae
-
+UkatonMission messages
+UdpConnectionManager
 BluetoothManager
     storing discovered devices
     creating bluetoothmanager from discovered device
-UdpConnectionManager
 Missions
+
+try using Observers

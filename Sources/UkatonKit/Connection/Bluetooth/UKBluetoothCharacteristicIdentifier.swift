@@ -28,10 +28,63 @@ enum UKBluetoothCharacteristicIdentifier: String, CaseIterable, UKBluetoothConta
     case hapticsVibration = "d000"
 
     init?(characteristic: CBCharacteristic) {
-        guard let characteristicCase = Self.allCases.first(where: { $0.uuid == characteristic.uuid }) else {
+        guard let characteristicIdentifier = Self.allCases.first(where: { $0.uuid == characteristic.uuid }) else {
             Self.logger.error("unknown characteristic \(characteristic.uuid)")
             return nil
         }
-        self = characteristicCase
+        self = characteristicIdentifier
+    }
+
+    var connectionMessageType: UKConnectionMessageType {
+        switch self {
+        case .deviceName:
+            return .getDeviceName
+        case .batteryLevel:
+            return .batteryLevel
+        case .deviceType:
+            return .getDeviceType
+        case .motionCalibration:
+            return .motionCalibration
+        case .sensorDataConfiguration:
+            return .getSensorDataConfiguration
+        case .sensorData:
+            return .sensorData
+        case .wifiSsid:
+            return .getWifiSsid
+        case .wifiPassword:
+            return .getWifiPassword
+        case .wifiShouldConnect:
+            return .getWifiShouldConnect
+        case .wifiIsConnected:
+            return .wifiIsConnected
+        case .wifiIpAddress:
+            return .getWifiIpAddress
+        case .hapticsVibration:
+            return .setHapticsVibration
+        }
+    }
+
+    init?(connectionMessageType: UKConnectionMessageType) {
+        let serviceIdentifier: Self? = switch connectionMessageType {
+        case .batteryLevel:
+            .batteryLevel
+
+        case .getDeviceName, .setDeviceName:
+            .deviceName
+        case .getDeviceType, .setDeviceType:
+            .deviceType
+
+        // TODO: - FILL
+
+        default:
+            nil
+        }
+
+        guard let serviceIdentifier else {
+            Self.logger.debug("uncaught connection message type \(connectionMessageType.name)")
+            return nil
+        }
+
+        self = serviceIdentifier
     }
 }

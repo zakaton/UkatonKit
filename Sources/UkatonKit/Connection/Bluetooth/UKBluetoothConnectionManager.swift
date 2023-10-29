@@ -3,48 +3,16 @@ import Foundation
 import OSLog
 import UkatonMacros
 
-extension UKBluetoothCharacteristicIdentifier {
-    var connectionMessageType: UKConnectionMessageType {
-        switch self {
-        case .deviceName:
-            return .getDeviceName
-        case .batteryLevel:
-            return .batteryLevel
-        case .deviceType:
-            return .getDeviceType
-        case .motionCalibration:
-            return .motionCalibration
-        case .sensorDataConfiguration:
-            return .getSensorDataConfiguration
-        case .sensorData:
-            return .sensorData
-        case .wifiSsid:
-            return .getWifiSsid
-        case .wifiPassword:
-            return .getWifiPassword
-        case .wifiShouldConnect:
-            return .getWifiShouldConnect
-        case .wifiIsConnected:
-            return .wifiIsConnected
-        case .wifiIpAddress:
-            return .getWifiIpAddress
-        case .hapticsVibration:
-            return .setHapticsVibration
-        }
-    }
-}
-
 @StaticLogger
 class UKBluetoothConnectionManager: NSObject, UKConnectionManager, ObservableObject, CBPeripheralDelegate {
+    static let allowedMessageTypes: [UKConnectionMessageType] = UKConnectionMessageType.allCases
+
+    var onStatusUpdated: ((UKConnectionStatus) -> Void)?
+
     let type: UKConnectionType = .bluetooth
-    var status: UKConnectionStatus {
-        switch peripheral?.state {
-        case nil, .disconnected, .connecting:
-            .notConnected
-        case .connected, .disconnecting:
-            .connected
-        case .some:
-            .notConnected
+    var status: UKConnectionStatus = .notConnected {
+        didSet {
+            onStatusUpdated?(status)
         }
     }
 
@@ -52,8 +20,20 @@ class UKBluetoothConnectionManager: NSObject, UKConnectionManager, ObservableObj
 
     var onMessageReceived: ((UKConnectionMessageType, Data) -> Void)?
 
-    func sendMessage(type: UKConnectionMessageType, data: Data) {
-        // TODO: - FILL
+    func sendMessage(type messageType: UKConnectionMessageType, data: Data) throws {
+        guard let peripheral else {
+            throw UKConnectionManagerMessageError.bluetoothError("peripheral not defined")
+        }
+
+        guard let characteristicIdentifier: UKBluetoothCharacteristicIdentifier = .init(connectionMessageType: messageType) else {
+            throw UKConnectionManagerMessageError.bluetoothError("no characteristicIdentifier defined for messageType \(messageType.name)")
+        }
+
+        guard let characteristic = characteristics[characteristicIdentifier] else {
+            throw UKConnectionManagerMessageError.bluetoothError("no characteristic defined for messageType \(messageType.name)")
+        }
+
+        peripheral.writeValue(data, for: characteristic, type: .withResponse)
     }
 
     // MARK: - UKBluetoothManager
@@ -64,7 +44,7 @@ class UKBluetoothConnectionManager: NSObject, UKConnectionManager, ObservableObj
 
     // MARK: - Characteristics
 
-    private var characteristics: [CBUUID: CBCharacteristic] = [:]
+    private var characteristics: [UKBluetoothCharacteristicIdentifier: CBCharacteristic] = [:]
 
     // MARK: - Peripheral Device
 
@@ -116,10 +96,12 @@ class UKBluetoothConnectionManager: NSObject, UKConnectionManager, ObservableObj
     func onConnection() {
         logger.debug("connected")
         peripheral?.discoverServices(UKBluetoothServiceIdentifier.allUUIDs)
+        status = .connected
     }
 
     func onDisconnection() {
         logger.debug("disconnected")
+        status = .notConnected
     }
 
     // MARK: - Service Discovery
@@ -160,8 +142,9 @@ class UKBluetoothConnectionManager: NSObject, UKConnectionManager, ObservableObj
         }
     }
 
-    func onDiscovered(characteristic: CBCharacteristic, withIdentifier serviceIdentifier: UKBluetoothCharacteristicIdentifier) {
-        logger.debug("discovered characteristic \(serviceIdentifier.name)")
+    func onDiscovered(characteristic: CBCharacteristic, withIdentifier characteristicIdentifier: UKBluetoothCharacteristicIdentifier) {
+        logger.debug("discovered characteristic \(characteristicIdentifier.name)")
+        characteristics[characteristicIdentifier] = characteristic
         if characteristic.properties.contains(.notify) {
             peripheral!.setNotifyValue(true, for: characteristic)
         }
@@ -178,6 +161,12 @@ class UKBluetoothConnectionManager: NSObject, UKConnectionManager, ObservableObj
 
             logger.debug("updated notification state for characteristic \(characteristicIdentifier.name): \(characteristic.isNotifying)")
         }
+    }
+
+    // MARK: - Device Initialization
+
+    func initializeDevice() {
+        // TODO: - FILL
     }
 
     // MARK: - Read Values

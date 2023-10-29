@@ -1,7 +1,7 @@
 import UkatonMacros
 
 @EnumName
-enum UKConnectionMessageType {
+enum UKConnectionMessageType: CaseIterable {
     case batteryLevel
     case getDeviceType, setDeviceType
     case getDeviceName, setDeviceName
@@ -12,6 +12,6 @@ enum UKConnectionMessageType {
     case getWifiPassword, setWifiPassword
     case getWifiShouldConnect, setWifiShouldConnect
     case wifiIsConnected
-    case getWifiIpAddress, setWifiIpAddress
+    case getWifiIpAddress
     case setHapticsVibration
 }

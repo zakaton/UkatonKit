@@ -39,10 +39,10 @@ enum UKBluetoothServiceIdentifier: String, CaseIterable, UKBluetoothContainerIde
     }
 
     init?(service: CBService) {
-        guard let serviceCase = Self.allCases.first(where: { $0.uuid == service.uuid }) else {
+        guard let serviceIdentifier = Self.allCases.first(where: { $0.uuid == service.uuid }) else {
             Self.logger.error("unknown service \(service.uuid)")
             return nil
         }
-        self = serviceCase
+        self = serviceIdentifier
     }
 }

@@ -72,10 +72,30 @@ extension Data {
 
         let nameDataRange = Data.Index(offset) ..< Data.Index(finalOffset)
         let nameData = subdata(in: nameDataRange)
-        guard let newName = String(data: nameData, encoding: .utf8) else {
+        guard let newName = String(data: nameData, encoding: .ascii) else {
             return ""
         }
         return newName
+    }
+}
+
+// MARK: - String to Data
+
+extension String {
+    var data: Data {
+        return self.data(using: .ascii)!
+    }
+}
+
+// MARK: - Bool to Data
+
+extension Bool {
+    var number: UInt8 {
+        self ? 1 : 0
+    }
+
+    var data: Data {
+        return .init([self.number])
     }
 }
 
