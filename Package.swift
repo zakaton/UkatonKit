@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "UkatonKit",
-    platforms: [.iOS(.v15), .macOS(.v14), .watchOS(.v8)],
+    platforms: [.iOS(.v15), .macOS(.v14), .watchOS(.v8), .tvOS(.v16), .visionOS(.v1)],
 
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
