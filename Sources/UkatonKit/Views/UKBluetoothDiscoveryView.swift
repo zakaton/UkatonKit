@@ -1,6 +1,6 @@
 import SwiftUI
 
-// TODO: - button to scan for devices
+// TODO: - button to start/stop for devices
 // TODO: - display list of device names
 
 struct UKBluetoothDiscoveryView: View {
