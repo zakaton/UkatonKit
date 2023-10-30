@@ -1,5 +1,3 @@
-UdpConnectionManager
-    ping
 BluetoothDiscoveryView
     list devices
 DeviceView

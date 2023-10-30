@@ -1,4 +1,3 @@
-import CoreMotion
 import Foundation
 import OSLog
 import simd

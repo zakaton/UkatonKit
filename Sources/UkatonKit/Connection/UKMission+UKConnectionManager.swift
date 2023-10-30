@@ -49,6 +49,8 @@ extension UKMission {
             throw UKConnectionManagerMessageError.messageTypeNotImplemented(messageType)
         }
 
+        logger.debug("sending message of type \(messageType.name)")
+
         try connectionManager.sendMessage(type: messageType, data: data)
     }
 

@@ -8,6 +8,7 @@ class UKUdpConnectionManager: UKConnectionManager {
     static let allowedMessageTypes: [UKConnectionMessageType] = UKConnectionMessageType.allCases.filter { $0.name.contains("wifi") }
 
     var onStatusUpdated: ((UKConnectionStatus) -> Void)?
+    var onMessageReceived: ((UKConnectionMessageType, Data, inout Data.Index) -> Void)?
 
     let type: UKConnectionType = .udp
     var status: UKConnectionStatus = .notConnected {
@@ -19,12 +20,39 @@ class UKUdpConnectionManager: UKConnectionManager {
     }
 
     func connect() {
-        // TODO: - start interval
+        startTimer()
     }
 
     func disconnect() {
-        // TODO: - stop interval
+        stopTimer()
         status = .notConnected
+    }
+
+    // MARK: - PING
+
+    var timer: Timer?
+
+    func startTimer() {
+        guard timer == nil else {
+            logger.warning("timer is already running")
+            return
+        }
+        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(ping), userInfo: nil, repeats: true)
+        timer?.tolerance = 0.2
+    }
+
+    func stopTimer() {
+        guard timer != nil else {
+            logger.warning("no timer to stop")
+            return
+        }
+
+        timer!.invalidate()
+        timer = nil
+    }
+
+    @objc func ping() {
+        sendUdpMessage(type: .ping)
     }
 
     // MARK: - UDP
@@ -33,15 +61,17 @@ class UKUdpConnectionManager: UKConnectionManager {
     var connection: NWConnection!
     var queue = DispatchQueue.global(qos: .userInitiated)
 
-    convenience init(to host: String, on port: Int) {
-        self.init(
-            to: NWEndpoint.Host(stringLiteral: host),
-            on: NWEndpoint.Port(integerLiteral: NWEndpoint.Port.IntegerLiteralType(port))
-        )
+    static let portNumber: NWEndpoint.Port.IntegerLiteralType = 9999
+    static let port: NWEndpoint.Port = .init(integerLiteral: portNumber)
+    var port: NWEndpoint.Port { Self.port }
+
+    convenience init(to host: String) {
+        self.init(to: NWEndpoint.Host(stringLiteral: host))
     }
 
-    init(to host: NWEndpoint.Host, on port: NWEndpoint.Port) {
-        logger.debug("host: \(host.debugDescription), port: \(port.debugDescription)")
+    init(to host: NWEndpoint.Host) {
+        let _self = self
+        logger.debug("host: \(host.debugDescription), port: \(_self.port.debugDescription)")
 
         connection = NWConnection(host: host, port: port, using: .udp)
         connection.stateUpdateHandler = { [unowned self] newState in
@@ -65,26 +95,37 @@ class UKUdpConnectionManager: UKConnectionManager {
 
     // MARK: - Send Message
 
-    var onMessageReceived: ((UKConnectionMessageType, Data, inout Data.Index) -> Void)?
+    func sendRawData(_ data: Data) {
+        logger.debug("sending udp data [\(data.count) bytes]")
+        connection.send(content: data, completion: NWConnection.SendCompletion.contentProcessed { [unowned self] NWError in
+            guard NWError == nil else {
+                self.logger.error("error sending data: \(NWError)")
+                return
+            }
+            self.logger.debug("sent data")
+        })
+    }
+
+    func sendUdpMessage(type udpMessageType: UKUdpMessageType, data: Data? = nil) {
+        var messageData: Data = .init()
+        if let data {
+            messageData = data
+            if udpMessageType.shouldIncludeDataSize {
+                messageData.insert(UInt8(data.count), at: 0)
+            }
+        }
+        messageData.insert(udpMessageType.rawValue, at: 0)
+
+        logger.debug("sending udp message of type \(udpMessageType.name)")
+
+        sendRawData(messageData)
+    }
 
     func sendMessage(type messageType: UKConnectionMessageType, data: Data) {
         guard let udpMessageType: UKUdpMessageType = .init(connectionMessageType: messageType) else {
             return
         }
-
-        var content: Data = .init(data)
-        if udpMessageType.shouldIncludeDataSize {
-            content.insert(UInt8(data.count), at: 0)
-        }
-        content.insert(udpMessageType.rawValue, at: 0)
-
-        connection.send(content: content, completion: NWConnection.SendCompletion.contentProcessed { [unowned self] NWError in
-            guard NWError == nil else {
-                self.logger.error("error sending \(messageType.name) message: \(NWError)")
-                return
-            }
-            self.logger.debug("sent \(messageType.name) message")
-        })
+        sendUdpMessage(type: udpMessageType, data: data)
     }
 
     // MARK: - Receive Message
@@ -95,8 +136,7 @@ class UKUdpConnectionManager: UKConnectionManager {
                 self.logger.debug("receive complete")
                 if let data {
                     onRawMessageReceived(data: data)
-                }
-                else {
+                } else {
                     self.logger.debug("nil data")
                 }
             }
@@ -114,7 +154,6 @@ class UKUdpConnectionManager: UKConnectionManager {
                 break
             }
 
-            // TODO: - how to properly parse?
             guard let connectionMessageType = udpMessageType.connectionMessageType else {
                 logger.error("uncaught raw udp message type \(udpMessageType.name)")
                 break
