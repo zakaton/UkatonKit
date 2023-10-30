@@ -66,4 +66,26 @@ enum UKUdpMessageType: UInt8 {
             false
         }
     }
+    
+    var connectionMessageType: UKConnectionMessageType? {
+        switch self {
+        case .getDeviceName:
+            .getDeviceName
+        case .setDeviceName:
+            .setDeviceName
+            
+        case .getDeviceType:
+            .getDeviceType
+        case .setDeviceType:
+            .setDeviceType
+            
+        case .getSensorDataConfigurations:
+            .getSensorDataConfigurations
+        case .setSensorDataConfigurations:
+            .setSensorDataConfigurations
+            
+        default:
+            nil
+        }
+    }
 }

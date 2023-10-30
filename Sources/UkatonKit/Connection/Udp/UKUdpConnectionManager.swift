@@ -47,16 +47,16 @@ class UKUdpConnectionManager: UKConnectionManager {
         connection.stateUpdateHandler = { [unowned self] newState in
             logger.debug("new state: \(String(describing: newState))")
             switch newState {
-                case .ready:
-                    self.receiveUDP()
-                case .setup:
-                    break
-                case .cancelled:
-                    break
-                case .preparing:
-                    break
-                default:
-                    logger.error("uncaught state \(String(describing: newState))")
+            case .ready:
+                self.receiveUDP()
+            case .setup:
+                break
+            case .cancelled:
+                break
+            case .preparing:
+                break
+            default:
+                logger.error("uncaught state \(String(describing: newState))")
             }
         }
 
@@ -105,6 +105,21 @@ class UKUdpConnectionManager: UKConnectionManager {
     }
 
     func onRawMessageReceived(data: Data) {
-        // TODO: - FILL
+        var offset: Data.Index = 0
+
+        while offset < data.count {
+            let rawUdpMessageType: UInt8 = data.parse(at: &offset)
+            guard let udpMessageType: UKUdpMessageType = .init(rawValue: rawUdpMessageType) else {
+                logger.error("uncaught raw udp message type \(rawUdpMessageType)")
+                break
+            }
+
+            // TODO: - how to properly parse?
+            guard let connectionMessageType = udpMessageType.connectionMessageType else {
+                logger.error("uncaught raw udp message type \(udpMessageType.name)")
+                break
+            }
+            onMessageReceived?(connectionMessageType, data.suffix(from: offset))
+        }
     }
 }
