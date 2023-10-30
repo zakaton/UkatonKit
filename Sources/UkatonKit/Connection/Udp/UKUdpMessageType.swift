@@ -1,16 +1,18 @@
+import OSLog
 import UkatonMacros
 
 @EnumName
+@StaticLogger
 enum UKUdpMessageType: UInt8 {
     case ping
     
     case batteryLevel
     
-    case getType
-    case setType
+    case getDeviceType
+    case setDeviceType
     
-    case getName
-    case setName
+    case getDeviceName
+    case setDeviceName
     
     case motionCalibration
     
@@ -19,6 +21,49 @@ enum UKUdpMessageType: UInt8 {
     
     case sensorData
     
-    case vibration
+    case setHapticsVibration
     case setRemoteReceivePort
+    
+    init?(connectionMessageType: UKConnectionMessageType) {
+        let udpMessageType: Self? = switch connectionMessageType {
+        case .getDeviceName:
+            .getDeviceName
+        case .setDeviceName:
+            .setDeviceName
+            
+        case .getDeviceType:
+            .getDeviceType
+        case .setDeviceType:
+            .setDeviceType
+            
+        case .getSensorDataConfigurations:
+            .getSensorDataConfigurations
+        case .setSensorDataConfigurations:
+            .setSensorDataConfigurations
+            
+        case .setHapticsVibration:
+            .setHapticsVibration
+        
+        default:
+            nil
+        }
+
+        guard let udpMessageType else {
+            Self.logger.debug("uncaught connection message type \(connectionMessageType.name)")
+            return nil
+        }
+
+        self = udpMessageType
+    }
+    
+    var shouldIncludeDataSize: Bool {
+        switch self {
+        case .setDeviceName,
+             .setHapticsVibration,
+             .setSensorDataConfigurations:
+            true
+        default:
+            false
+        }
+    }
 }

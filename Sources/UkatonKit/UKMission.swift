@@ -41,21 +41,12 @@ public class UKMission: ObservableObject {
     }
 
     @Published public var connectionType: UKConnectionType? = nil
-    @Published public var connectionStatus: UKConnectionStatus = .notConnected
-
-    func sendMessage(type messageType: UKConnectionMessageType, data: Data) throws {
-        guard let connectionManager else {
-            throw UKConnectionManagerMessageError.noConnectionManager
+    var connectionStatus: UKConnectionStatus = .notConnected {
+        didSet {
+            if connectionStatus == .connected && !isFullyInitialized {
+                // TODO: - FILL
+            }
         }
-        guard connectionManager.status == .connected else {
-            throw UKConnectionManagerMessageError.notConnected
-        }
-
-        guard connectionManager.allowedMessageTypes.contains(messageType) else {
-            throw UKConnectionManagerMessageError.messageTypeNotImplemented(messageType)
-        }
-
-        try connectionManager.sendMessage(type: messageType, data: data)
     }
 
     // MARK: - Device Information
@@ -80,16 +71,6 @@ public class UKMission: ObservableObject {
 
     @Published public private(set) var batteryLevel: UKBatteryLevel?
 
-    public func setDeviceType(newDeviceType: UKDeviceType) async throws {
-        try sendMessage(type: .setDeviceType, data: newDeviceType.rawValue.data)
-        // TODO: - wait for deviceType event
-    }
-
-    public func setDeviceName(newDeviceName: String) async throws {
-        try sendMessage(type: .setDeviceName, data: newDeviceName.data)
-        // TODO: - wait for deviceType event
-    }
-
     // MARK: - Motion Calibration
 
     public private(set) var isMotionSensorFullyCalibrated: Bool = false {
@@ -104,21 +85,6 @@ public class UKMission: ObservableObject {
 
     @Published public private(set) var wifiSsid: String?
     @Published public private(set) var wifiPassword: String?
-
-    public func setWifiSsid(newWifiSsid: String) async throws {
-        try sendMessage(type: .setWifiSsid, data: newWifiSsid.data)
-        // TODO: - wait for wifiSsid event
-    }
-
-    public func setWifiPassword(newWifiPassword: String) async throws {
-        try sendMessage(type: .setWifiPassword, data: newWifiPassword.data)
-        // TODO: - wait for wifiPassword event
-    }
-
-    public func setWifiShouldConnect(newShouldConnect: Bool) async throws {
-        try sendMessage(type: .setWifiShouldConnect, data: newShouldConnect.data)
-        // TODO: - wait for shouldConnect event
-    }
 
     // MARK: - Initialization
 
@@ -175,37 +141,5 @@ public class UKMission: ObservableObject {
 
     public static func stopScanningForBluetoothDevices() {
         bluetoothManager.stopScanningForDevices()
-    }
-
-    // MARK: - ConnectionManager Parsing
-
-    func onConnectionMessage(type messageType: UKConnectionMessageType, data: Data) {
-        switch messageType {
-        case .batteryLevel:
-            batteryLevelManager.parseBatteryLevel(data: data)
-
-        case .getDeviceType, .setDeviceType:
-            deviceInformationManager.parseType(data: data)
-        case .getDeviceName, .setDeviceName:
-            deviceInformationManager.parseName(data: data)
-
-        case .getWifiSsid, .setWifiSsid:
-            wifiInformationManager.parseSsid(data: data)
-        case .getWifiPassword, .setWifiPassword:
-            wifiInformationManager.parsePassword(data: data)
-        case .getWifiShouldConnect, .setWifiShouldConnect:
-            wifiInformationManager.parseShouldConnect(data: data)
-        case .wifiIsConnected:
-            wifiInformationManager.parseIsConnected(data: data)
-
-        case .getSensorDataConfiguration, .setSensorDataConfiguration:
-            sensorDataConfigurationsManager.parse(data)
-
-        case .sensorData:
-            sensorDataManager.parse(data)
-
-        default:
-            logger.error("uncaught connection message type \(messageType.name)")
-        }
     }
 }

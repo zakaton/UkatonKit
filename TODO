@@ -1,8 +1,18 @@
-UkatonMission messages
 UdpConnectionManager
-BluetoothManager
-    storing discovered devices
-    creating bluetoothmanager from discovered device
+    receive message
+    ping
+BluetoothDiscoveryView
+    list devices
+DeviceView
+    toggle connection
+    device information
+SensorData View
+    raw data
+3DView
+    toggle Quaternion/LinearAcceleration data
+GraphView
+    line graphs
+UDPView
+    input ip address and find device
+SensorDataView
 Missions
-
-try using Observers

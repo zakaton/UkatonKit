@@ -5,6 +5,8 @@ import UkatonMacros
 
 @StaticLogger
 class UKBluetoothConnectionManager: NSObject, UKConnectionManager, ObservableObject, CBPeripheralDelegate {
+    // MARK: - UKConnectionManager
+
     static let allowedMessageTypes: [UKConnectionMessageType] = UKConnectionMessageType.allCases
 
     var onStatusUpdated: ((UKConnectionStatus) -> Void)?
@@ -12,7 +14,9 @@ class UKBluetoothConnectionManager: NSObject, UKConnectionManager, ObservableObj
     let type: UKConnectionType = .bluetooth
     var status: UKConnectionStatus = .notConnected {
         didSet {
-            onStatusUpdated?(status)
+            if status != oldValue {
+                onStatusUpdated?(status)
+            }
         }
     }
 
@@ -161,12 +165,6 @@ class UKBluetoothConnectionManager: NSObject, UKConnectionManager, ObservableObj
 
             logger.debug("updated notification state for characteristic \(characteristicIdentifier.name): \(characteristic.isNotifying)")
         }
-    }
-
-    // MARK: - Device Initialization
-
-    func initializeDevice() {
-        // TODO: - FILL
     }
 
     // MARK: - Read Values

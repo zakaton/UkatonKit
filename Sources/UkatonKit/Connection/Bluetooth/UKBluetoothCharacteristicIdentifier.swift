@@ -46,7 +46,7 @@ enum UKBluetoothCharacteristicIdentifier: String, CaseIterable, UKBluetoothConta
         case .motionCalibration:
             return .motionCalibration
         case .sensorDataConfiguration:
-            return .getSensorDataConfiguration
+            return .getSensorDataConfigurations
         case .sensorData:
             return .sensorData
         case .wifiSsid:
@@ -66,9 +66,6 @@ enum UKBluetoothCharacteristicIdentifier: String, CaseIterable, UKBluetoothConta
 
     init?(connectionMessageType: UKConnectionMessageType) {
         let serviceIdentifier: Self? = switch connectionMessageType {
-        case .batteryLevel:
-            .batteryLevel
-
         case .getDeviceName, .setDeviceName:
             .deviceName
         case .getDeviceType, .setDeviceType:

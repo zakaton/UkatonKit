@@ -72,7 +72,7 @@ extension Data {
 
         let nameDataRange = Data.Index(offset) ..< Data.Index(finalOffset)
         let nameData = subdata(in: nameDataRange)
-        guard let newName = String(data: nameData, encoding: .ascii) else {
+        guard let newName = String(data: nameData, encoding: .utf8) else {
             return ""
         }
         return newName
@@ -83,7 +83,7 @@ extension Data {
 
 extension String {
     var data: Data {
-        return self.data(using: .ascii)!
+        return self.data(using: .utf8)!
     }
 }
 

@@ -6,7 +6,7 @@ enum UKConnectionMessageType: CaseIterable {
     case getDeviceType, setDeviceType
     case getDeviceName, setDeviceName
     case motionCalibration
-    case getSensorDataConfiguration, setSensorDataConfiguration
+    case getSensorDataConfigurations, setSensorDataConfigurations
     case sensorData
     case getWifiSsid, setWifiSsid
     case getWifiPassword, setWifiPassword

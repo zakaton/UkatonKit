@@ -9,9 +9,10 @@ protocol UKConnectionManager {
     var onMessageReceived: ((UKConnectionMessageType, Data) -> Void)? { get set }
     func sendMessage(type: UKConnectionMessageType, data: Data) throws
 
-    func initializeDevice()
-
     static var allowedMessageTypes: [UKConnectionMessageType] { get }
+
+    func connect()
+    func disconnect()
 }
 
 extension UKConnectionManager {
