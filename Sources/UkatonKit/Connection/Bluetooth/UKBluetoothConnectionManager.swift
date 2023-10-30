@@ -22,7 +22,7 @@ class UKBluetoothConnectionManager: NSObject, UKConnectionManager, ObservableObj
 
     // MARK: - Messaging
 
-    var onMessageReceived: ((UKConnectionMessageType, Data) -> Void)?
+    var onMessageReceived: ((UKConnectionMessageType, Data, inout Data.Index) -> Void)?
 
     func sendMessage(type messageType: UKConnectionMessageType, data: Data) throws {
         guard let peripheral else {
@@ -189,7 +189,8 @@ class UKBluetoothConnectionManager: NSObject, UKConnectionManager, ObservableObj
         logger.debug("received \(data.count) bytes from characteristic \(characteristicIdentifier.name)")
 
         if let onMessageReceived {
-            onMessageReceived(characteristicIdentifier.connectionMessageType, data)
+            var offset: Data.Index = 0
+            onMessageReceived(characteristicIdentifier.connectionMessageType, data, &offset)
         }
     }
 }

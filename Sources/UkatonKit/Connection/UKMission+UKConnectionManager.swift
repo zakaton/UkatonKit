@@ -3,7 +3,9 @@ import Foundation
 extension UKMission {
     // MARK: - ConnectionManager Parsing
 
-    func onConnectionMessage(type messageType: UKConnectionMessageType, data: Data) {
+    func onConnectionMessage(type messageType: UKConnectionMessageType, data: Data, at offset: inout Data.Index) {
+        // TODO: - make parsing return offset
+
         switch messageType {
         case .batteryLevel:
             batteryLevelManager.parseBatteryLevel(data: data)

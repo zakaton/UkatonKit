@@ -65,7 +65,7 @@ class UKUdpConnectionManager: UKConnectionManager {
 
     // MARK: - Send Message
 
-    var onMessageReceived: ((UKConnectionMessageType, Data) -> Void)?
+    var onMessageReceived: ((UKConnectionMessageType, Data, inout Data.Index) -> Void)?
 
     func sendMessage(type messageType: UKConnectionMessageType, data: Data) {
         guard let udpMessageType: UKUdpMessageType = .init(connectionMessageType: messageType) else {
@@ -119,7 +119,13 @@ class UKUdpConnectionManager: UKConnectionManager {
                 logger.error("uncaught raw udp message type \(udpMessageType.name)")
                 break
             }
-            onMessageReceived?(connectionMessageType, data.suffix(from: offset))
+
+            guard let onMessageReceived else {
+                logger.error("no onMessageReceived callback")
+                break
+            }
+
+            onMessageReceived(connectionMessageType, data, &offset)
         }
     }
 }

@@ -29,8 +29,8 @@ public class UKMission: ObservableObject {
         }
         didSet {
             if var connectionManager {
-                connectionManager.onMessageReceived = { [unowned self] type, data in
-                    self.onConnectionMessage(type: type, data: data)
+                connectionManager.onMessageReceived = { [unowned self] type, data, offset in
+                    self.onConnectionMessage(type: type, data: data, at: &offset)
                 }
                 connectionManager.onStatusUpdated = { [unowned self] in
                     self.connectionStatus = $0

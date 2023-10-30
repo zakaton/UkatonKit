@@ -1,5 +1,4 @@
 UdpConnectionManager
-    parseMessage
     ping
 BluetoothDiscoveryView
     list devices
