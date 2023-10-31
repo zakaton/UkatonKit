@@ -4,8 +4,23 @@ import SwiftUI
 // TODO: - display list of device names
 
 struct UKBluetoothDiscoveryView: View {
+    @ObservedObject private var bluetoothManager: UKBluetoothManager = .shared
     var body: some View {
-        Text("Hello")
+        NavigationStack {
+            List {
+                ForEach(bluetoothManager.discoveredPeripherals) { _ in
+                    Text("LOL")
+                }
+                Text(bluetoothManager.isScanning ? "scanning" : "not scanning")
+
+                Button {
+                    bluetoothManager.toggleDeviceScan()
+                } label: {
+                    Text(bluetoothManager.isScanning ? "stop scanning" : "scan")
+                }
+            }
+            .navigationTitle("Ukaton Mission")
+        }
     }
 }
 

@@ -46,13 +46,14 @@ class BluetoothViewModel: NSObject, ObservableObject {
 
     override init() {
         super.init()
-        // self.centralManager = .init(delegate: self, queue: .main)
+        self.centralManager = .init(delegate: self, queue: .main)
     }
 }
 
 extension BluetoothViewModel: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         if central.state == .poweredOn {
+            print("scanning")
             centralManager.scanForPeripherals(withServices: ServiceUUID.uuids)
         }
     }

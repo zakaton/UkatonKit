@@ -130,16 +130,4 @@ public class UKMission: ObservableObject {
 
         // TODO: - FILL
     }
-
-    // MARK: - Bluetooth Connection
-
-    static let bluetoothManager: UKBluetoothManager = .shared
-
-    public static func scanForBluetoothDevices() {
-        bluetoothManager.scanForDevices()
-    }
-
-    public static func stopScanningForBluetoothDevices() {
-        bluetoothManager.stopScanningForDevices()
-    }
 }

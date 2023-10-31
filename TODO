@@ -1,3 +1,5 @@
+expose isScanning to SwiftUI
+
 BluetoothDiscoveryView
     list devices
 DeviceView

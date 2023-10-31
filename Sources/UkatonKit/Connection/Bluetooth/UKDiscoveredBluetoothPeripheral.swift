@@ -1,9 +1,10 @@
 import CoreBluetooth
 
-typealias UKBluetoothPeripheralAdvertisementData = [String: Any]
+public typealias UKBluetoothPeripheralAdvertisementData = [String: Any]
 
-struct UKDiscoveredBluetoothPeripheral {
-    let peripheral: CBPeripheral
-    let RSSI: NSNumber
-    let advertisementData: UKBluetoothPeripheralAdvertisementData
+public struct UKDiscoveredBluetoothPeripheral: Identifiable {
+    public let peripheral: CBPeripheral
+    public let RSSI: NSNumber
+    public let advertisementData: UKBluetoothPeripheralAdvertisementData
+    public var id: UUID { self.peripheral.identifier }
 }

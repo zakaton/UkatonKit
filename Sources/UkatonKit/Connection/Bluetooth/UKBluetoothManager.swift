@@ -25,18 +25,20 @@ extension Array {
 
 @StaticLogger
 @Singleton
-class UKBluetoothManager: NSObject, ObservableObject {
+public class UKBluetoothManager: NSObject, ObservableObject {
     lazy var centralManager: CBCentralManager = .init(delegate: self, queue: .main)
 
     // MARK: - Scanning
 
-    var discoveredPeripherals: [UKDiscoveredBluetoothPeripheral] = []
+    @Published public private(set) var discoveredPeripherals: [UKDiscoveredBluetoothPeripheral] = []
+    @Published public private(set) var isScanning: Bool = false
 
     private var shouldScanForDevicesWhenPoweredOn: Bool = false
-    func scanForDevices() {
+    public func scanForDevices() {
         if centralManager.state == .poweredOn {
             discoveredPeripherals.removeAll()
             centralManager.scanForPeripherals(withServices: UKBluetoothServiceIdentifier.allUUIDs)
+            isScanning = true
             logger.debug("scanning for devices...")
         }
         else {
@@ -45,24 +47,28 @@ class UKBluetoothManager: NSObject, ObservableObject {
         }
     }
 
-    func stopScanningForDevices() {
+    public func stopScanningForDevices() {
         if centralManager.isScanning {
             centralManager.stopScan()
+            isScanning = false
             logger.debug("stopped scanning for devices")
         }
     }
 
-    // MARK: - Callbacks
-
-    var onDeviceDiscovered: ((CBPeripheral, [String: Any], NSNumber) -> Void)?
-    var onDeviceConnected: ((UKBluetoothConnectionManager) -> Void)?
-    var onDeviceDisconnected: ((UKBluetoothConnectionManager) -> Void)?
+    public func toggleDeviceScan() {
+        if centralManager.isScanning {
+            stopScanningForDevices()
+        }
+        else {
+            scanForDevices()
+        }
+    }
 }
 
 extension UKBluetoothManager: CBCentralManagerDelegate {
     // MARK: - State
 
-    func centralManagerDidUpdateState(_ central: CBCentralManager) {
+    public func centralManagerDidUpdateState(_ central: CBCentralManager) {
         logger.debug("centralManager state: \(String(describing: central.state))")
         if central.state == .poweredOn {
             logger.debug("centralManager is powered on")
@@ -75,19 +81,19 @@ extension UKBluetoothManager: CBCentralManagerDelegate {
 
     // MARK: - Scanning
 
-    func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: UKBluetoothPeripheralAdvertisementData, rssi RSSI: NSNumber) {
+    public func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: UKBluetoothPeripheralAdvertisementData, rssi RSSI: NSNumber) {
         discoveredPeripherals.replaceOrAppend(.init(peripheral: peripheral, RSSI: RSSI, advertisementData: advertisementData), firstMatchingKeyPath: \.peripheral.identifier)
     }
 
     // MARK: - Connection
 
-    func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
+    public func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         if let bluetoothConnectionManager = peripheral.delegate as? UKBluetoothConnectionManager {
             bluetoothConnectionManager.onConnection()
         }
     }
 
-    func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
+    public func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         if let bluetoothConnectionManager = peripheral.delegate as? UKBluetoothConnectionManager {
             bluetoothConnectionManager.onDisconnection()
         }
