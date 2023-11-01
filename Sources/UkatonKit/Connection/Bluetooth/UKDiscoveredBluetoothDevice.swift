@@ -8,7 +8,7 @@ public struct UKDiscoveredBluetoothDevice: Identifiable {
     public let advertisementData: UKBluetoothPeripheralAdvertisementData
     public let type: UKDeviceType
     public let isConnectedToWifi: Bool
-    public let ipAddress: String
+    public private(set) var ipAddress: String?
 
     public var id: UUID { self.peripheral.identifier }
 
@@ -25,7 +25,9 @@ public struct UKDiscoveredBluetoothDevice: Identifiable {
 
         let serviceData = advertisementData["kCBAdvDataServiceData"] as! [CBUUID: Any]
         let rawServiceData = serviceData[UKBluetoothServiceIdentifier.main.uuid] as! Data
-        print(rawServiceData)
+
+        // print(rssi)
+        // print(advertisementData)
 
         var offset: Data.Index = 0
         self.type = .init(rawValue: rawServiceData[offset])!
@@ -33,6 +35,8 @@ public struct UKDiscoveredBluetoothDevice: Identifiable {
         self.isConnectedToWifi = rawServiceData[0] != 0
         offset += 1
 
-        self.ipAddress = rawServiceData.parseString(offset: &offset, until: rawServiceData.count)
+        if self.isConnectedToWifi {
+            self.ipAddress = rawServiceData.parseString(offset: &offset, until: rawServiceData.count)
+        }
     }
 }

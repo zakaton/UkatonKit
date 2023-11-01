@@ -1,10 +1,6 @@
 DeviceRow
-    name
-    rssi
-    ip address
-    type
-    isConnected
-    isWifiConnected
+    dynamcally update
+    update timestamp
 DeviceView
     toggle connection
     device information

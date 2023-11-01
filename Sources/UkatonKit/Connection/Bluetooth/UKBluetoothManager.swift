@@ -30,13 +30,13 @@ public class UKBluetoothManager: NSObject, ObservableObject {
 
     // MARK: - Scanning
 
-    @Published public private(set) var discoveredPeripherals: [UKDiscoveredBluetoothDevice] = []
+    @Published public private(set) var discoveredDevices: [UKDiscoveredBluetoothDevice] = []
     @Published public private(set) var isScanning: Bool = false
 
     private var shouldScanForDevicesWhenPoweredOn: Bool = false
     public func scanForDevices() {
         if centralManager.state == .poweredOn {
-            discoveredPeripherals.removeAll()
+            discoveredDevices.removeAll()
             centralManager.scanForPeripherals(withServices: [UKBluetoothServiceIdentifier.main.uuid])
             isScanning = true
             logger.debug("scanning for devices...")
@@ -82,7 +82,7 @@ extension UKBluetoothManager: CBCentralManagerDelegate {
     // MARK: - Scanning
 
     public func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: UKBluetoothPeripheralAdvertisementData, rssi RSSI: NSNumber) {
-        discoveredPeripherals.replaceOrAppend(.init(peripheral: peripheral, rssi: RSSI, advertisementData: advertisementData), firstMatchingKeyPath: \.peripheral.identifier)
+        discoveredDevices.replaceOrAppend(.init(peripheral: peripheral, rssi: RSSI, advertisementData: advertisementData), firstMatchingKeyPath: \.peripheral.identifier)
     }
 
     // MARK: - Connection
