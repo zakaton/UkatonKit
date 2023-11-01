@@ -4,10 +4,38 @@ public typealias UKBluetoothPeripheralAdvertisementData = [String: Any]
 
 public struct UKDiscoveredBluetoothDevice: Identifiable {
     let peripheral: CBPeripheral
-    public let rssi: NSNumber
-    public let advertisementData: UKBluetoothPeripheralAdvertisementData
-    public let type: UKDeviceType
-    public let isConnectedToWifi: Bool
+    public internal(set) var rssi: NSNumber
+    var advertisementData: UKBluetoothPeripheralAdvertisementData? {
+        didSet {
+            guard let advertisementData else { return }
+
+            let serviceData = advertisementData["kCBAdvDataServiceData"] as! [CBUUID: Any]
+            let rawServiceData = serviceData[UKBluetoothServiceIdentifier.main.uuid] as! Data
+
+            self.timestamp = advertisementData["kCBAdvDataTimestamp"] as! Double
+
+            var offset: Data.Index = 0
+            self.type = .init(rawValue: rawServiceData[offset])!
+            offset += 1
+            self.isConnectedToWifi = rawServiceData[0] != 0
+            offset += 1
+
+            if self.isConnectedToWifi {
+                self.ipAddress = rawServiceData.parseString(offset: &offset, until: rawServiceData.count)
+            }
+        }
+    }
+
+    public private(set) var type: UKDeviceType?
+    public private(set) var isConnectedToWifi: Bool = false
+    public private(set) var timestamp: Double = .nan {
+        didSet {
+            self.timestampDifference_ms = (self.timestamp - oldValue) * 1000
+        }
+    }
+
+    public private(set) var timestampDifference_ms: Double = .nan
+
     public private(set) var ipAddress: String?
 
     public var id: UUID { self.peripheral.identifier }
@@ -21,22 +49,8 @@ public struct UKDiscoveredBluetoothDevice: Identifiable {
     init(peripheral: CBPeripheral, rssi: NSNumber, advertisementData: UKBluetoothPeripheralAdvertisementData) {
         self.peripheral = peripheral
         self.rssi = rssi
-        self.advertisementData = advertisementData
-
-        let serviceData = advertisementData["kCBAdvDataServiceData"] as! [CBUUID: Any]
-        let rawServiceData = serviceData[UKBluetoothServiceIdentifier.main.uuid] as! Data
-
-        // print(rssi)
-        // print(advertisementData)
-
-        var offset: Data.Index = 0
-        self.type = .init(rawValue: rawServiceData[offset])!
-        offset += 1
-        self.isConnectedToWifi = rawServiceData[0] != 0
-        offset += 1
-
-        if self.isConnectedToWifi {
-            self.ipAddress = rawServiceData.parseString(offset: &offset, until: rawServiceData.count)
+        defer {
+            self.advertisementData = advertisementData
         }
     }
 }
