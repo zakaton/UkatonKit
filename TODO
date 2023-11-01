@@ -4,6 +4,7 @@ DeviceRow
     ip address
     type
     isConnected
+    isWifiConnected
 DeviceView
     toggle connection
     device information

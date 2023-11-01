@@ -1,6 +1,6 @@
 import UkatonMacros
 
-@EnumName
+@EnumName(accessLevel: "public")
 public enum UKDeviceType: UInt8, CaseIterable {
     case motionModule
     case leftInsole

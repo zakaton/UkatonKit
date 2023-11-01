@@ -3,7 +3,7 @@ import CoreBluetooth
 public typealias UKBluetoothPeripheralAdvertisementData = [String: Any]
 
 public struct UKDiscoveredBluetoothPeripheral: Identifiable {
-    public let peripheral: CBPeripheral
+    let peripheral: CBPeripheral
     public let rssi: NSNumber
     public let advertisementData: UKBluetoothPeripheralAdvertisementData
     public let type: UKDeviceType
@@ -12,8 +12,11 @@ public struct UKDiscoveredBluetoothPeripheral: Identifiable {
 
     public var id: UUID { self.peripheral.identifier }
 
+    public var name: String { self.peripheral.name! }
+    public var state: CBPeripheralState { self.peripheral.state }
+    public var isConnected: Bool { self.state == .connected && self.connectionManager != nil }
+
     var connectionManager: UKBluetoothConnectionManager? { self.peripheral.delegate as? UKBluetoothConnectionManager }
-    public var isConnected: Bool { self.connectionManager != nil }
 
     init(peripheral: CBPeripheral, rssi: NSNumber, advertisementData: UKBluetoothPeripheralAdvertisementData) {
         self.peripheral = peripheral
