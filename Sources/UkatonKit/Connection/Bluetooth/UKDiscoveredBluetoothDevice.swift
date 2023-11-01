@@ -2,7 +2,7 @@ import CoreBluetooth
 
 public typealias UKBluetoothPeripheralAdvertisementData = [String: Any]
 
-public struct UKDiscoveredBluetoothPeripheral: Identifiable {
+public struct UKDiscoveredBluetoothDevice: Identifiable {
     let peripheral: CBPeripheral
     public let rssi: NSNumber
     public let advertisementData: UKBluetoothPeripheralAdvertisementData

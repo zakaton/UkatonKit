@@ -30,7 +30,7 @@ public class UKBluetoothManager: NSObject, ObservableObject {
 
     // MARK: - Scanning
 
-    @Published public private(set) var discoveredPeripherals: [UKDiscoveredBluetoothPeripheral] = []
+    @Published public private(set) var discoveredPeripherals: [UKDiscoveredBluetoothDevice] = []
     @Published public private(set) var isScanning: Bool = false
 
     private var shouldScanForDevicesWhenPoweredOn: Bool = false
