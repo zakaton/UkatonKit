@@ -1,7 +1,9 @@
-expose isScanning to SwiftUI
-
-BluetoothDiscoveryView
-    list devices
+DeviceRow
+    name
+    rssi
+    ip address
+    type
+    isConnected
 DeviceView
     toggle connection
     device information

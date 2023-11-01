@@ -15,7 +15,7 @@ protocol UKBluetoothContainerIdentifier: Hashable, CaseIterable, RawRepresentabl
 extension UKBluetoothContainerIdentifier {
     var uuidString: String {
         switch name {
-        case "battery level":
+        case "main", "battery level":
             rawValue
         default:
             "5691eddf-\(rawValue)-4420-b7a5-bb8751ab5181"
