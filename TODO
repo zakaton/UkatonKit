@@ -1,7 +1,10 @@
-DeviceRow
-    update timestamp
+UKDiscoveredDevice.connect
+    specify type
+    
+bluetooth connect
+wifi connect
 DeviceView
-    toggle connection
+    connect via wifi or bluetooth
     device information
 SensorData View
     raw data

@@ -30,14 +30,14 @@ public class UKBluetoothManager: NSObject, ObservableObject {
 
     // MARK: - Scanning
 
-    @Published public private(set) var discoveredDevices: [UKDiscoveredBluetoothDevice] = []
+    @Published public var discoveredDevices: [UKDiscoveredBluetoothDevice] = []
     @Published public private(set) var isScanning: Bool = false
 
     private var shouldScanForDevicesWhenPoweredOn: Bool = false
     public func scanForDevices() {
         if centralManager.state == .poweredOn {
             discoveredDevices.removeAll()
-            centralManager.scanForPeripherals(withServices: [UKBluetoothServiceIdentifier.main.uuid])
+            centralManager.scanForPeripherals(withServices: [UKBluetoothServiceIdentifier.main.uuid], options: [CBCentralManagerScanOptionAllowDuplicatesKey: true])
             isScanning = true
             logger.debug("scanning for devices...")
         }

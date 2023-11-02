@@ -1,10 +1,25 @@
 import CoreBluetooth
+import OSLog
+import UkatonMacros
 
 public typealias UKBluetoothPeripheralAdvertisementData = [String: Any]
 
-public struct UKDiscoveredBluetoothDevice: Identifiable {
+@StaticLogger
+public struct UKDiscoveredBluetoothDevice {
+    // MARK: - Stored Properties
+
     let peripheral: CBPeripheral
     public internal(set) var rssi: NSNumber
+
+    // MARK: - Peripheral Getters
+
+    public var name: String { self.peripheral.name! }
+    public var state: CBPeripheralState { self.peripheral.state }
+    var connectionManager: UKBluetoothConnectionManager? { self.peripheral.delegate as? UKBluetoothConnectionManager }
+    public var isConnected: Bool { self.state == .connected && self.connectionManager != nil }
+
+    // MARK: - Parsing Advertisement Data
+
     var advertisementData: UKBluetoothPeripheralAdvertisementData? {
         didSet {
             guard let advertisementData else { return }
@@ -26,8 +41,11 @@ public struct UKDiscoveredBluetoothDevice: Identifiable {
         }
     }
 
+    // MARK: - Parsed Properties
+
     public private(set) var type: UKDeviceType?
     public private(set) var isConnectedToWifi: Bool = false
+    public private(set) var ipAddress: String?
     public private(set) var timestamp: Double = .nan {
         didSet {
             self.timestampDifference_ms = (self.timestamp - oldValue) * 1000
@@ -36,15 +54,7 @@ public struct UKDiscoveredBluetoothDevice: Identifiable {
 
     public private(set) var timestampDifference_ms: Double = .nan
 
-    public private(set) var ipAddress: String?
-
-    public var id: UUID { self.peripheral.identifier }
-
-    public var name: String { self.peripheral.name! }
-    public var state: CBPeripheralState { self.peripheral.state }
-    public var isConnected: Bool { self.state == .connected && self.connectionManager != nil }
-
-    var connectionManager: UKBluetoothConnectionManager? { self.peripheral.delegate as? UKBluetoothConnectionManager }
+    // MARK: - init
 
     init(peripheral: CBPeripheral, rssi: NSNumber, advertisementData: UKBluetoothPeripheralAdvertisementData) {
         self.peripheral = peripheral
@@ -52,5 +62,27 @@ public struct UKDiscoveredBluetoothDevice: Identifiable {
         defer {
             self.advertisementData = advertisementData
         }
+    }
+
+    // MARK: - connect
+
+    public func connect(type: UKConnectionType) {
+        guard self.isConnected else {
+            logger.error("device is already connected")
+            return
+        }
+        guard type.requiresWifi, !self.isConnectedToWifi else {
+            logger.error("device is already connected")
+            return
+        }
+    }
+}
+
+extension UKDiscoveredBluetoothDevice: Identifiable, Hashable {
+    public var id: UUID { self.peripheral.identifier }
+    public func hash(into hasher: inout Hasher) { hasher.combine(self.id) }
+
+    public static func == (lhs: UKDiscoveredBluetoothDevice, rhs: UKDiscoveredBluetoothDevice) -> Bool {
+        lhs.id == rhs.id
     }
 }
