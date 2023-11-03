@@ -1,8 +1,9 @@
 UKDiscoveredDevice.connect
-    specify type
-    
-bluetooth connect
-wifi connect
+    add to UKMission static array of connected devices(?)
+    disconnect
+test bluetooth connect
+test wifi connect
+change UKMission to struct (?)
 DeviceView
     connect via wifi or bluetooth
     device information

@@ -36,7 +36,11 @@ public struct UKDiscoveredBluetoothDevice {
             offset += 1
 
             if self.isConnectedToWifi {
-                self.ipAddress = rawServiceData.parseString(offset: &offset, until: rawServiceData.count)
+                var ipAddressBytes: [UInt8] = []
+                for _ in 0 ..< 4 {
+                    ipAddressBytes.append(rawServiceData.parse(at: &offset))
+                }
+                self.ipAddress = ipAddressBytes.map { String($0) }.joined(separator: ".")
             }
         }
     }
@@ -66,15 +70,22 @@ public struct UKDiscoveredBluetoothDevice {
 
     // MARK: - connect
 
-    public func connect(type: UKConnectionType) {
+    public func connect(type connectionType: UKConnectionType = .bluetooth) throws -> UKMission {
         guard self.isConnected else {
-            logger.error("device is already connected")
-            return
+            throw UKDiscoveredBluetoothDeviceError.connectionError("device is already connected")
         }
-        guard type.requiresWifi, !self.isConnectedToWifi else {
-            logger.error("device is already connected")
-            return
+        guard !connectionType.requiresWifi || (self.isConnectedToWifi && self.ipAddress != nil) else {
+            throw UKDiscoveredBluetoothDeviceError.connectionError("device is not connected to wifi")
         }
+
+        let connectionManager: UKConnectionManager = switch connectionType {
+        case .bluetooth:
+            UKBluetoothConnectionManager(peripheral: self.peripheral)
+        case .udp:
+            UKUdpConnectionManager(ipAddress: self.ipAddress!)
+        }
+
+        return .init(connectionManager: connectionManager)
     }
 }
 

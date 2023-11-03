@@ -88,7 +88,11 @@ public class UKMission: ObservableObject {
 
     // MARK: - Initialization
 
-    init() {
+    init(connectionManager: UKConnectionManager) {
+        defer {
+            self.connectionManager = connectionManager
+        }
+
         // MARK: - Battery Level Callbacks
 
         batteryLevelManager.onBatteryLevelUpdated = {

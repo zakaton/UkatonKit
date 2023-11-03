@@ -65,11 +65,11 @@ class UKUdpConnectionManager: UKConnectionManager {
     static let port: NWEndpoint.Port = .init(integerLiteral: portNumber)
     var port: NWEndpoint.Port { Self.port }
 
-    convenience init(to host: String) {
-        self.init(to: NWEndpoint.Host(stringLiteral: host))
+    convenience init(ipAddress host: String) {
+        self.init(ipAddress: NWEndpoint.Host(stringLiteral: host))
     }
 
-    init(to host: NWEndpoint.Host) {
+    init(ipAddress host: NWEndpoint.Host) {
         let _self = self
         logger.debug("host: \(host.debugDescription), port: \(_self.port.debugDescription)")
 
