@@ -5,6 +5,8 @@ import UkatonMacros
 
 @StaticLogger
 class UKUdpConnectionManager: UKConnectionManager {
+    var id: String { ipAddress }
+
     static let allowedMessageTypes: [UKConnectionMessageType] = UKConnectionMessageType.allCases.filter { $0.name.contains("wifi") }
 
     var onStatusUpdated: ((UKConnectionStatus) -> Void)?
@@ -57,19 +59,19 @@ class UKUdpConnectionManager: UKConnectionManager {
 
     // MARK: - UDP
 
-    var listener: NWListener!
     var connection: NWConnection!
+    let ipAddress: String!
     var queue = DispatchQueue.global(qos: .userInitiated)
 
     static let portNumber: NWEndpoint.Port.IntegerLiteralType = 9999
     static let port: NWEndpoint.Port = .init(integerLiteral: portNumber)
     var port: NWEndpoint.Port { Self.port }
 
-    convenience init(ipAddress host: String) {
-        self.init(ipAddress: NWEndpoint.Host(stringLiteral: host))
-    }
+    init(ipAddress: String) {
+        self.ipAddress = ipAddress
 
-    init(ipAddress host: NWEndpoint.Host) {
+        let host: NWEndpoint.Host = .init(stringLiteral: self.ipAddress)
+
         let _self = self
         logger.debug("host: \(host.debugDescription), port: \(_self.port.debugDescription)")
 

@@ -1,11 +1,11 @@
-setting initial deviceinformation from connectionManager?
-
 connect
 disconnect
 change connection
 
 test bluetooth connect
 test wifi connect
+
+remove from discovered devices on a timer (every second)
 
 buttons to reconnect via ble/wifi (instead of disconnect)
 

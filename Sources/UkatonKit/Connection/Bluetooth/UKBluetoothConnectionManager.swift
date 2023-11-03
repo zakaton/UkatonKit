@@ -5,6 +5,8 @@ import UkatonMacros
 
 @StaticLogger
 class UKBluetoothConnectionManager: NSObject, UKConnectionManager, ObservableObject, CBPeripheralDelegate {
+    var id: String { peripheral?.identifier.uuidString ?? "" }
+
     // MARK: - UKConnectionManager
 
     static let allowedMessageTypes: [UKConnectionMessageType] = UKConnectionMessageType.allCases

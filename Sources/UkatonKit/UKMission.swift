@@ -20,7 +20,7 @@ public class UKMission: ObservableObject {
 
     // MARK: - Connection
 
-    var connectionManager: UKConnectionManager? {
+    var connectionManager: (any UKConnectionManager)? {
         willSet {
             if connectionManager != nil {
                 connectionManager?.disconnect()
@@ -41,7 +41,21 @@ public class UKMission: ObservableObject {
         }
     }
 
-    @Published public var connectionType: UKConnectionType? = nil
+    @Published public var connectionType: UKConnectionType? = nil {
+        didSet {
+            switch connectionType {
+            case .bluetooth:
+                break
+            case .udp:
+                if let udpConnectionManager = connectionManager as? UKUdpConnectionManager {
+                    ipAddress = udpConnectionManager.ipAddress
+                }
+            case nil:
+                break
+            }
+        }
+    }
+
     var connectionStatus: UKConnectionStatus = .notConnected {
         didSet {
             if connectionStatus == .connected && !isFullyInitialized {
@@ -102,6 +116,7 @@ public class UKMission: ObservableObject {
 
     @Published public private(set) var wifiSsid: String?
     @Published public private(set) var wifiPassword: String?
+    @Published public private(set) var ipAddress: String?
 
     // MARK: - Initialization
 
@@ -132,6 +147,9 @@ public class UKMission: ObservableObject {
         wifiInformationManager.onPasswordUpdated = {
             [unowned self] in self.wifiPassword = $0
         }
+        wifiInformationManager.onIpAddresssUpdated = {
+            [unowned self] in self.ipAddress = $0
+        }
 
         // MARK: - Motion Calibration Callbacks
 
@@ -147,10 +165,10 @@ public class UKMission: ObservableObject {
 
         // TODO: - FILL
 
-        UKMissionManager.shared.missions.append(self)
+        UKMissionsManager.shared.missions.append(self)
     }
 
-    convenience init(connectionManager: UKConnectionManager) {
+    convenience init(connectionManager: any UKConnectionManager) {
         defer {
             self.connectionManager = connectionManager
         }
@@ -162,5 +180,23 @@ public class UKMission: ObservableObject {
             self.connectionManager = UKUdpConnectionManager(ipAddress: ipAddress)
         }
         self.init()
+    }
+}
+
+extension UKMission: Identifiable {
+    public var id: String {
+        connectionManager?.id ?? ""
+    }
+}
+
+extension UKMission: Hashable {
+    public func hash(into hasher: inout Hasher) { hasher.combine(id) }
+
+    public static func == (lhs: UKMission, rhs: UKMission) -> Bool {
+        guard let lhsType = lhs.connectionType, let rhsType = lhs.connectionType, lhsType == rhsType else {
+            return false
+        }
+
+        return !lhs.id.isEmpty && lhs.id == rhs.id
     }
 }

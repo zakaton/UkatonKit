@@ -76,7 +76,7 @@ struct UKWifiInformationManager {
 
     // MARK: - Is Connected
 
-    private var isConnected: Bool? {
+    var isConnected: Bool? {
         didSet {
             onConnectionUpdated?(isConnected)
         }
@@ -93,6 +93,31 @@ struct UKWifiInformationManager {
     mutating func parseIsConnected(data: Data) {
         var offset: Data.Index = 0
         parseIsConnected(data: data, at: &offset)
+    }
+
+    // MARK: - IP Address
+
+    var ipAddress: String? {
+        didSet {
+            onIpAddresssUpdated?(ipAddress)
+        }
+    }
+
+    public var onIpAddresssUpdated: ((String?) -> Void)?
+
+    mutating func parseIpAddress(data: Data, at offset: inout Data.Index, until finalOffset: Data.Index) {
+        let newIpAddress = data.parseString(offset: &offset, until: finalOffset)
+        logger.debug("new ip address \"\(newIpAddress)\"")
+        ipAddress = newIpAddress
+    }
+
+    mutating func parseIpAddress(data: Data, at offset: inout Data.Index) {
+        parseIpAddress(data: data, at: &offset, until: data.count)
+    }
+
+    mutating func parseIpAddress(data: Data) {
+        var offset: Data.Index = 0
+        parseIpAddress(data: data, at: &offset, until: data.count)
     }
 
     // MARK: - Reset

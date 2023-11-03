@@ -1,6 +1,7 @@
 import Foundation
 
-protocol UKConnectionManager {
+protocol UKConnectionManager: Identifiable & Hashable {
+    var id: String { get }
     var type: UKConnectionType { get }
     var status: UKConnectionStatus { get }
 
@@ -17,4 +18,11 @@ protocol UKConnectionManager {
 
 extension UKConnectionManager {
     var allowedMessageTypes: [UKConnectionMessageType] { Self.allowedMessageTypes }
+}
+
+extension UKConnectionManager {
+    public func hash(into hasher: inout Hasher) { hasher.combine(id) }
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        !lhs.id.isEmpty && lhs.id == rhs.id
+    }
 }

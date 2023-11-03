@@ -70,7 +70,7 @@ public struct UKDiscoveredBluetoothDevice {
 
     // MARK: - connect
 
-    func createConnectionManager(type connectionType: UKConnectionType) throws -> UKConnectionManager {
+    func createConnectionManager(type connectionType: UKConnectionType) throws -> any UKConnectionManager {
         guard !connectionType.requiresWifi || (self.isConnectedToWifi && self.ipAddress != nil) else {
             throw UKDiscoveredBluetoothDeviceError.connectionError("device is not connected to wifi")
         }
