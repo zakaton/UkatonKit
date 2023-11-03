@@ -67,6 +67,16 @@ enum UKUdpMessageType: UInt8 {
         }
     }
     
+    var includesDataSize: Bool {
+        switch self {
+        case .getDeviceName, .setDeviceName,
+             .getSensorDataConfigurations, .setSensorDataConfigurations:
+            true
+        default:
+            false
+        }
+    }
+    
     var connectionMessageType: UKConnectionMessageType? {
         switch self {
         case .getDeviceName:

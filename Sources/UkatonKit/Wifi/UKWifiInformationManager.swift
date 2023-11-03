@@ -19,6 +19,10 @@ struct UKWifiInformationManager {
         ssid = newSsid
     }
 
+    mutating func parseSsid(data: Data, at offset: inout Data.Index) {
+        parseSsid(data: data, at: &offset, until: data.count)
+    }
+
     mutating func parseSsid(data: Data) {
         var offset: Data.Index = 0
         parseSsid(data: data, at: &offset, until: data.count)
@@ -40,6 +44,10 @@ struct UKWifiInformationManager {
         password = newPassword
     }
 
+    mutating func parsePassword(data: Data, at offset: inout Data.Index) {
+        parsePassword(data: data, at: &offset, until: data.count)
+    }
+
     mutating func parsePassword(data: Data) {
         var offset: Data.Index = 0
         parseSsid(data: data, at: &offset, until: data.count)
@@ -55,7 +63,7 @@ struct UKWifiInformationManager {
 
     public var onShouldConnectUpdated: ((Bool?) -> Void)?
 
-    mutating func parseShouldConnect(data: Data, at offset: inout Data.Index, until finalOffset: Data.Index) {
+    mutating func parseShouldConnect(data: Data, at offset: inout Data.Index) {
         let newShouldConnect: Bool = data.parse(at: &offset)
         logger.debug("new wifi should connect \"\(newShouldConnect)\"")
         shouldConnect = newShouldConnect
@@ -63,7 +71,7 @@ struct UKWifiInformationManager {
 
     mutating func parseShouldConnect(data: Data) {
         var offset: Data.Index = 0
-        parseShouldConnect(data: data, at: &offset, until: data.count)
+        parseShouldConnect(data: data, at: &offset)
     }
 
     // MARK: - Is Connected
@@ -76,7 +84,7 @@ struct UKWifiInformationManager {
 
     public var onConnectionUpdated: ((Bool?) -> Void)?
 
-    mutating func parseIsConnected(data: Data, at offset: inout Data.Index, until finalOffset: Data.Index) {
+    mutating func parseIsConnected(data: Data, at offset: inout Data.Index) {
         let newIsConnected: Bool = data.parse(at: &offset)
         logger.debug("new wifi connection \"\(newIsConnected)\"")
         isConnected = newIsConnected
@@ -84,7 +92,7 @@ struct UKWifiInformationManager {
 
     mutating func parseIsConnected(data: Data) {
         var offset: Data.Index = 0
-        parseIsConnected(data: data, at: &offset, until: data.count)
+        parseIsConnected(data: data, at: &offset)
     }
 
     // MARK: - Reset

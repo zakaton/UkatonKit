@@ -155,7 +155,7 @@ class UKUdpConnectionManager: UKConnectionManager {
             }
 
             guard let connectionMessageType = udpMessageType.connectionMessageType else {
-                logger.error("uncaught raw udp message type \(udpMessageType.name)")
+                logger.error("uncaught connectionMessageType for udpMessageType \(udpMessageType.name)")
                 break
             }
 
@@ -164,7 +164,15 @@ class UKUdpConnectionManager: UKConnectionManager {
                 break
             }
 
-            onMessageReceived(connectionMessageType, data, &offset)
+            let subData: Data?
+            if udpMessageType.includesDataSize {
+                let size: UInt8 = data.parse(at: &offset)
+                subData = data.subdata(in: offset ..< offset + Int(size))
+            } else {
+                subData = data
+            }
+
+            onMessageReceived(connectionMessageType, subData!, &offset)
         }
     }
 }

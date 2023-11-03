@@ -21,6 +21,10 @@ struct UKDeviceInformationManager {
         name = newName
     }
 
+    mutating func parseName(data: Data, at offset: inout Data.Index) {
+        parseName(data: data, at: &offset, until: data.count)
+    }
+
     mutating func parseName(data: Data) {
         var offset: Data.Index = 0
         parseName(data: data, at: &offset, until: data.count)

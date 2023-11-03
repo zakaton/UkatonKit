@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-syntax.git",
       "state" : {
-        "revision" : "ffa3cd6fc2aa62adbedd31d3efaf7c0d86a9f029",
-        "version" : "509.0.1"
+        "revision" : "6ad4ea24b01559dde0773e3d091f1b9e36175036",
+        "version" : "509.0.2"
       }
     },
     {
@@ -15,7 +15,7 @@
       "location" : "/Users/zakaton/Documents/GitHub/UkatonSwiftMacros",
       "state" : {
         "branch" : "main",
-        "revision" : "025159aef229cc4ba760e86d2307b5722102ba92"
+        "revision" : "77494a7e71bfd65d1e5e8951b95b8de340d5c6c6"
       }
     }
   ],

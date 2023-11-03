@@ -4,31 +4,29 @@ extension UKMission {
     // MARK: - ConnectionManager Parsing
 
     func onConnectionMessage(type messageType: UKConnectionMessageType, data: Data, at offset: inout Data.Index) {
-        // TODO: - make parsing return offset
-
         switch messageType {
         case .batteryLevel:
-            batteryLevelManager.parseBatteryLevel(data: data)
+            batteryLevelManager.parseBatteryLevel(data: data, at: &offset)
 
         case .getDeviceType, .setDeviceType:
-            deviceInformationManager.parseType(data: data)
+            deviceInformationManager.parseType(data: data, at: &offset)
         case .getDeviceName, .setDeviceName:
-            deviceInformationManager.parseName(data: data)
+            deviceInformationManager.parseName(data: data, at: &offset)
 
         case .getWifiSsid, .setWifiSsid:
-            wifiInformationManager.parseSsid(data: data)
+            wifiInformationManager.parseSsid(data: data, at: &offset)
         case .getWifiPassword, .setWifiPassword:
-            wifiInformationManager.parsePassword(data: data)
+            wifiInformationManager.parsePassword(data: data, at: &offset)
         case .getWifiShouldConnect, .setWifiShouldConnect:
-            wifiInformationManager.parseShouldConnect(data: data)
+            wifiInformationManager.parseShouldConnect(data: data, at: &offset)
         case .wifiIsConnected:
-            wifiInformationManager.parseIsConnected(data: data)
+            wifiInformationManager.parseIsConnected(data: data, at: &offset)
 
         case .getSensorDataConfigurations, .setSensorDataConfigurations:
-            sensorDataConfigurationsManager.parse(data)
+            sensorDataConfigurationsManager.parse(data, at: &offset)
 
         case .sensorData:
-            sensorDataManager.parse(data)
+            sensorDataManager.parse(data, at: &offset)
 
         default:
             logger.error("uncaught connection message type \(messageType.name)")
@@ -56,31 +54,26 @@ extension UKMission {
 
     // MARK: - DeviceInformationManager Interface
 
-    func setDeviceType(newDeviceType: UKDeviceType) async throws {
+    func setDeviceType(newDeviceType: UKDeviceType) throws {
         try sendMessage(type: .setDeviceType, data: newDeviceType.rawValue.data)
-        // TODO: - wait for deviceType event
     }
 
-    func setDeviceName(newDeviceName: String) async throws {
+    func setDeviceName(newDeviceName: String) throws {
         try sendMessage(type: .setDeviceName, data: newDeviceName.data)
-        // TODO: - wait for deviceName event
     }
 
     // MARK: - WifiManager Interface
 
-    func setWifiSsid(newWifiSsid: String) async throws {
+    func setWifiSsid(newWifiSsid: String) throws {
         try sendMessage(type: .setWifiSsid, data: newWifiSsid.data)
-        // TODO: - wait for wifiSsid event
     }
 
-    func setWifiPassword(newWifiPassword: String) async throws {
+    func setWifiPassword(newWifiPassword: String) throws {
         try sendMessage(type: .setWifiPassword, data: newWifiPassword.data)
-        // TODO: - wait for wifiPassword event
     }
 
-    func setWifiShouldConnect(newShouldConnect: Bool) async throws {
+    func setWifiShouldConnect(newShouldConnect: Bool) throws {
         try sendMessage(type: .setWifiShouldConnect, data: newShouldConnect.data)
-        // TODO: - wait for shouldConnect event
     }
 
     // MARK: - SensorDataConfigurationsManager Interface

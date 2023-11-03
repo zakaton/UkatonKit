@@ -70,21 +70,21 @@ public struct UKDiscoveredBluetoothDevice {
 
     // MARK: - connect
 
-    public func connect(type connectionType: UKConnectionType = .bluetooth) throws -> UKMission {
-        guard self.isConnected else {
-            throw UKDiscoveredBluetoothDeviceError.connectionError("device is already connected")
-        }
+    func createConnectionManager(type connectionType: UKConnectionType) throws -> UKConnectionManager {
         guard !connectionType.requiresWifi || (self.isConnectedToWifi && self.ipAddress != nil) else {
             throw UKDiscoveredBluetoothDeviceError.connectionError("device is not connected to wifi")
         }
 
-        let connectionManager: UKConnectionManager = switch connectionType {
+        return switch connectionType {
         case .bluetooth:
             UKBluetoothConnectionManager(peripheral: self.peripheral)
         case .udp:
             UKUdpConnectionManager(ipAddress: self.ipAddress!)
         }
+    }
 
+    public func connect(type connectionType: UKConnectionType) throws -> UKMission {
+        let connectionManager = try! self.createConnectionManager(type: connectionType)
         return .init(connectionManager: connectionManager)
     }
 }

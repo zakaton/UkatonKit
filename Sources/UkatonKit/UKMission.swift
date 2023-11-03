@@ -22,20 +22,21 @@ public class UKMission: ObservableObject {
 
     var connectionManager: UKConnectionManager? {
         willSet {
-            if var connectionManager {
-                connectionManager.onMessageReceived = nil
+            if connectionManager != nil {
+                connectionManager?.disconnect()
+                connectionManager?.onMessageReceived = nil
                 connectionType = nil
             }
         }
         didSet {
-            if var connectionManager {
-                connectionManager.onMessageReceived = { [unowned self] type, data, offset in
+            if connectionManager != nil {
+                connectionManager?.onMessageReceived = { [unowned self] type, data, offset in
                     self.onConnectionMessage(type: type, data: data, at: &offset)
                 }
-                connectionManager.onStatusUpdated = { [unowned self] in
+                connectionManager?.onStatusUpdated = { [unowned self] in
                     self.connectionStatus = $0
                 }
-                connectionType = connectionManager.type
+                connectionType = connectionManager?.type
             }
         }
     }
@@ -47,6 +48,22 @@ public class UKMission: ObservableObject {
                 // TODO: - FILL
             }
         }
+    }
+
+    public func connect() {
+        guard connectionManager != nil else {
+            logger.error("no connectionManager defined")
+            return
+        }
+        connectionManager?.connect()
+    }
+
+    public func disconnect() {
+        guard connectionManager != nil else {
+            logger.error("no connectionManager defined")
+            return
+        }
+        connectionManager?.disconnect()
     }
 
     // MARK: - Device Information
@@ -88,11 +105,7 @@ public class UKMission: ObservableObject {
 
     // MARK: - Initialization
 
-    init(connectionManager: UKConnectionManager) {
-        defer {
-            self.connectionManager = connectionManager
-        }
-
+    init() {
         // MARK: - Battery Level Callbacks
 
         batteryLevelManager.onBatteryLevelUpdated = {
@@ -133,5 +146,21 @@ public class UKMission: ObservableObject {
         // MARK: - Sensor Data Callbacks
 
         // TODO: - FILL
+
+        UKMissionManager.shared.missions.append(self)
+    }
+
+    convenience init(connectionManager: UKConnectionManager) {
+        defer {
+            self.connectionManager = connectionManager
+        }
+        self.init()
+    }
+
+    convenience init(ipAddress: String) {
+        defer {
+            self.connectionManager = UKUdpConnectionManager(ipAddress: ipAddress)
+        }
+        self.init()
     }
 }
