@@ -14,13 +14,7 @@ public struct UKDiscoveredBluetoothDevice {
     // MARK: - Peripheral Getters
 
     public var name: String { self.peripheral.name! }
-    public var mission: UKMission? {
-        didSet {
-            // TODO: - listen for connection event
-        }
-    }
-
-    public var isConnected: Bool = false // TODO: - update when mission updates
+    public var mission: UKMission?
 
     // MARK: - Parsing Advertisement Data
 
@@ -76,7 +70,7 @@ public struct UKDiscoveredBluetoothDevice {
 
     func createConnectionManager(type connectionType: UKConnectionType) -> any UKConnectionManager {
         var _connectionType = connectionType
-        if !connectionType.requiresWifi || (self.isConnectedToWifi && self.ipAddress != nil) {
+        if connectionType.requiresWifi, !self.isConnectedToWifi || self.ipAddress != nil {
             logger.warning("device is not connected to wifi - defaulting to bluetooth")
             _connectionType = .bluetooth
         }
@@ -89,8 +83,10 @@ public struct UKDiscoveredBluetoothDevice {
         }
     }
 
-    public func connect(type connectionType: UKConnectionType) -> UKMission {
-        .init(discoveredBluetoothDevice: self, connectionType: connectionType)
+    public mutating func connect(type connectionType: UKConnectionType) {
+        if self.mission == nil {
+            self.mission = .init(discoveredBluetoothDevice: self, connectionType: connectionType)
+        }
     }
 }
 

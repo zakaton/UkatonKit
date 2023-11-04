@@ -16,6 +16,8 @@ public class UKMission: ObservableObject {
     @Published public internal(set) var name: String?
     @Published public internal(set) var deviceType: UKDeviceType? {
         didSet {
+            let _self = self
+            logger.debug("updated device type: \(_self.deviceType!.name)")
             sensorDataConfigurations.deviceType = deviceType
             sensorData.deviceType = deviceType
         }
@@ -52,6 +54,8 @@ public class UKMission: ObservableObject {
                     self.connectionStatus = $0
                 }
                 connectionType = connectionManager?.type
+
+                connect()
             }
         }
     }

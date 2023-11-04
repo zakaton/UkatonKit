@@ -1,6 +1,7 @@
-test bluetooth connect
-test wifi connect
+connect/disconnect UI
+hide time/rssi after connection
 
+keep connected discovered device when re-scanning (keep at top)
 remove from discovered devices on a timer (every second)
 
 buttons to reconnect via ble/wifi (instead of disconnect)

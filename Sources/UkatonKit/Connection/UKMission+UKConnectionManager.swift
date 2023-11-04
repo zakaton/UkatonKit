@@ -27,6 +27,9 @@ extension UKMission {
         case .sensorData:
             sensorData.parse(data, at: &offset)
 
+        case .motionCalibration:
+            motionCalibrationData.parse(data, at: &offset)
+
         default:
             logger.error("uncaught connection message type \(messageType.name)")
         }

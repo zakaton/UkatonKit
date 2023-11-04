@@ -36,7 +36,7 @@ public class UKBluetoothManager: NSObject, ObservableObject {
     private var shouldScanForDevicesWhenPoweredOn: Bool = false
     public func scanForDevices() {
         if centralManager.state == .poweredOn {
-            discoveredDevices.removeAll()
+            discoveredDevices.removeAll(where: { $0.mission?.connectionStatus != .connected })
             centralManager.scanForPeripherals(withServices: [UKBluetoothServiceIdentifier.main.uuid], options: [CBCentralManagerScanOptionAllowDuplicatesKey: true])
             isScanning = true
             logger.debug("scanning for devices...")
