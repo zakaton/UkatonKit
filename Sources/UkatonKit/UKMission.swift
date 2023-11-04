@@ -45,14 +45,8 @@ public class UKMission: ObservableObject {
         }
     }
 
-    @Published public var connectionType: UKConnectionType? = nil
-    @Published public var connectionStatus: UKConnectionStatus = .notConnected {
-        didSet {
-            if connectionStatus == .connected {
-                // TODO: - FILL
-            }
-        }
-    }
+    @Published public private(set) var connectionType: UKConnectionType? = nil
+    @Published public private(set) var connectionStatus: UKConnectionStatus = .notConnected
 
     public func connect() {
         guard connectionManager != nil else {
@@ -95,7 +89,6 @@ public class UKMission: ObservableObject {
     // MARK: - Initialization
 
     init() {
-        // TODO: - add eventlistener for deviceType update
         UKMissionsManager.shared.missions.append(self)
     }
 

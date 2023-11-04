@@ -5,7 +5,6 @@ extension UKMission {
 
     func onConnectionMessage(type messageType: UKConnectionMessageType, data: Data, at offset: inout Data.Index) {
         switch messageType {
-            
         case .batteryLevel:
             parseBatteryLevel(data: data, at: &offset)
         case .getDeviceType, .setDeviceType:
