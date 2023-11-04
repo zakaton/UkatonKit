@@ -3,8 +3,8 @@ import Foundation
 import OSLog
 import UkatonMacros
 
-@Singleton(isMutable: true)
+@Singleton
 @StaticLogger
-public struct UKMissionsManager {
-    public var missions: [UKMission] = []
+public class UKMissionsManager {
+    @Published public internal(set) var missions: [UKMission] = []
 }

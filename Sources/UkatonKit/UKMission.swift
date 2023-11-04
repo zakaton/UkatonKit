@@ -1,3 +1,4 @@
+import CoreBluetooth
 import Foundation
 import OSLog
 import UkatonMacros
@@ -23,6 +24,8 @@ public class UKMission: ObservableObject {
     @Published public internal(set) var batteryLevel: UKBatteryLevel?
 
     // MARK: - Connection
+
+    private var peripheral: CBPeripheral?
 
     var connectionManager: (any UKConnectionManager)? {
         willSet {
@@ -70,12 +73,38 @@ public class UKMission: ObservableObject {
             return
         }
 
-        // TODO: - check if connectionType requires wifi and is connected to wifi
+        guard connectionType.requiresWifi != true || isConnectedToWifi == true else {
+            logger.error("connection type requires a wifi connection")
+            return
+        }
+
         if connectionStatus == .notConnected {
             disconnect()
         }
-        // TODO: - update connectionManager
-        connect()
+
+        var newConnectionManager: (any UKConnectionManager)? = nil
+        switch connectionType {
+        case .bluetooth:
+            if let peripheral {
+                newConnectionManager = UKBluetoothConnectionManager(peripheral: peripheral)
+            }
+            else {
+                logger.error("no peripheral found")
+            }
+        case .udp:
+            if let ipAddress {
+                newConnectionManager = UKUdpConnectionManager(ipAddress: ipAddress)
+            }
+            else {
+                logger.error("no ip address defined")
+            }
+        }
+
+        if newConnectionManager != nil {
+            logger.debug("switching to \(newConnectionManager!.type.name) connection")
+            connectionManager = newConnectionManager
+            connect()
+        }
     }
 
     // MARK: - Wifi Information
@@ -94,8 +123,18 @@ public class UKMission: ObservableObject {
 
     convenience init(discoveredBluetoothDevice: UKDiscoveredBluetoothDevice, connectionType: UKConnectionType) {
         defer {
+            self.name = discoveredBluetoothDevice.name
+            self.deviceType = discoveredBluetoothDevice.type
+            self.isConnectedToWifi = discoveredBluetoothDevice.isConnectedToWifi
+            if self.isConnectedToWifi == true {
+                self.ipAddress = discoveredBluetoothDevice.ipAddress
+                self.shouldConnectToWifi = true
+            }
+            self.peripheral = discoveredBluetoothDevice.peripheral
+
             self.connectionManager = discoveredBluetoothDevice.createConnectionManager(type: connectionType)
         }
+
         self.init()
     }
 }
