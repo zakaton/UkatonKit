@@ -1,5 +1,7 @@
 import Foundation
 
+public typealias UKBatteryLevel = UInt8
+
 extension UKMission {
     // MARK: - Name
 

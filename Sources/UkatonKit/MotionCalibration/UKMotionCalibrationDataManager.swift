@@ -18,12 +18,6 @@ public struct UKMotionCalibrationDataManager {
 
     public private(set) var isFullyCalibrated: Bool = false
 
-    // MARK: - Conveniance Subscript
-
-    public subscript(motionCalibrationType: UKMotionCalibrationType) -> UKMotionCalibrationStatus {
-        calibration[motionCalibrationType]!
-    }
-
     // MARK: - Parsing
 
     mutating func parse(_ data: Data, at offset: inout Data.Index) {
