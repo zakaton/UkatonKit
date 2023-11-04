@@ -2,18 +2,13 @@ import Foundation
 import OSLog
 import UkatonMacros
 
+public typealias UKBatteryLevel = UInt8
+
 @StaticLogger
-struct UKDeviceInformationManager {
+public struct UKDeviceInformationManager {
     // MARK: - Name
 
-    private var name: String? {
-        didSet {
-            onNameUpdated?(name)
-            checkIsFullyInitialized()
-        }
-    }
-
-    public var onNameUpdated: ((String?) -> Void)?
+    public internal(set) var name: String? = nil
 
     mutating func parseName(data: Data, at offset: inout Data.Index, until finalOffset: Data.Index) {
         let newName = data.parseString(offset: &offset, until: finalOffset)
@@ -32,14 +27,7 @@ struct UKDeviceInformationManager {
 
     // MARK: - DeviceType
 
-    private var type: UKDeviceType? {
-        didSet {
-            onTypeUpdated?(type)
-            checkIsFullyInitialized()
-        }
-    }
-
-    public var onTypeUpdated: ((UKDeviceType?) -> Void)?
+    public internal(set) var type: UKDeviceType? = nil
 
     mutating func parseType(data: Data, at offset: inout Data.Index) {
         if offset < data.count {
@@ -58,28 +46,18 @@ struct UKDeviceInformationManager {
         parseType(data: data, at: &offset)
     }
 
-    // MARK: - Is Fully Initialized?
+    // MARK: - Battery Level
 
-    private var isFullyInitialized: Bool = false {
-        didSet {
-            if isFullyInitialized, oldValue != isFullyInitialized {
-                logger.debug("Fully Initialized!")
-            }
-            onIsFullyInitialized?(isFullyInitialized)
+    public internal(set) var batteryLevel: UKBatteryLevel?
+
+    mutating func parseBatteryLevel(data: Data, at offset: inout Data.Index) {
+        if offset < data.count {
+            batteryLevel = data.parse(at: &offset)
         }
     }
 
-    public var onIsFullyInitialized: ((Bool) -> Void)?
-
-    private mutating func checkIsFullyInitialized() {
-        isFullyInitialized = name != nil && type != nil
-    }
-
-    // MARK: - Reset
-
-    public mutating func reset() {
-        logger.debug("resetting")
-        name = nil
-        type = nil
+    mutating func parseBatteryLevel(data: Data) {
+        var offset: Data.Index = 0
+        parseBatteryLevel(data: data, at: &offset)
     }
 }

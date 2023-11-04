@@ -9,14 +9,14 @@ final class UkatonKitTests: XCTestCase {
     func testParseDeviceName() {
         let deviceName = "My Ukaton Mission"
         let data: Data = .init(deviceName.utf8)
-        mission.deviceInformationManager.parseName(data: data)
-        XCTAssertEqual(deviceName, mission.deviceName, "names don't match")
+        mission.parseName(data: data)
+        XCTAssertEqual(deviceName, mission.name, "names don't match")
     }
 
     func testParseDeviceType() {
         UKDeviceType.allCases.forEach { deviceType in
             let data: Data = deviceType.rawValue.data
-            mission.deviceInformationManager.parseType(data: data)
+            mission.parseDeviceType(data: data)
             XCTAssertEqual(deviceType, mission.deviceType, "types don't match")
         }
     }
@@ -34,16 +34,16 @@ final class UkatonKitTests: XCTestCase {
                 .quaternion: 40,
             ]
         )
-        mission.sensorDataConfigurationsManager.configurations = sensorDataConfigurations
+        mission.sensorDataConfigurations.configurations = sensorDataConfigurations
 
-        let serializedConfigurations = mission.sensorDataConfigurationsManager.getSerialization()
+        let serializedConfigurations = mission.sensorDataConfigurations.getSerialization()
         print("serialization: \(serializedConfigurations.bytes)")
 
-        mission.sensorDataConfigurationsManager.configurations = .init()
-        mission.sensorDataConfigurationsManager.parse(Data([UInt8](arrayLiteral: 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)))
-        print(mission.sensorDataConfigurationsManager.configurations)
+        mission.sensorDataConfigurations.configurations = .init()
+        mission.sensorDataConfigurations.parse(Data([UInt8](arrayLiteral: 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)))
+        print(mission.sensorDataConfigurations.configurations)
 
-        XCTAssertEqual(sensorDataConfigurations, mission.sensorDataConfigurationsManager.configurations, "configurations don't match")
+        XCTAssertEqual(sensorDataConfigurations, mission.sensorDataConfigurations.configurations, "configurations don't match")
     }
 
     // MARK: - Sensor Data
@@ -83,9 +83,9 @@ final class UkatonKitTests: XCTestCase {
             212,
             63,
         ]
-        mission.sensorDataManager.parse(quaternionData.data)
-        mission.sensorDataManager.deviceType = .rightInsole
-        mission.sensorDataManager.parse(pressureData.data)
+        mission.sensorData.parse(quaternionData.data)
+        mission.sensorData.deviceType = .rightInsole
+        mission.sensorData.parse(pressureData.data)
     }
 
     // MARK: - Motion Calibration Data
@@ -99,20 +99,20 @@ final class UkatonKitTests: XCTestCase {
         ]
         let rawMotionCalibrationData = UKMotionCalibrationType.allCases.map { motionCalibrationData[$0]!.rawValue }
         print(rawMotionCalibrationData)
-        mission.motionCalibrationDataManager.parse(rawMotionCalibrationData.data)
-        print(mission.motionCalibrationDataManager.calibration)
-        XCTAssertEqual(mission.motionCalibrationDataManager.calibration, motionCalibrationData, "calibrations don't match")
+        mission.motionCalibrationData.parse(rawMotionCalibrationData.data)
+        print(mission.motionCalibrationData.calibration)
+        XCTAssertEqual(mission.motionCalibrationData.calibration, motionCalibrationData, "calibrations don't match")
     }
 
     // MARK: - Haptics
 
     func testSerializeHapticsWaveforms() {
-        let waveformSerialization = mission.hapticsManager.serialize(waveforms: [.longDoubleSharpTick80, .doubleClick100])
+        let waveformSerialization = mission.serializeHaptics(waveforms: [.longDoubleSharpTick80, .doubleClick100])
         print(waveformSerialization.bytes)
     }
 
     func testSerializeHapticsSequence() {
-        let sequenceSerialization = mission.hapticsManager.serialize(sequence: [.init(intensity: 1, delay: 20)])
+        let sequenceSerialization = mission.serializeHaptics(sequence: [.init(intensity: 1, delay: 20)])
         print(sequenceSerialization.bytes)
     }
 

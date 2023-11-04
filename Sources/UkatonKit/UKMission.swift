@@ -6,17 +6,21 @@ import UkatonMacros
 public class UKMission: ObservableObject {
     // MARK: - Components
 
-    var batteryLevelManager: UKBatteryLevelManager = .init()
-    var deviceInformationManager: UKDeviceInformationManager = .init()
-    var wifiInformationManager: UKWifiInformationManager = .init()
-    var motionCalibrationDataManager: UKMotionCalibrationDataManager = .init()
-    var sensorDataConfigurationsManager: UKSensorDataConfigurationsManager = .init()
-    var sensorDataManager: UKSensorDataManager = .init()
-    var hapticsManager: UKHapticsManager = .init()
+    public var motionCalibrationData: UKMotionCalibrationDataManager = .init()
+    public var sensorDataConfigurations: UKSensorDataConfigurationsManager = .init()
+    public var sensorData: UKSensorDataManager = .init()
 
-    // MARK: - Connected
+    // MARK: - Device Information
 
-    @Published public var isConnected: Bool = false
+    @Published public internal(set) var name: String?
+    @Published public internal(set) var deviceType: UKDeviceType? {
+        didSet {
+            sensorDataConfigurations.deviceType = deviceType
+            sensorData.deviceType = deviceType
+        }
+    }
+
+    @Published public internal(set) var batteryLevel: UKBatteryLevel?
 
     // MARK: - Connection
 
@@ -41,24 +45,10 @@ public class UKMission: ObservableObject {
         }
     }
 
-    @Published public var connectionType: UKConnectionType? = nil {
+    @Published public var connectionType: UKConnectionType? = nil
+    @Published public var connectionStatus: UKConnectionStatus = .notConnected {
         didSet {
-            switch connectionType {
-            case .bluetooth:
-                break
-            case .udp:
-                if let udpConnectionManager = connectionManager as? UKUdpConnectionManager {
-                    ipAddress = udpConnectionManager.ipAddress
-                }
-            case nil:
-                break
-            }
-        }
-    }
-
-    var connectionStatus: UKConnectionStatus = .notConnected {
-        didSet {
-            if connectionStatus == .connected && !isFullyInitialized {
+            if connectionStatus == .connected {
                 // TODO: - FILL
             }
         }
@@ -80,104 +70,38 @@ public class UKMission: ObservableObject {
         connectionManager?.disconnect()
     }
 
-    // MARK: - Device Information
-
-    @Published public private(set) var deviceType: UKDeviceType? {
-        didSet {
-            sensorDataConfigurationsManager.deviceType = deviceType
-            sensorDataManager.deviceType = deviceType
+    public func changeConnection(type connectionType: UKConnectionType) {
+        guard self.connectionType == connectionType else {
+            logger.warning("already connected via \(connectionType.name)")
+            return
         }
-    }
 
-    @Published public private(set) var deviceName: String?
-
-    @Published public private(set) var isFullyInitialized: Bool = false {
-        didSet {
-            if isFullyInitialized {
-                logger.debug("Fully initialized!")
-                isConnected = true
-            }
+        // TODO: - check if connectionType requires wifi and is connected to wifi
+        if connectionStatus == .notConnected {
+            disconnect()
         }
-    }
-
-    @Published public private(set) var batteryLevel: UKBatteryLevel?
-
-    // MARK: - Motion Calibration
-
-    public private(set) var isMotionSensorFullyCalibrated: Bool = false {
-        didSet {
-            if isMotionSensorFullyCalibrated {
-                logger.debug("Motion Sensor is fully calibrated!")
-            }
-        }
+        // TODO: - update connectionManager
+        connect()
     }
 
     // MARK: - Wifi Information
 
-    @Published public private(set) var wifiSsid: String?
-    @Published public private(set) var wifiPassword: String?
-    @Published public private(set) var ipAddress: String?
+    @Published public internal(set) var wifiSsid: String?
+    @Published public internal(set) var wifiPassword: String?
+    @Published public internal(set) var shouldConnectToWifi: Bool?
+    @Published public internal(set) var isConnectedToWifi: Bool?
+    @Published public internal(set) var ipAddress: String?
 
     // MARK: - Initialization
 
     init() {
-        // MARK: - Battery Level Callbacks
-
-        batteryLevelManager.onBatteryLevelUpdated = {
-            [unowned self] in self.batteryLevel = $0
-        }
-
-        // MARK: - Device Information Callbacks
-
-        deviceInformationManager.onTypeUpdated = {
-            [unowned self] in self.deviceType = $0
-        }
-        deviceInformationManager.onNameUpdated = {
-            [unowned self] in self.deviceName = $0
-        }
-        deviceInformationManager.onIsFullyInitialized = {
-            [unowned self] in self.isFullyInitialized = $0
-        }
-
-        // MARK: - Wifi Information Callbacks
-
-        wifiInformationManager.onSsidUpdated = {
-            [unowned self] in self.wifiSsid = $0
-        }
-        wifiInformationManager.onPasswordUpdated = {
-            [unowned self] in self.wifiPassword = $0
-        }
-        wifiInformationManager.onIpAddresssUpdated = {
-            [unowned self] in self.ipAddress = $0
-        }
-
-        // MARK: - Motion Calibration Callbacks
-
-        motionCalibrationDataManager.onIsFullyCalibrated = {
-            [unowned self] in self.isMotionSensorFullyCalibrated = $0
-        }
-
-        // MARK: - Sensor Data Configurations Callbacks
-
-        // TODO: - FILL
-
-        // MARK: - Sensor Data Callbacks
-
-        // TODO: - FILL
-
+        // TODO: - add eventlistener for deviceType update
         UKMissionsManager.shared.missions.append(self)
     }
 
-    convenience init(connectionManager: any UKConnectionManager) {
+    convenience init(discoveredBluetoothDevice: UKDiscoveredBluetoothDevice, connectionType: UKConnectionType) {
         defer {
-            self.connectionManager = connectionManager
-        }
-        self.init()
-    }
-
-    convenience init(ipAddress: String) {
-        defer {
-            self.connectionManager = UKUdpConnectionManager(ipAddress: ipAddress)
+            self.connectionManager = discoveredBluetoothDevice.createConnectionManager(type: connectionType)
         }
         self.init()
     }

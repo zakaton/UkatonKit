@@ -14,9 +14,13 @@ public struct UKDiscoveredBluetoothDevice {
     // MARK: - Peripheral Getters
 
     public var name: String { self.peripheral.name! }
-    public var state: CBPeripheralState { self.peripheral.state }
-    var connectionManager: UKBluetoothConnectionManager? { self.peripheral.delegate as? UKBluetoothConnectionManager }
-    public var isConnected: Bool { self.state == .connected && self.connectionManager != nil }
+    public var mission: UKMission? {
+        didSet {
+            // TODO: - listen for connection event
+        }
+    }
+
+    public var isConnected: Bool = false // TODO: - update when mission updates
 
     // MARK: - Parsing Advertisement Data
 
@@ -70,12 +74,14 @@ public struct UKDiscoveredBluetoothDevice {
 
     // MARK: - connect
 
-    func createConnectionManager(type connectionType: UKConnectionType) throws -> any UKConnectionManager {
-        guard !connectionType.requiresWifi || (self.isConnectedToWifi && self.ipAddress != nil) else {
-            throw UKDiscoveredBluetoothDeviceError.connectionError("device is not connected to wifi")
+    func createConnectionManager(type connectionType: UKConnectionType) -> any UKConnectionManager {
+        var _connectionType = connectionType
+        if !connectionType.requiresWifi || (self.isConnectedToWifi && self.ipAddress != nil) {
+            logger.warning("device is not connected to wifi - defaulting to bluetooth")
+            _connectionType = .bluetooth
         }
 
-        return switch connectionType {
+        return switch _connectionType {
         case .bluetooth:
             UKBluetoothConnectionManager(peripheral: self.peripheral)
         case .udp:
@@ -83,9 +89,8 @@ public struct UKDiscoveredBluetoothDevice {
         }
     }
 
-    public func connect(type connectionType: UKConnectionType) throws -> UKMission {
-        let connectionManager = try! self.createConnectionManager(type: connectionType)
-        return .init(connectionManager: connectionManager)
+    public func connect(type connectionType: UKConnectionType) -> UKMission {
+        .init(discoveredBluetoothDevice: self, connectionType: connectionType)
     }
 }
 

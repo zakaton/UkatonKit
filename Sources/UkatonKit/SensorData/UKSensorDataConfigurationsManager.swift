@@ -24,7 +24,7 @@ public struct UKSensorDataConfigurations: Equatable {
 }
 
 @StaticLogger
-struct UKSensorDataConfigurationsManager {
+public struct UKSensorDataConfigurationsManager {
     // MARK: - Device Type
 
     var deviceType: UKDeviceType?

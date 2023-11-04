@@ -16,21 +16,13 @@ public struct UKMotionCalibrationDataManager {
         return _calibration
     }()
 
-    public private(set) var isFullyCalibrated: Bool = false {
-        didSet {
-            onIsFullyCalibrated?(isFullyCalibrated)
-        }
-    }
+    public private(set) var isFullyCalibrated: Bool = false
 
     // MARK: - Conveniance Subscript
 
     public subscript(motionCalibrationType: UKMotionCalibrationType) -> UKMotionCalibrationStatus {
         calibration[motionCalibrationType]!
     }
-
-    // MARK: - Callback
-
-    public var onIsFullyCalibrated: ((Bool) -> Void)?
 
     // MARK: - Parsing
 

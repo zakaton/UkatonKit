@@ -2,16 +2,10 @@ import OSLog
 import UkatonMacros
 
 @StaticLogger
-struct UKWifiInformationManager {
+public struct UKWifiInformationManager {
     // MARK: - SSID
 
-    private var ssid: String? {
-        didSet {
-            onSsidUpdated?(password)
-        }
-    }
-
-    public var onSsidUpdated: ((String?) -> Void)?
+    public internal(set) var ssid: String? = nil
 
     mutating func parseSsid(data: Data, at offset: inout Data.Index, until finalOffset: Data.Index) {
         let newSsid = data.parseString(offset: &offset, until: finalOffset)
@@ -30,13 +24,7 @@ struct UKWifiInformationManager {
 
     // MARK: - Password
 
-    private var password: String? {
-        didSet {
-            onPasswordUpdated?(password)
-        }
-    }
-
-    public var onPasswordUpdated: ((String?) -> Void)?
+    private var password: String? = nil
 
     mutating func parsePassword(data: Data, at offset: inout Data.Index, until finalOffset: Data.Index) {
         let newPassword = data.parseString(offset: &offset, until: finalOffset)
@@ -55,13 +43,7 @@ struct UKWifiInformationManager {
 
     // MARK: - Connect
 
-    private var shouldConnect: Bool? {
-        didSet {
-            onShouldConnectUpdated?(shouldConnect)
-        }
-    }
-
-    public var onShouldConnectUpdated: ((Bool?) -> Void)?
+    private var shouldConnect: Bool? = nil
 
     mutating func parseShouldConnect(data: Data, at offset: inout Data.Index) {
         let newShouldConnect: Bool = data.parse(at: &offset)
@@ -76,13 +58,7 @@ struct UKWifiInformationManager {
 
     // MARK: - Is Connected
 
-    var isConnected: Bool? {
-        didSet {
-            onConnectionUpdated?(isConnected)
-        }
-    }
-
-    public var onConnectionUpdated: ((Bool?) -> Void)?
+    var isConnected: Bool? = nil
 
     mutating func parseIsConnected(data: Data, at offset: inout Data.Index) {
         let newIsConnected: Bool = data.parse(at: &offset)
@@ -97,13 +73,7 @@ struct UKWifiInformationManager {
 
     // MARK: - IP Address
 
-    var ipAddress: String? {
-        didSet {
-            onIpAddresssUpdated?(ipAddress)
-        }
-    }
-
-    public var onIpAddresssUpdated: ((String?) -> Void)?
+    var ipAddress: String? = nil
 
     mutating func parseIpAddress(data: Data, at offset: inout Data.Index, until finalOffset: Data.Index) {
         let newIpAddress = data.parseString(offset: &offset, until: finalOffset)
@@ -118,13 +88,5 @@ struct UKWifiInformationManager {
     mutating func parseIpAddress(data: Data) {
         var offset: Data.Index = 0
         parseIpAddress(data: data, at: &offset, until: data.count)
-    }
-
-    // MARK: - Reset
-
-    public mutating func reset() {
-        logger.debug("resetting")
-        ssid = nil
-        password = nil
     }
 }

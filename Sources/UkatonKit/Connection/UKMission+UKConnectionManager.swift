@@ -5,28 +5,28 @@ extension UKMission {
 
     func onConnectionMessage(type messageType: UKConnectionMessageType, data: Data, at offset: inout Data.Index) {
         switch messageType {
+            
         case .batteryLevel:
-            batteryLevelManager.parseBatteryLevel(data: data, at: &offset)
-
+            parseBatteryLevel(data: data, at: &offset)
         case .getDeviceType, .setDeviceType:
-            deviceInformationManager.parseType(data: data, at: &offset)
+            parseDeviceType(data: data, at: &offset)
         case .getDeviceName, .setDeviceName:
-            deviceInformationManager.parseName(data: data, at: &offset)
+            parseName(data: data, at: &offset)
 
         case .getWifiSsid, .setWifiSsid:
-            wifiInformationManager.parseSsid(data: data, at: &offset)
+            parseWifiSsid(data: data, at: &offset)
         case .getWifiPassword, .setWifiPassword:
-            wifiInformationManager.parsePassword(data: data, at: &offset)
+            parseWifiPassword(data: data, at: &offset)
         case .getWifiShouldConnect, .setWifiShouldConnect:
-            wifiInformationManager.parseShouldConnect(data: data, at: &offset)
+            parseShouldConnectToWifi(data: data, at: &offset)
         case .wifiIsConnected:
-            wifiInformationManager.parseIsConnected(data: data, at: &offset)
+            parseIsConnectedToWifi(data: data, at: &offset)
 
         case .getSensorDataConfigurations, .setSensorDataConfigurations:
-            sensorDataConfigurationsManager.parse(data, at: &offset)
+            sensorDataConfigurations.parse(data, at: &offset)
 
         case .sensorData:
-            sensorDataManager.parse(data, at: &offset)
+            sensorData.parse(data, at: &offset)
 
         default:
             logger.error("uncaught connection message type \(messageType.name)")
