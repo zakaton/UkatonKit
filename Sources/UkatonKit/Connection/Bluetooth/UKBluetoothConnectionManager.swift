@@ -54,7 +54,7 @@ class UKBluetoothConnectionManager: NSObject, UKConnectionManager, ObservableObj
 
     // MARK: - Peripheral Device
 
-    var peripheral: CBPeripheral? = nil {
+    weak var peripheral: CBPeripheral? = nil {
         willSet {
             if let peripheral {
                 peripheral.delegate = nil
