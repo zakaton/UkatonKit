@@ -34,7 +34,7 @@ public struct UKDiscoveredBluetoothDevice {
             self.isConnectedToWifi = rawServiceData[0] != 0
             offset += 1
 
-            if self.isConnectedToWifi {
+            if self.isConnectedToWifi, rawServiceData.count > 2 {
                 var ipAddressBytes: [UInt8] = []
                 for _ in 0 ..< 4 {
                     ipAddressBytes.append(rawServiceData.parse(at: &offset))
@@ -71,7 +71,7 @@ public struct UKDiscoveredBluetoothDevice {
 
     func createConnectionManager(type connectionType: UKConnectionType) -> any UKConnectionManager {
         var _connectionType = connectionType
-        if connectionType.requiresWifi, !self.isConnectedToWifi || self.ipAddress != nil {
+        if connectionType.requiresWifi, !self.isConnectedToWifi || self.ipAddress == nil {
             logger.warning("device is not connected to wifi - defaulting to bluetooth")
             _connectionType = .bluetooth
         }

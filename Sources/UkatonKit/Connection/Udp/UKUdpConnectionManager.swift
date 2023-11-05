@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 import Network
 import OSLog
@@ -5,6 +6,8 @@ import UkatonMacros
 
 @StaticLogger
 class UKUdpConnectionManager: UKConnectionManager {
+    // MARK: - UKConnectionManager
+
     var id: String { ipAddress }
 
     static let allowedMessageTypes: [UKConnectionMessageType] = UKConnectionMessageType.allCases.filter { $0.name.contains("wifi") }
@@ -20,6 +23,8 @@ class UKUdpConnectionManager: UKConnectionManager {
             }
         }
     }
+
+    // MARK: - Connection
 
     func connect() {
         guard timer == nil else {
@@ -69,6 +74,7 @@ class UKUdpConnectionManager: UKConnectionManager {
     var connection: NWConnection!
     let ipAddress: String!
     var queue = DispatchQueue.global(qos: .userInitiated)
+    private var cancellable: AnyCancellable?
 
     static let portNumber: NWEndpoint.Port.IntegerLiteralType = 9999
     static let port: NWEndpoint.Port = .init(integerLiteral: portNumber)
@@ -108,8 +114,8 @@ class UKUdpConnectionManager: UKConnectionManager {
         logger.debug("sending udp data [\(data.count) bytes]")
         connection.send(content: data, completion: NWConnection.SendCompletion.contentProcessed { [unowned self] NWError in
             guard NWError == nil else {
-                self.logger.error("error sending data: \(NWError)")
                 print("udp error")
+                self.logger.error("error sending data: \(NWError)")
                 return
             }
             self.logger.debug("sent data")
@@ -148,7 +154,10 @@ class UKUdpConnectionManager: UKConnectionManager {
             if isComplete {
                 self.logger.debug("receive complete")
                 if let data {
-                    onRawMessageReceived(data: data)
+                    self.logger.debug("received \(data.count) bytes")
+                    DispatchQueue.main.async { [self] in
+                        onRawMessageReceived(data: data)
+                    }
                 } else {
                     self.logger.debug("nil data")
                 }
@@ -158,6 +167,10 @@ class UKUdpConnectionManager: UKConnectionManager {
     }
 
     func onRawMessageReceived(data: Data) {
+        if status == .connecting {
+            status = .connected
+        }
+
         var offset: Data.Index = 0
 
         while offset < data.count {
@@ -187,5 +200,10 @@ class UKUdpConnectionManager: UKConnectionManager {
 
             onMessageReceived(connectionMessageType, subData!, &offset)
         }
+    }
+
+    deinit {
+        disconnect()
+        connection.cancel()
     }
 }

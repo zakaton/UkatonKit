@@ -79,6 +79,9 @@ enum UKUdpMessageType: UInt8 {
     
     var connectionMessageType: UKConnectionMessageType? {
         switch self {
+        case .batteryLevel:
+            .batteryLevel
+            
         case .getDeviceName:
             .getDeviceName
         case .setDeviceName:

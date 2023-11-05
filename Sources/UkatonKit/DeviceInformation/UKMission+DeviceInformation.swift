@@ -43,7 +43,9 @@ extension UKMission {
 
     func parseBatteryLevel(data: Data, at offset: inout Data.Index) {
         if offset < data.count {
-            batteryLevel = data.parse(at: &offset)
+            let newBatteryLevel: UKBatteryLevel = data.parse(at: &offset)
+            logger.debug("new battery level: \(newBatteryLevel)")
+            batteryLevel = newBatteryLevel
         }
     }
 

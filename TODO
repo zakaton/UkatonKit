@@ -1,9 +1,8 @@
-test udp
+switch connection button
 
 keep connected discovered device when re-scanning (keep at top)
 remove from discovered devices on a timer (every second)
 
-buttons to reconnect via ble/wifi (instead of disconnect)
 
 change UKMission to struct (?)
 
