@@ -66,7 +66,7 @@ class UKUdpConnectionManager: UKConnectionManager {
     }
 
     @objc func ping() {
-        sendUdpMessage(type: .ping)
+        sendUdpMessage(type: status == .connecting ? .getDeviceType : .ping)
     }
 
     // MARK: - UDP
@@ -119,9 +119,6 @@ class UKUdpConnectionManager: UKConnectionManager {
                 return
             }
             self.logger.debug("sent data")
-            print("udp sent")
-            // TODO: - verify data was sent
-            // status = .connected
         })
     }
 

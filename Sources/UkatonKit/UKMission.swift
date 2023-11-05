@@ -74,7 +74,7 @@ public class UKMission: ObservableObject {
             logger.error("no connectionManager defined")
             return
         }
-        guard connectionStatus == .notConnected else {
+        guard connectionStatus == .notConnected || connectionStatus == .disconnecting else {
             let _self = self
             logger.warning("cannot connect while in connection state \(_self.connectionStatus.name)")
             return
@@ -88,46 +88,6 @@ public class UKMission: ObservableObject {
             return
         }
         connectionManager?.disconnect()
-    }
-
-    public func changeConnection(type connectionType: UKConnectionType) {
-        guard self.connectionType == connectionType else {
-            logger.warning("already connected via \(connectionType.name)")
-            return
-        }
-
-        guard connectionType.requiresWifi != true || isConnectedToWifi == true else {
-            logger.error("connection type requires a wifi connection")
-            return
-        }
-
-        if connectionStatus == .notConnected {
-            disconnect()
-        }
-
-        var newConnectionManager: (any UKConnectionManager)? = nil
-        switch connectionType {
-        case .bluetooth:
-            if let peripheral {
-                newConnectionManager = UKBluetoothConnectionManager(peripheral: peripheral)
-            }
-            else {
-                logger.error("no peripheral found")
-            }
-        case .udp:
-            if let ipAddress {
-                newConnectionManager = UKUdpConnectionManager(ipAddress: ipAddress)
-            }
-            else {
-                logger.error("no ip address defined")
-            }
-        }
-
-        if newConnectionManager != nil {
-            logger.debug("switching to \(newConnectionManager!.type.name) connection")
-            connectionManager = newConnectionManager
-            connect()
-        }
     }
 
     // MARK: - Initialization

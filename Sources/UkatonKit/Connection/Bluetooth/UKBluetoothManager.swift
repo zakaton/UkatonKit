@@ -36,9 +36,10 @@ public class UKBluetoothManager: NSObject, ObservableObject {
     private var shouldScanForDevicesWhenPoweredOn: Bool = false
     public func scanForDevices() {
         if centralManager.state == .poweredOn {
-            discoveredDevices.removeAll(where: { $0.mission?.connectionStatus != .connected })
+            discoveredDevices.removeAll(where: { $0.mission?.connectionStatus == .notConnected })
             centralManager.scanForPeripherals(withServices: [UKBluetoothServiceIdentifier.main.uuid], options: [CBCentralManagerScanOptionAllowDuplicatesKey: true])
             isScanning = true
+            startTimer()
             logger.debug("scanning for devices...")
         }
         else {
@@ -53,6 +54,7 @@ public class UKBluetoothManager: NSObject, ObservableObject {
             isScanning = false
             logger.debug("stopped scanning for devices")
         }
+        stopTimer()
     }
 
     public func toggleDeviceScan() {
@@ -62,6 +64,35 @@ public class UKBluetoothManager: NSObject, ObservableObject {
         else {
             scanForDevices()
         }
+    }
+
+    // MARK: - Check Devices
+
+    var timer: Timer?
+
+    func startTimer() {
+        guard timer == nil else {
+            logger.warning("timer is already running")
+            return
+        }
+        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(checkDevices), userInfo: nil, repeats: true)
+        timer?.tolerance = 0.2
+    }
+
+    func stopTimer() {
+        guard timer != nil else {
+            logger.warning("no timer to stop")
+            return
+        }
+
+        timer!.invalidate()
+        timer = nil
+    }
+
+    @objc func checkDevices() {
+        discoveredDevices.removeAll(where: {
+            $0.mission?.connectionStatus == .notConnected && $0.lastTimeReceivedAdvertisement.timeIntervalSinceNow < -3
+        })
     }
 }
 
@@ -85,6 +116,7 @@ extension UKBluetoothManager: CBCentralManagerDelegate {
         if let index = discoveredDevices.firstIndex(where: { $0.peripheral.identifier == peripheral.identifier }) {
             discoveredDevices[index].rssi = RSSI
             discoveredDevices[index].advertisementData = advertisementData
+            discoveredDevices[index].lastTimeReceivedAdvertisement = Date.now
         }
         else {
             discoveredDevices.append(.init(peripheral: peripheral, rssi: RSSI, advertisementData: advertisementData))

@@ -11,6 +11,7 @@ public struct UKDiscoveredBluetoothDevice {
 
     let peripheral: CBPeripheral
     public internal(set) var rssi: NSNumber
+    var lastTimeReceivedAdvertisement: Date = .now
 
     // MARK: - Peripheral Getters
 
