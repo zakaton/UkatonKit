@@ -66,7 +66,7 @@ class UKUdpConnectionManager: UKConnectionManager {
     }
 
     @objc func ping() {
-        sendUdpMessage(type: status == .connecting ? .getDeviceType : .ping)
+        sendUdpMessage(type: status == .connecting ? .batteryLevel : .ping)
     }
 
     // MARK: - UDP

@@ -162,6 +162,11 @@ class UKBluetoothConnectionManager: NSObject, UKConnectionManager, ObservableObj
         if characteristic.properties.contains(.notify) {
             peripheral!.setNotifyValue(true, for: characteristic)
         }
+        if characteristic.properties.contains(.read) {
+            if characteristicIdentifier == .batteryLevel {
+                peripheral!.readValue(for: characteristic)
+            }
+        }
     }
 
     // MARK: - Notifications
