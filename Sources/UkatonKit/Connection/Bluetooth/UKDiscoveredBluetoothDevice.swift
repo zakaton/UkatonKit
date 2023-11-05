@@ -1,3 +1,4 @@
+import Combine
 import CoreBluetooth
 import OSLog
 import UkatonMacros
@@ -14,7 +15,7 @@ public struct UKDiscoveredBluetoothDevice {
     // MARK: - Peripheral Getters
 
     public var name: String { self.peripheral.name! }
-    public var mission: UKMission?
+    public private(set) var mission: UKMission?
 
     // MARK: - Parsing Advertisement Data
 

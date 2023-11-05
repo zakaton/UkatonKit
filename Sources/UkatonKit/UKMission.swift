@@ -5,6 +5,8 @@ import UkatonMacros
 
 @StaticLogger
 public class UKMission: ObservableObject {
+    public static let None = UKMission()
+
     // MARK: - Components
 
     public var motionCalibrationData: UKMotionCalibrationDataManager = .init()
@@ -61,7 +63,11 @@ public class UKMission: ObservableObject {
     }
 
     @Published public private(set) var connectionType: UKConnectionType? = nil
-    @Published public private(set) var connectionStatus: UKConnectionStatus = .notConnected
+    @Published public private(set) var connectionStatus: UKConnectionStatus = .notConnected {
+        didSet {
+            print("new connection status: \(connectionStatus.name)")
+        }
+    }
 
     public func connect() {
         guard connectionManager != nil else {
