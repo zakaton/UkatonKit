@@ -56,8 +56,6 @@ public class UKMission: ObservableObject {
                     self.connectionStatus = $0
                 }
                 connectionType = connectionManager?.type
-
-                connect()
             }
         }
     }
@@ -66,20 +64,45 @@ public class UKMission: ObservableObject {
     @Published public private(set) var connectionStatus: UKConnectionStatus = .notConnected {
         didSet {
             print("new connection status: \(connectionStatus.name)")
+
+            if connectionStatus == .connected {
+                UKMissionsManager.shared.add(self)
+            }
+            else if connectionStatus == .notConnected {
+                UKMissionsManager.shared.remove(self)
+            }
         }
     }
 
-    public func connect() {
-        guard connectionManager != nil else {
-            logger.error("no connectionManager defined")
-            return
+    func createConnectionManager(type connectionType: UKConnectionType) -> any UKConnectionManager {
+        var _connectionType = connectionType
+        if connectionType.requiresWifi, isConnectedToWifi == false || ipAddress == nil {
+            logger.warning("device is not connected to wifi - defaulting to bluetooth")
+            _connectionType = .bluetooth
         }
+
+        return switch _connectionType {
+        case .bluetooth:
+            UKBluetoothConnectionManager(peripheral: peripheral!)
+        case .udp:
+            UKUdpConnectionManager(ipAddress: ipAddress!)
+        }
+    }
+
+    public func connect(type _connectionType: UKConnectionType? = nil) {
         guard connectionStatus == .notConnected || connectionStatus == .disconnecting else {
             let _self = self
             logger.warning("cannot connect while in connection state \(_self.connectionStatus.name)")
             return
         }
-        connectionManager?.connect()
+        if connectionManager == nil || (_connectionType != nil && connectionType != _connectionType) {
+            connectionManager = createConnectionManager(type: _connectionType ?? .bluetooth)
+        }
+        guard connectionManager != nil else {
+            logger.error("no connectionManager defined")
+            return
+        }
+        connectionManager!.connect()
     }
 
     public func disconnect() {
@@ -93,10 +116,10 @@ public class UKMission: ObservableObject {
     // MARK: - Initialization
 
     init() {
-        UKMissionsManager.shared.missions.append(self)
+        // UKMissionsManager.shared.missions.append(self)
     }
 
-    convenience init(discoveredBluetoothDevice: UKDiscoveredBluetoothDevice, connectionType: UKConnectionType) {
+    convenience init(discoveredBluetoothDevice: UKDiscoveredBluetoothDevice) {
         defer {
             self.name = discoveredBluetoothDevice.name
             self.deviceType = discoveredBluetoothDevice.type
@@ -106,8 +129,6 @@ public class UKMission: ObservableObject {
                 self.shouldConnectToWifi = true
             }
             self.peripheral = discoveredBluetoothDevice.peripheral
-
-            self.connectionManager = discoveredBluetoothDevice.createConnectionManager(type: connectionType)
         }
 
         self.init()

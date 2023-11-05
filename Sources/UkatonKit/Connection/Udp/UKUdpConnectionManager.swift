@@ -73,7 +73,8 @@ class UKUdpConnectionManager: UKConnectionManager {
 
     var connection: NWConnection!
     let ipAddress: String!
-    var queue = DispatchQueue.global(qos: .userInitiated)
+    static var queue: DispatchQueue = .global(qos: .userInteractive)
+    var queue: DispatchQueue { Self.queue }
     private var cancellable: AnyCancellable?
 
     static let portNumber: NWEndpoint.Port.IntegerLiteralType = 9999
@@ -197,10 +198,5 @@ class UKUdpConnectionManager: UKConnectionManager {
 
             onMessageReceived(connectionMessageType, subData!, &offset)
         }
-    }
-
-    deinit {
-        disconnect()
-        connection.cancel()
     }
 }

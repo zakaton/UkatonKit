@@ -91,7 +91,7 @@ public class UKBluetoothManager: NSObject, ObservableObject {
 
     @objc func checkDevices() {
         discoveredDevices.removeAll(where: {
-            $0.mission?.connectionStatus == .notConnected && $0.lastTimeReceivedAdvertisement.timeIntervalSinceNow < -3
+            $0.mission?.connectionStatus == .notConnected && $0.lastTimeReceivedAdvertisement.timeIntervalSinceNow < -4
         })
     }
 }

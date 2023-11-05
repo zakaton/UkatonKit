@@ -32,7 +32,7 @@ public struct UKDiscoveredBluetoothDevice {
             var offset: Data.Index = 0
             self.type = .init(rawValue: rawServiceData[offset])!
             offset += 1
-            self.isConnectedToWifi = rawServiceData[0] != 0
+            self.isConnectedToWifi = rawServiceData[offset] != 0
             offset += 1
 
             if self.isConnectedToWifi, rawServiceData.count > 2 {
@@ -70,31 +70,16 @@ public struct UKDiscoveredBluetoothDevice {
 
     // MARK: - connect
 
-    func createConnectionManager(type connectionType: UKConnectionType) -> any UKConnectionManager {
-        var _connectionType = connectionType
-        if connectionType.requiresWifi, !self.isConnectedToWifi || self.ipAddress == nil {
-            logger.warning("device is not connected to wifi - defaulting to bluetooth")
-            _connectionType = .bluetooth
-        }
-
-        return switch _connectionType {
-        case .bluetooth:
-            UKBluetoothConnectionManager(peripheral: self.peripheral)
-        case .udp:
-            UKUdpConnectionManager(ipAddress: self.ipAddress!)
-        }
-    }
-
     public mutating func connect(type connectionType: UKConnectionType) {
         if self.mission == nil {
-            self.mission = .init(discoveredBluetoothDevice: self, connectionType: connectionType)
+            self.mission = .init(discoveredBluetoothDevice: self)
         }
+        self.mission!.connect(type: connectionType)
     }
 
     public mutating func disconnect() {
         if self.mission != nil {
             self.mission!.disconnect()
-            self.mission = nil
         }
     }
 }
