@@ -95,13 +95,13 @@ extension UKBluetoothManager: CBCentralManagerDelegate {
 
     public func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         if let bluetoothConnectionManager = peripheral.delegate as? UKBluetoothConnectionManager {
-            bluetoothConnectionManager.onConnection()
+            bluetoothConnectionManager.onPeripheralConnection()
         }
     }
 
     public func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         if let bluetoothConnectionManager = peripheral.delegate as? UKBluetoothConnectionManager {
-            bluetoothConnectionManager.onDisconnection()
+            bluetoothConnectionManager.onPeripheralDisconnection()
         }
     }
 }

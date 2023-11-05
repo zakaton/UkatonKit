@@ -5,7 +5,7 @@ import UkatonMacros
 
 @StaticLogger
 public class UKMission: ObservableObject {
-    public static let None = UKMission()
+    public static let none = UKMission()
 
     // MARK: - Components
 
@@ -72,6 +72,11 @@ public class UKMission: ObservableObject {
     public func connect() {
         guard connectionManager != nil else {
             logger.error("no connectionManager defined")
+            return
+        }
+        guard connectionStatus == .notConnected else {
+            let _self = self
+            logger.warning("cannot connect while in connection state \(_self.connectionStatus.name)")
             return
         }
         connectionManager?.connect()

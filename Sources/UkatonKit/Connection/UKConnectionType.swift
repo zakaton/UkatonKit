@@ -1,6 +1,6 @@
 import UkatonMacros
 
-@EnumName
+@EnumName(accessLevel: "public")
 public enum UKConnectionType {
     case bluetooth
     case udp

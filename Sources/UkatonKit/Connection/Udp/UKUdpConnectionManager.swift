@@ -22,6 +22,13 @@ class UKUdpConnectionManager: UKConnectionManager {
     }
 
     func connect() {
+        guard timer == nil else {
+            logger.warning("timer already started")
+            return
+        }
+
+        status = .connecting
+
         startTimer()
     }
 
@@ -102,9 +109,13 @@ class UKUdpConnectionManager: UKConnectionManager {
         connection.send(content: data, completion: NWConnection.SendCompletion.contentProcessed { [unowned self] NWError in
             guard NWError == nil else {
                 self.logger.error("error sending data: \(NWError)")
+                print("udp error")
                 return
             }
             self.logger.debug("sent data")
+            print("udp sent")
+            // TODO: - verify data was sent
+            // status = .connected
         })
     }
 

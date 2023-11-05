@@ -2,6 +2,8 @@ import UkatonMacros
 
 @EnumName(accessLevel: "public")
 public enum UKConnectionStatus {
-    case connected
     case notConnected
+    case connecting
+    case connected
+    case disconnecting
 }

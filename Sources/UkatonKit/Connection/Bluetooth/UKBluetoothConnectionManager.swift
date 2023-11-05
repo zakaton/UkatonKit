@@ -85,28 +85,32 @@ class UKBluetoothConnectionManager: NSObject, UKConnectionManager, ObservableObj
             return
         }
 
+        status = .connecting
+
         centralManager.connect(peripheral)
     }
 
     func disconnect() {
-        guard let peripheral, peripheral.state == .connected else {
+        guard let peripheral, peripheral.state == .connected || peripheral.state == .connecting else {
             logger.error("unable to disconnect, peripheral is in state \(String(describing: self.peripheral!.state))")
+            status = .notConnected
             return
         }
+
+        status = .disconnecting
 
         centralManager.cancelPeripheralConnection(peripheral)
     }
 
     // MARK: - Connection callbacks
 
-    func onConnection() {
-        logger.debug("connected")
+    func onPeripheralConnection() {
+        logger.debug("connected to peripheral")
         peripheral?.discoverServices(UKBluetoothServiceIdentifier.allUUIDs)
-        status = .connected
     }
 
-    func onDisconnection() {
-        logger.debug("disconnected")
+    func onPeripheralDisconnection() {
+        logger.debug("disconnected from peripheral")
         status = .notConnected
     }
 
@@ -144,6 +148,10 @@ class UKBluetoothConnectionManager: NSObject, UKConnectionManager, ObservableObj
                 if let characteristicIdentifier = UKBluetoothCharacteristicIdentifier(characteristic: characteristic) {
                     onDiscovered(characteristic: characteristic, withIdentifier: characteristicIdentifier)
                 }
+            }
+
+            if serviceIdentifier == .main {
+                status = .connected
             }
         }
     }

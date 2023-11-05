@@ -89,6 +89,13 @@ public struct UKDiscoveredBluetoothDevice {
             self.mission = .init(discoveredBluetoothDevice: self, connectionType: connectionType)
         }
     }
+
+    public mutating func disconnect() {
+        if self.mission != nil {
+            self.mission!.disconnect()
+            self.mission = nil
+        }
+    }
 }
 
 extension UKDiscoveredBluetoothDevice: Identifiable, Hashable {

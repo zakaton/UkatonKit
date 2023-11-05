@@ -1,5 +1,4 @@
-connect/disconnect UI
-hide time/rssi after connection
+test udp
 
 keep connected discovered device when re-scanning (keep at top)
 remove from discovered devices on a timer (every second)
