@@ -113,10 +113,8 @@ extension UKBluetoothManager: CBCentralManagerDelegate {
     // MARK: - Scanning
 
     public func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: UKBluetoothPeripheralAdvertisementData, rssi RSSI: NSNumber) {
-        if let index = discoveredDevices.firstIndex(where: { $0.peripheral.identifier == peripheral.identifier }) {
-            discoveredDevices[index].rssi = RSSI
-            discoveredDevices[index].advertisementData = advertisementData
-            discoveredDevices[index].lastTimeInteracted = Date.now
+        if let index = discoveredDevices.firstIndex(where: { $0.peripheral?.identifier == peripheral.identifier }) {
+            discoveredDevices[index].onAdvertisementUpdate(peripheral: peripheral, rssi: RSSI, advertisementData: advertisementData)
         }
         else {
             discoveredDevices.append(.init(peripheral: peripheral, rssi: RSSI, advertisementData: advertisementData))

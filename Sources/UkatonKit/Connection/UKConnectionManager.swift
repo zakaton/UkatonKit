@@ -25,4 +25,11 @@ extension UKConnectionManager {
     public static func == (lhs: Self, rhs: Self) -> Bool {
         !lhs.id.isEmpty && lhs.id == rhs.id
     }
+
+    func onMessageReceived(type connectionMessageType: UKConnectionMessageType, data: Data) {
+        if onMessageReceived != nil {
+            var offset: Data.Index = 0
+            onMessageReceived!(connectionMessageType, data, &offset)
+        }
+    }
 }

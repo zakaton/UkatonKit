@@ -7,15 +7,17 @@ public typealias UKBluetoothPeripheralAdvertisementData = [String: Any]
 
 @StaticLogger
 public struct UKDiscoveredBluetoothDevice {
+    public static let none = UKDiscoveredBluetoothDevice()
+
     // MARK: - Stored Properties
 
-    let peripheral: CBPeripheral
-    public internal(set) var rssi: NSNumber
+    private(set) var peripheral: CBPeripheral?
+    public internal(set) var rssi: NSNumber?
     var lastTimeInteracted: Date = .now
 
     // MARK: - Peripheral Getters
 
-    public var name: String { self.peripheral.name! }
+    public var name: String?
     public private(set) var mission: UKMission?
 
     // MARK: - Parsing Advertisement Data
@@ -60,12 +62,20 @@ public struct UKDiscoveredBluetoothDevice {
 
     // MARK: - init
 
+    init() {}
+
     init(peripheral: CBPeripheral, rssi: NSNumber, advertisementData: UKBluetoothPeripheralAdvertisementData) {
         self.peripheral = peripheral
-        self.rssi = rssi
         defer {
-            self.advertisementData = advertisementData
+            self.onAdvertisementUpdate(peripheral: peripheral, rssi: rssi, advertisementData: advertisementData)
         }
+    }
+
+    mutating func onAdvertisementUpdate(peripheral: CBPeripheral, rssi: NSNumber, advertisementData: UKBluetoothPeripheralAdvertisementData) {
+        self.name = peripheral.name
+        self.rssi = rssi
+        self.advertisementData = advertisementData
+        self.lastTimeInteracted = Date.now
     }
 
     // MARK: - connect
@@ -86,7 +96,7 @@ public struct UKDiscoveredBluetoothDevice {
 }
 
 extension UKDiscoveredBluetoothDevice: Identifiable, Hashable {
-    public var id: UUID { self.peripheral.identifier }
+    public var id: UUID? { self.peripheral?.identifier }
     public func hash(into hasher: inout Hasher) { hasher.combine(self.id) }
 
     public static func == (lhs: UKDiscoveredBluetoothDevice, rhs: UKDiscoveredBluetoothDevice) -> Bool {

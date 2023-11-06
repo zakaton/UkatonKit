@@ -4,7 +4,7 @@ import UkatonMacros
 enum UKConnectionMessageType: CaseIterable {
     case batteryLevel
     case getDeviceType, setDeviceType
-    case getDeviceName, setDeviceName
+    case getName, setName
     case motionCalibration
     case getSensorDataConfigurations, setSensorDataConfigurations
     case sensorData

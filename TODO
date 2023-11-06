@@ -1,16 +1,19 @@
 DeviceView
-    get/set information
-    toggle connection
+    type picker
+    wifi info
     list of demo views
     
 SensorData View
-    raw data
+    text data
 3DView
     toggle Quaternion/LinearAcceleration data
 GraphView
     line graphs
-
-2 tabs on main page (Connected Devices vs Discovered Devices)
+HapticsView
+    manual trigger
+    create presets
+BalanceGameView
+    like wii fit
     
-Missions
-    select 2 connected devices
+Missions Tab
+    gets first left/right connected insoles

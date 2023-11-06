@@ -163,9 +163,7 @@ class UKBluetoothConnectionManager: NSObject, UKConnectionManager, ObservableObj
             peripheral!.setNotifyValue(true, for: characteristic)
         }
         if characteristic.properties.contains(.read) {
-            if characteristicIdentifier == .batteryLevel {
-                peripheral!.readValue(for: characteristic)
-            }
+            peripheral!.readValue(for: characteristic)
         }
     }
 
@@ -203,9 +201,21 @@ class UKBluetoothConnectionManager: NSObject, UKConnectionManager, ObservableObj
     func onReceived(data: Data, from characteristic: CBCharacteristic, withIdentifier characteristicIdentifier: UKBluetoothCharacteristicIdentifier) {
         logger.debug("received \(data.count) bytes from characteristic \(characteristicIdentifier.name)")
 
-        if let onMessageReceived {
-            var offset: Data.Index = 0
-            onMessageReceived(characteristicIdentifier.connectionMessageType, data, &offset)
+        onMessageReceived(type: characteristicIdentifier.connectionMessageType, data: data)
+    }
+
+    func peripheralDidUpdateName(_ peripheral: CBPeripheral) {
+        if let name = peripheral.name {
+            logger.debug("peripheral name changed to \(name)")
+        }
+    }
+
+    func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
+        if let characteristicIdentifier: UKBluetoothCharacteristicIdentifier = .init(characteristic: characteristic) {
+            logger.debug("didWriteValueFor \(characteristicIdentifier.name)")
+            if characteristic.properties.contains(.read) {
+                peripheral.readValue(for: characteristic)
+            }
         }
     }
 }

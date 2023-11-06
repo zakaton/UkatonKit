@@ -1,15 +1,15 @@
 import Foundation
 
-extension UKMission {
+public extension UKMission {
     // MARK: - ConnectionManager Parsing
 
-    func onConnectionMessage(type messageType: UKConnectionMessageType, data: Data, at offset: inout Data.Index) {
+    internal func onConnectionMessage(type messageType: UKConnectionMessageType, data: Data, at offset: inout Data.Index) {
         switch messageType {
         case .batteryLevel:
             parseBatteryLevel(data: data, at: &offset)
         case .getDeviceType, .setDeviceType:
             parseDeviceType(data: data, at: &offset)
-        case .getDeviceName, .setDeviceName:
+        case .getName, .setName:
             parseName(data: data, at: &offset)
 
         case .getWifiSsid, .setWifiSsid:
@@ -37,15 +37,18 @@ extension UKMission {
 
     // MARK: - Send Message
 
-    func sendMessage(type messageType: UKConnectionMessageType, data: Data) throws {
+    internal func sendMessage(type messageType: UKConnectionMessageType, data: Data) throws {
         guard let connectionManager else {
+            logger.error("no connection manager")
             throw UKConnectionManagerMessageError.noConnectionManager
         }
         guard connectionManager.status == .connected else {
+            logger.error("not connected")
             throw UKConnectionManagerMessageError.notConnected
         }
 
         guard connectionManager.allowedMessageTypes.contains(messageType) else {
+            logger.error("messageType not implemented \(messageType.name)")
             throw UKConnectionManagerMessageError.messageTypeNotImplemented(messageType)
         }
 
@@ -60,8 +63,8 @@ extension UKMission {
         try sendMessage(type: .setDeviceType, data: newDeviceType.rawValue.data)
     }
 
-    func setDeviceName(newDeviceName: String) throws {
-        try sendMessage(type: .setDeviceName, data: newDeviceName.data)
+    func setName(newName: String) throws {
+        try sendMessage(type: .setName, data: newName.data)
     }
 
     // MARK: - WifiManager Interface

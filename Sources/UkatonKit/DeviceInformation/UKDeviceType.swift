@@ -1,7 +1,9 @@
 import UkatonMacros
 
 @EnumName(accessLevel: "public")
-public enum UKDeviceType: UInt8, CaseIterable {
+public enum UKDeviceType: UInt8, CaseIterable, Identifiable {
+    public var id: Self { self }
+
     case motionModule
     case leftInsole
     case rightInsole

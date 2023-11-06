@@ -10,7 +10,7 @@ class UKUdpConnectionManager: UKConnectionManager {
 
     var id: String { ipAddress }
 
-    static let allowedMessageTypes: [UKConnectionMessageType] = UKConnectionMessageType.allCases.filter { $0.name.contains("wifi") }
+    static let allowedMessageTypes: [UKConnectionMessageType] = UKConnectionMessageType.allCases.filter { !$0.name.contains("wifi") }
 
     var onStatusUpdated: ((UKConnectionStatus) -> Void)?
     var onMessageReceived: ((UKConnectionMessageType, Data, inout Data.Index) -> Void)?
@@ -183,20 +183,19 @@ class UKUdpConnectionManager: UKConnectionManager {
                 break
             }
 
-            guard let onMessageReceived else {
+            guard onMessageReceived != nil else {
                 logger.error("no onMessageReceived callback")
                 break
             }
 
-            let subData: Data?
             if udpMessageType.includesDataSize {
                 let size: UInt8 = data.parse(at: &offset)
-                subData = data.subdata(in: offset ..< offset + Int(size))
+                let subData = data.subdata(in: offset ..< offset + Int(size))
+                onMessageReceived(type: connectionMessageType, data: subData)
+                offset += Int(size)
             } else {
-                subData = data
+                onMessageReceived?(connectionMessageType, data, &offset)
             }
-
-            onMessageReceived(connectionMessageType, subData!, &offset)
         }
     }
 }

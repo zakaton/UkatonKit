@@ -63,8 +63,6 @@ public class UKMission: ObservableObject {
     @Published public private(set) var connectionType: UKConnectionType? = nil
     @Published public private(set) var connectionStatus: UKConnectionStatus = .notConnected {
         didSet {
-            print("new connection status: \(connectionStatus.name)")
-
             if connectionStatus == .connected {
                 UKMissionsManager.shared.add(self)
             }
@@ -115,9 +113,7 @@ public class UKMission: ObservableObject {
 
     // MARK: - Initialization
 
-    init() {
-        // UKMissionsManager.shared.missions.append(self)
-    }
+    init() {}
 
     convenience init(discoveredBluetoothDevice: UKDiscoveredBluetoothDevice) {
         defer {

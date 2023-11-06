@@ -38,7 +38,7 @@ enum UKBluetoothCharacteristicIdentifier: String, CaseIterable, UKBluetoothConta
     var connectionMessageType: UKConnectionMessageType {
         switch self {
         case .deviceName:
-            return .getDeviceName
+            return .getName
         case .batteryLevel:
             return .batteryLevel
         case .deviceType:
@@ -66,7 +66,7 @@ enum UKBluetoothCharacteristicIdentifier: String, CaseIterable, UKBluetoothConta
 
     init?(connectionMessageType: UKConnectionMessageType) {
         let serviceIdentifier: Self? = switch connectionMessageType {
-        case .getDeviceName, .setDeviceName:
+        case .getName, .setName:
             .deviceName
         case .getDeviceType, .setDeviceType:
             .deviceType
