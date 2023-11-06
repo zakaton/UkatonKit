@@ -91,7 +91,7 @@ public class UKBluetoothManager: NSObject, ObservableObject {
 
     @objc func checkDevices() {
         discoveredDevices.removeAll(where: {
-            $0.mission?.connectionStatus == .notConnected && $0.lastTimeReceivedAdvertisement.timeIntervalSinceNow < -4
+            $0.mission?.connectionStatus == .notConnected && $0.lastTimeInteracted.timeIntervalSinceNow < -4
         })
     }
 }
@@ -116,7 +116,7 @@ extension UKBluetoothManager: CBCentralManagerDelegate {
         if let index = discoveredDevices.firstIndex(where: { $0.peripheral.identifier == peripheral.identifier }) {
             discoveredDevices[index].rssi = RSSI
             discoveredDevices[index].advertisementData = advertisementData
-            discoveredDevices[index].lastTimeReceivedAdvertisement = Date.now
+            discoveredDevices[index].lastTimeInteracted = Date.now
         }
         else {
             discoveredDevices.append(.init(peripheral: peripheral, rssi: RSSI, advertisementData: advertisementData))

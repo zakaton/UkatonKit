@@ -11,7 +11,7 @@ public struct UKDiscoveredBluetoothDevice {
 
     let peripheral: CBPeripheral
     public internal(set) var rssi: NSNumber
-    var lastTimeReceivedAdvertisement: Date = .now
+    var lastTimeInteracted: Date = .now
 
     // MARK: - Peripheral Getters
 
@@ -79,6 +79,7 @@ public struct UKDiscoveredBluetoothDevice {
 
     public mutating func disconnect() {
         if self.mission != nil {
+            self.lastTimeInteracted = Date.now
             self.mission!.disconnect()
         }
     }
