@@ -8,7 +8,7 @@ public class UKMission: ObservableObject {
     // MARK: - none type
 
     public static let none = UKMission(isNone: true)
-    private var isNone: Bool = false
+    public private(set) var isNone: Bool = false
     private convenience init(isNone: Bool) {
         self.init()
         self.isNone = isNone
@@ -22,7 +22,7 @@ public class UKMission: ObservableObject {
 
     // MARK: - Device Information
 
-    @Published public internal(set) var name: String = "undefined name"
+    @Published public internal(set) var name: String = "undefined"
     @Published public internal(set) var deviceType: UKDeviceType = .motionModule {
         didSet {
             let _self = self
@@ -39,7 +39,14 @@ public class UKMission: ObservableObject {
     @Published public internal(set) var wifiSsid: String = ""
     @Published public internal(set) var wifiPassword: String = ""
     @Published public internal(set) var shouldConnectToWifi: Bool = false
-    @Published public internal(set) var isConnectedToWifi: Bool = false
+    @Published public internal(set) var isConnectedToWifi: Bool = false {
+        didSet {
+            if !isConnectedToWifi {
+                ipAddress = nil
+            }
+        }
+    }
+
     @Published public internal(set) var ipAddress: String? = nil
 
     // MARK: - Connection

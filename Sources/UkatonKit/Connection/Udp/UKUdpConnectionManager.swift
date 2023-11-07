@@ -66,7 +66,11 @@ class UKUdpConnectionManager: UKConnectionManager {
     }
 
     @objc func ping() {
-        sendUdpMessage(type: status == .connecting ? .batteryLevel : .ping)
+        if status == .connecting {
+            sendUdpMessages(.init(type: .getDeviceName), .init(type: .batteryLevel))
+        } else {
+            sendUdpMessage(type: .ping)
+        }
     }
 
     // MARK: - UDP
@@ -111,6 +115,11 @@ class UKUdpConnectionManager: UKConnectionManager {
 
     // MARK: - Send Message
 
+    struct UKUdpMessage {
+        var type: UKUdpMessageType
+        var data: Data?
+    }
+
     func sendRawData(_ data: Data) {
         logger.debug("sending udp data [\(data.count) bytes]")
         connection.send(content: data, completion: NWConnection.SendCompletion.contentProcessed { [unowned self] NWError in
@@ -123,19 +132,30 @@ class UKUdpConnectionManager: UKConnectionManager {
         })
     }
 
-    func sendUdpMessage(type udpMessageType: UKUdpMessageType, data: Data? = nil) {
-        var messageData: Data = .init()
+    func createRawMessageData(type udpMessageType: UKUdpMessageType, data: Data? = nil) -> Data {
+        var rawMessageData: Data = .init()
         if let data {
-            messageData = data
+            rawMessageData = data
             if udpMessageType.shouldIncludeDataSize {
-                messageData.insert(UInt8(data.count), at: 0)
+                rawMessageData.insert(UInt8(data.count), at: 0)
             }
         }
-        messageData.insert(udpMessageType.rawValue, at: 0)
+        rawMessageData.insert(udpMessageType.rawValue, at: 0)
 
-        logger.debug("sending udp message of type \(udpMessageType.name)")
+        return rawMessageData
+    }
 
-        sendRawData(messageData)
+    func sendUdpMessage(type udpMessageType: UKUdpMessageType, data: Data? = nil) {
+        let rawMessageData = createRawMessageData(type: udpMessageType, data: data)
+        sendRawData(rawMessageData)
+    }
+
+    func sendUdpMessages(_ messages: UKUdpMessage...) {
+        var rawMessageData: Data = .init()
+        messages.forEach { message in
+            rawMessageData += createRawMessageData(type: message.type, data: message.data)
+        }
+        sendRawData(rawMessageData)
     }
 
     func sendMessage(type messageType: UKConnectionMessageType, data: Data) {

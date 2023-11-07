@@ -18,6 +18,8 @@ public extension UKMission {
             parseWifiPassword(data: data, at: &offset)
         case .getWifiShouldConnect, .setWifiShouldConnect:
             parseShouldConnectToWifi(data: data, at: &offset)
+        case .getWifiIpAddress:
+            parseIpAddress(data: data, at: &offset)
         case .wifiIsConnected:
             parseIsConnectedToWifi(data: data, at: &offset)
 
@@ -59,26 +61,26 @@ public extension UKMission {
 
     // MARK: - DeviceInformationManager Interface
 
-    func setDeviceType(newDeviceType: UKDeviceType) throws {
+    func setDeviceType(_ newDeviceType: UKDeviceType) throws {
         try sendMessage(type: .setDeviceType, data: newDeviceType.rawValue.data)
     }
 
-    func setName(newName: String) throws {
+    func setName(_ newName: String) throws {
         try sendMessage(type: .setName, data: newName.data)
     }
 
     // MARK: - WifiManager Interface
 
-    func setWifiSsid(newWifiSsid: String) throws {
+    func setWifiSsid(_ newWifiSsid: String) throws {
         try sendMessage(type: .setWifiSsid, data: newWifiSsid.data)
     }
 
-    func setWifiPassword(newWifiPassword: String) throws {
+    func setWifiPassword(_ newWifiPassword: String) throws {
         try sendMessage(type: .setWifiPassword, data: newWifiPassword.data)
     }
 
-    func setWifiShouldConnect(newShouldConnect: Bool) throws {
-        try sendMessage(type: .setWifiShouldConnect, data: newShouldConnect.data)
+    func setWifiShouldConnect(_ newWifiShouldConnect: Bool) throws {
+        try sendMessage(type: .setWifiShouldConnect, data: newWifiShouldConnect.data)
     }
 
     // MARK: - SensorDataConfigurationsManager Interface

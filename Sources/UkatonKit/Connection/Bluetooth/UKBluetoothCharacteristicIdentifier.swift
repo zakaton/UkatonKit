@@ -71,6 +71,19 @@ enum UKBluetoothCharacteristicIdentifier: String, CaseIterable, UKBluetoothConta
         case .getDeviceType, .setDeviceType:
             .deviceType
 
+        case .getSensorDataConfigurations, .setSensorDataConfigurations:
+            .sensorDataConfiguration
+
+        case .getWifiSsid, .setWifiSsid:
+            .wifiSsid
+        case .getWifiPassword, .setWifiPassword:
+            .wifiPassword
+        case .getWifiShouldConnect, .setWifiShouldConnect:
+            .wifiShouldConnect
+
+        case .setHapticsVibration:
+            .hapticsVibration
+
         // TODO: - FILL
 
         default:
@@ -78,7 +91,7 @@ enum UKBluetoothCharacteristicIdentifier: String, CaseIterable, UKBluetoothConta
         }
 
         guard let serviceIdentifier else {
-            Self.logger.debug("uncaught connection message type \(connectionMessageType.name)")
+            Self.logger.error("uncaught connection message type \(connectionMessageType.name)")
             return nil
         }
 

@@ -17,7 +17,7 @@ public struct UKDiscoveredBluetoothDevice {
 
     // MARK: - Peripheral Getters
 
-    public var name: String = ""
+    public var name: String = "undefined"
     public private(set) var mission: UKMission?
 
     // MARK: - Parsing Advertisement Data
