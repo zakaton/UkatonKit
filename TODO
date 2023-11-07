@@ -1,5 +1,5 @@
 DeviceView
-    type picker
+    sendUdpMessage(s)
     wifi info
     list of demo views
     

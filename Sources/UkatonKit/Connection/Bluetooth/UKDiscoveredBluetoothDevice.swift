@@ -17,7 +17,7 @@ public struct UKDiscoveredBluetoothDevice {
 
     // MARK: - Peripheral Getters
 
-    public var name: String?
+    public var name: String = ""
     public private(set) var mission: UKMission?
 
     // MARK: - Parsing Advertisement Data
@@ -49,7 +49,7 @@ public struct UKDiscoveredBluetoothDevice {
 
     // MARK: - Parsed Properties
 
-    public private(set) var type: UKDeviceType?
+    public private(set) var type: UKDeviceType = .motionModule
     public private(set) var isConnectedToWifi: Bool = false
     public private(set) var ipAddress: String?
     public private(set) var timestamp: Double = .nan {
@@ -72,7 +72,7 @@ public struct UKDiscoveredBluetoothDevice {
     }
 
     mutating func onAdvertisementUpdate(peripheral: CBPeripheral, rssi: NSNumber, advertisementData: UKBluetoothPeripheralAdvertisementData) {
-        self.name = peripheral.name
+        self.name = peripheral.name ?? ""
         self.rssi = rssi
         self.advertisementData = advertisementData
         self.lastTimeInteracted = Date.now

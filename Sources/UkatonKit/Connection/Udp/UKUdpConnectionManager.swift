@@ -119,7 +119,7 @@ class UKUdpConnectionManager: UKConnectionManager {
                 self.logger.error("error sending data: \(NWError)")
                 return
             }
-            self.logger.debug("sent data")
+            // self.logger.debug("successfully sent data")
         })
     }
 

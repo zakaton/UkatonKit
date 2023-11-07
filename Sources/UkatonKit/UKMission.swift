@@ -5,7 +5,14 @@ import UkatonMacros
 
 @StaticLogger
 public class UKMission: ObservableObject {
-    public static let none = UKMission()
+    // MARK: - none type
+
+    public static let none = UKMission(isNone: true)
+    private var isNone: Bool = false
+    private convenience init(isNone: Bool) {
+        self.init()
+        self.isNone = isNone
+    }
 
     // MARK: - Components
 
@@ -15,25 +22,25 @@ public class UKMission: ObservableObject {
 
     // MARK: - Device Information
 
-    @Published public internal(set) var name: String?
-    @Published public internal(set) var deviceType: UKDeviceType? {
+    @Published public internal(set) var name: String = "undefined name"
+    @Published public internal(set) var deviceType: UKDeviceType = .motionModule {
         didSet {
             let _self = self
-            logger.debug("updated device type: \(_self.deviceType!.name)")
+            logger.debug("updated device type: \(_self.deviceType.name)")
             sensorDataConfigurations.deviceType = deviceType
             sensorData.deviceType = deviceType
         }
     }
 
-    @Published public internal(set) var batteryLevel: UKBatteryLevel?
+    @Published public internal(set) var batteryLevel: UKBatteryLevel = .zero
 
     // MARK: - Wifi Information
 
-    @Published public internal(set) var wifiSsid: String?
-    @Published public internal(set) var wifiPassword: String?
-    @Published public internal(set) var shouldConnectToWifi: Bool?
-    @Published public internal(set) var isConnectedToWifi: Bool?
-    @Published public internal(set) var ipAddress: String?
+    @Published public internal(set) var wifiSsid: String = ""
+    @Published public internal(set) var wifiPassword: String = ""
+    @Published public internal(set) var shouldConnectToWifi: Bool = false
+    @Published public internal(set) var isConnectedToWifi: Bool = false
+    @Published public internal(set) var ipAddress: String? = nil
 
     // MARK: - Connection
 
@@ -70,6 +77,10 @@ public class UKMission: ObservableObject {
                 UKMissionsManager.shared.remove(self)
             }
         }
+    }
+
+    public var isConnected: Bool {
+        connectionStatus == .connected
     }
 
     func createConnectionManager(type connectionType: UKConnectionType) -> any UKConnectionManager {
@@ -141,6 +152,9 @@ extension UKMission: Hashable {
     public func hash(into hasher: inout Hasher) { hasher.combine(id) }
 
     public static func == (lhs: UKMission, rhs: UKMission) -> Bool {
+        if lhs.isNone || rhs.isNone {
+            return lhs.isNone && rhs.isNone
+        }
         guard let lhsType = lhs.connectionType, let rhsType = lhs.connectionType, lhsType == rhsType else {
             return false
         }
