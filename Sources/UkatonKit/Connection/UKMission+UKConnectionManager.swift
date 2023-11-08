@@ -66,6 +66,7 @@ public extension UKMission {
 
         case .getSensorDataConfigurations, .setSensorDataConfigurations:
             sensorDataConfigurations.parse(data, at: &offset)
+            updateCheckSensorDataTimer()
 
         case .sensorData:
             sensorData.parse(data, at: &offset)
@@ -128,6 +129,15 @@ public extension UKMission {
 
     func setSensorDataConfigurations(_ newSensorDataConfigurations: UKSensorDataConfigurations) throws {
         try sendMessage(type: .setSensorDataConfigurations, data: newSensorDataConfigurations.data(deviceType: deviceType))
+    }
+
+    func resendSensorDataConfigurations() throws {
+        try setSensorDataConfigurations(sensorDataConfigurations)
+    }
+
+    func resetSensorDataConfigurations() throws {
+        let newSensorDataConfiguratons: UKSensorDataConfigurations = .init()
+        try setSensorDataConfigurations(newSensorDataConfiguratons)
     }
 
     // MARK: - Haptics

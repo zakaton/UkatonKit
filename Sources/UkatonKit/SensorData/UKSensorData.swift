@@ -4,12 +4,6 @@ import UkatonMacros
 
 public typealias UKTimestamp = UInt64
 
-extension Date {
-    static var now_ms: UKTimestamp {
-        UKTimestamp(now.timeIntervalSince1970 * 1000)
-    }
-}
-
 protocol UKSensorDataComponent {
     var deviceType: UKDeviceType? { get set }
     mutating func parse(_ data: Data, at offset: inout Data.Index, until finalOffset: Data.Index, timestamp: UKTimestamp)
@@ -36,7 +30,7 @@ public struct UKSensorData {
     // MARK: - Timestamp
 
     private var timestamp: UKTimestamp = 0
-    private(set) var lastTimeReceivedSensorData: UKTimestamp = 0
+    private(set) var lastTimeReceivedSensorData: Date = .now
 
     private var timestampOffset: UKTimestamp = 0
     private var rawTimestamp: UInt16 = 0 {
@@ -54,7 +48,7 @@ public struct UKSensorData {
     // MARK: - Parsing
 
     mutating func parse(_ data: Data, at offset: inout Data.Index) {
-        lastTimeReceivedSensorData = Date.now_ms
+        lastTimeReceivedSensorData = Date.now
         rawTimestamp = .parse(from: data, at: &offset)
 
         let _self = self

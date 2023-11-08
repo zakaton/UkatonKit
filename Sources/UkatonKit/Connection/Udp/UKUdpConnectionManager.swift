@@ -52,7 +52,7 @@ class UKUdpConnectionManager: UKConnectionManager {
             return
         }
         timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(ping), userInfo: nil, repeats: true)
-        timer?.tolerance = 0.2
+        timer?.tolerance = 0.1
     }
 
     func stopTimer() {

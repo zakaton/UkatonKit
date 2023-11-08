@@ -67,4 +67,10 @@ public struct UKSensorDataConfigurations {
         var offset: Data.Index = 0
         parse(data, at: &offset)
     }
+
+    // MARK: - isZero
+
+    var isZero: Bool {
+        motion.isZero && pressure.isEmpty
+    }
 }

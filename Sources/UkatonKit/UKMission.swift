@@ -111,6 +111,7 @@ public class UKMission: ObservableObject {
     // MARK: - Sensor Data Configurations
 
     @Published public internal(set) var sensorDataConfigurations: UKSensorDataConfigurations = .init()
+    var checkSensorDataTimer: Timer? = nil
 
     // MARK: - Sensor Data
 

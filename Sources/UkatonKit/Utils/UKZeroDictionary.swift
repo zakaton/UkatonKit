@@ -19,7 +19,15 @@ extension Dictionary where Key: CaseIterable & RawRepresentable, Key.RawValue: N
     }
 }
 
-// MARK: - for initializing UKMotionCalibration
+// MARK: - for checking UKSensorDataConfigurations is zero
+
+extension Dictionary where Value: BinaryInteger {
+    var isZero: Bool {
+        !self.contains(where: { $1 > 0 })
+    }
+}
+
+// MARK: - for UKMotionCalibration
 
 extension Dictionary where Key: CaseIterable & RawRepresentable, Key.RawValue: Numeric, Value: RawRepresentable, Value.RawValue: Numeric {
     static var zero: Self {
