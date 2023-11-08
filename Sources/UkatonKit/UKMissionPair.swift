@@ -1,4 +1,11 @@
 import Foundation
+import UkatonMacros
+
+@EnumName
+public enum UKInsoleSide: UInt8, CaseIterable {
+    case left
+    case right
+}
 
 public struct UKMissionPair {
     // MARK: - Missions

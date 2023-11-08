@@ -209,7 +209,6 @@ class UKUdpConnectionManager: UKConnectionManager {
             }
 
             logger.debug("received \(connectionMessageType.name) message")
-            logger.debug("\(data.bytes.map { String($0) }.joined(separator: ","))")
 
             if udpMessageType.includesDataSize {
                 let size: UInt8 = data.parse(at: &offset)

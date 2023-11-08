@@ -16,7 +16,7 @@ public struct UKSensorDataConfigurations {
 
     // MARK: - Serialization
 
-    func data(deviceType: UKDeviceType = .motionModule) -> Data {
+    func data(deviceType: UKDeviceType) -> Data {
         var data: Data = .init()
 
         UKSensorType.allCases.filter { deviceType.hasSensorType($0) }.forEach { sensorType in
@@ -71,6 +71,6 @@ public struct UKSensorDataConfigurations {
     // MARK: - isZero
 
     var isZero: Bool {
-        motion.isZero && pressure.isEmpty
+        motion.isZero && pressure.isZero
     }
 }

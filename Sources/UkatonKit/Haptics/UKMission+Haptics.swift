@@ -1,4 +1,11 @@
 import Foundation
+import UkatonMacros
+
+@EnumName
+enum UKVibrationType: UInt8 {
+    case waveform
+    case sequence
+}
 
 extension UKMission {
     func serializeHaptics(waveforms: [UKVibrationWaveformType]) -> Data {
