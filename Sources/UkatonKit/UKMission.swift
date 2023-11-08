@@ -104,13 +104,7 @@ public class UKMission: ObservableObject {
 
     // MARK: - Motion Calibration
 
-    @Published public internal(set) var motionCalibration: UKMotionCalibration = {
-        var _calibration: UKMotionCalibration = [:]
-        UKMotionCalibrationType.allCases.forEach { motionCalibrationType in
-            _calibration[motionCalibrationType] = .none
-        }
-        return _calibration
-    }()
+    @Published public internal(set) var motionCalibration: UKMotionCalibration = .zero
 
     public internal(set) var isFullyCalibrated: Bool = false
 
