@@ -41,9 +41,11 @@ public struct UKMotionData: UKSensorDataComponent {
     public private(set) var quaternion: Quaternion = .init()
     public private(set) var rotation: Rotation3D = .init()
 
+    public private(set) var timestamps: [UKMotionDataType: UKTimestamp] = .init()
+
     // MARK: - Parsing
 
-    mutating func parse(_ data: Data, at offset: inout Data.Index, until finalOffset: Data.Index) {
+    mutating func parse(_ data: Data, at offset: inout Data.Index, until finalOffset: Data.Index, timestamp: UKTimestamp) {
         while offset < finalOffset {
             let rawMotionDataType: UKMotionDataType.RawValue = data.parse(at: &offset)
             guard let motionDataType: UKMotionDataType = .init(rawValue: rawMotionDataType) else {
@@ -68,8 +70,12 @@ public struct UKMotionData: UKSensorDataComponent {
                 quaternion = parseQuaternion(data: data, at: &offset, scalar: scalar)
                 rotation = Rotation3D(quaternion)
             }
+
+            timestamps[motionDataType] = timestamp
         }
     }
+
+    // MARK: - Vector
 
     private typealias RawVector = simd_double3
     private func parseVector(data: Data, at offset: inout Data.Index, scalar: Double) -> Vector3D {
@@ -98,6 +104,8 @@ public struct UKMotionData: UKSensorDataComponent {
         return .init(vector: rawVector)
     }
 
+    // MARK: - Rotation
+
     private typealias RawAngles = simd_double3
     private func parseRotation(data: Data, at offset: inout Data.Index, scalar: Double) -> Rotation3D {
         let rawX: Int16 = .parse(from: data, at: &offset)
@@ -120,9 +128,13 @@ public struct UKMotionData: UKSensorDataComponent {
         }
         rawAngles *= scalar
 
+        logger.debug("parsed rotation: \(rawAngles.debugDescription)")
+
         let eulerAngles: EulerAngles = .init(angles: rawAngles, order: .xyz)
         return .init(eulerAngles: eulerAngles)
     }
+
+    // MARK: - Quaternion
 
     private func parseQuaternion(data: Data, at offset: inout Data.Index, scalar: Double) -> Quaternion {
         let rawW: Int16 = .parse(from: data, at: &offset)
@@ -142,6 +154,8 @@ public struct UKMotionData: UKSensorDataComponent {
         if deviceType?.isInsole == true {
             quaternion *= correctionQuaternion
         }
+
+        logger.debug("parsed quaternion: \(quaternion.debugDescription)")
 
         return quaternion
     }

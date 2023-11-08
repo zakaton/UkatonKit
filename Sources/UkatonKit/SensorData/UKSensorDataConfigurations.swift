@@ -2,22 +2,30 @@ import Foundation
 import OSLog
 import UkatonMacros
 
+public typealias UKSensorDataRate = UInt16
+
+extension UKSensorDataRate {
+    var roundedToTens: UKSensorDataRate {
+        return self - (self % 10)
+    }
+}
+
 public typealias UKMotionDataRates = [UKMotionDataType: UKSensorDataRate]
 public typealias UKPressureDataRates = [UKPressureDataType: UKSensorDataRate]
 
 @StaticLogger
 public struct UKSensorDataConfigurations {
-    public var motion: UKMotionDataRates = {
-        var dataRates: UKMotionDataRates = .init()
-        UKMotionDataType.allCases.forEach { dataType in dataRates[dataType] = 0 }
-        return dataRates
-    }()
+    public var motion: UKMotionDataRates = .zero {
+        didSet {
+            motion.forEach { key, value in motion[key] = value.roundedToTens }
+        }
+    }
 
-    public var pressure: UKPressureDataRates = {
-        var dataRates: UKPressureDataRates = .init()
-        UKPressureDataType.allCases.forEach { dataType in dataRates[dataType] = 0 }
-        return dataRates
-    }()
+    public var pressure: UKPressureDataRates = .zero {
+        didSet {
+            pressure.forEach { key, value in pressure[key] = value.roundedToTens }
+        }
+    }
 
     public init() {}
 
@@ -30,15 +38,9 @@ public struct UKSensorDataConfigurations {
             var subData: Data = .init()
             switch sensorType {
             case .motion:
-                motion.forEach { dataType, dataRate in
-                    subData.append(dataType.rawValue.data)
-                    subData.append(dataRate.data)
-                }
+                subData = motion.data
             case .pressure:
-                pressure.forEach { dataType, dataRate in
-                    subData.append(dataType.rawValue.data)
-                    subData.append(dataRate.data)
-                }
+                subData = pressure.data
             }
 
             if subData.count > 0 {

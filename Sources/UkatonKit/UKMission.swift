@@ -14,9 +14,28 @@ public class UKMission: ObservableObject {
         self.isNone = isNone
     }
 
+    // MARK: - Initialization
+
+    init() {}
+
+    convenience init(discoveredBluetoothDevice: UKDiscoveredBluetoothDevice) {
+        defer {
+            self.name = discoveredBluetoothDevice.name
+            self.deviceType = discoveredBluetoothDevice.type
+            self.isConnectedToWifi = discoveredBluetoothDevice.isConnectedToWifi
+            if self.isConnectedToWifi == true {
+                self.ipAddress = discoveredBluetoothDevice.ipAddress
+                self.shouldConnectToWifi = true
+            }
+            self.peripheral = discoveredBluetoothDevice.peripheral
+        }
+
+        self.init()
+    }
+
     // MARK: - Connection
 
-    private var peripheral: CBPeripheral?
+    var peripheral: CBPeripheral?
 
     var connectionManager: (any UKConnectionManager)? {
         willSet {
@@ -53,45 +72,6 @@ public class UKMission: ObservableObject {
 
     public var isConnected: Bool {
         connectionStatus == .connected
-    }
-
-    func createConnectionManager(type connectionType: UKConnectionType) -> any UKConnectionManager {
-        var _connectionType = connectionType
-        if connectionType.requiresWifi, isConnectedToWifi == false || ipAddress == nil {
-            logger.warning("device is not connected to wifi - defaulting to bluetooth")
-            _connectionType = .bluetooth
-        }
-
-        return switch _connectionType {
-        case .bluetooth:
-            UKBluetoothConnectionManager(peripheral: peripheral!)
-        case .udp:
-            UKUdpConnectionManager(ipAddress: ipAddress!)
-        }
-    }
-
-    public func connect(type _connectionType: UKConnectionType? = nil) {
-        guard connectionStatus == .notConnected || connectionStatus == .disconnecting else {
-            let _self = self
-            logger.warning("cannot connect while in connection state \(_self.connectionStatus.name)")
-            return
-        }
-        if connectionManager == nil || (_connectionType != nil && connectionType != _connectionType) {
-            connectionManager = createConnectionManager(type: _connectionType ?? .bluetooth)
-        }
-        guard connectionManager != nil else {
-            logger.error("no connectionManager defined")
-            return
-        }
-        connectionManager!.connect()
-    }
-
-    public func disconnect() {
-        guard connectionManager != nil else {
-            logger.error("no connectionManager defined")
-            return
-        }
-        connectionManager?.disconnect()
     }
 
     // MARK: - Device Information
@@ -140,27 +120,7 @@ public class UKMission: ObservableObject {
 
     // MARK: - Sensor Data
 
-    // TODO: - replace with local version
-    @Published public var sensorData: UKSensorDataManager = .init()
-
-    // MARK: - Initialization
-
-    init() {}
-
-    convenience init(discoveredBluetoothDevice: UKDiscoveredBluetoothDevice) {
-        defer {
-            self.name = discoveredBluetoothDevice.name
-            self.deviceType = discoveredBluetoothDevice.type
-            self.isConnectedToWifi = discoveredBluetoothDevice.isConnectedToWifi
-            if self.isConnectedToWifi == true {
-                self.ipAddress = discoveredBluetoothDevice.ipAddress
-                self.shouldConnectToWifi = true
-            }
-            self.peripheral = discoveredBluetoothDevice.peripheral
-        }
-
-        self.init()
-    }
+    @Published public internal(set) var sensorData: UKSensorData = .init()
 }
 
 extension UKMission: Identifiable {
@@ -176,6 +136,7 @@ extension UKMission: Hashable {
         if lhs.isNone || rhs.isNone {
             return lhs.isNone && rhs.isNone
         }
+
         guard let lhsType = lhs.connectionType, let rhsType = lhs.connectionType, lhsType == rhsType else {
             return false
         }

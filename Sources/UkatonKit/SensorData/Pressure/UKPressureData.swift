@@ -32,9 +32,11 @@ public struct UKPressureData: UKSensorDataComponent {
     public private(set) var mass: Double = .zero
     public private(set) var heelToToe: Float64 = .zero
 
+    public private(set) var timestamps: [UKPressureDataType: UKTimestamp] = .init()
+
     // MARK: - Parsing
 
-    mutating func parse(_ data: Data, at offset: inout Data.Index, until finalOffset: Data.Index) {
+    mutating func parse(_ data: Data, at offset: inout Data.Index, until finalOffset: Data.Index, timestamp: UKTimestamp) {
         while offset < finalOffset {
             let rawPressureDataType: UKPressureDataType.RawValue = data.parse(at: &offset)
             guard let pressureDataType: UKPressureDataType = .init(rawValue: rawPressureDataType) else {
@@ -61,6 +63,8 @@ public struct UKPressureData: UKSensorDataComponent {
                 let _self = self
                 logger.debug("\(pressureDataType.name): \(_self.heelToToe.debugDescription)")
             }
+
+            timestamps[pressureDataType] = timestamp
         }
     }
 

@@ -1,6 +1,47 @@
 import Foundation
 
 public extension UKMission {
+    // MARK: - Connection
+
+    internal func createConnectionManager(type connectionType: UKConnectionType) -> any UKConnectionManager {
+        var _connectionType = connectionType
+        if connectionType.requiresWifi, isConnectedToWifi == false || ipAddress == nil {
+            logger.warning("device is not connected to wifi - defaulting to bluetooth")
+            _connectionType = .bluetooth
+        }
+
+        return switch _connectionType {
+        case .bluetooth:
+            UKBluetoothConnectionManager(peripheral: peripheral!)
+        case .udp:
+            UKUdpConnectionManager(ipAddress: ipAddress!)
+        }
+    }
+
+    func connect(type _connectionType: UKConnectionType? = nil) {
+        guard connectionStatus == .notConnected || connectionStatus == .disconnecting else {
+            let _self = self
+            logger.warning("cannot connect while in connection state \(_self.connectionStatus.name)")
+            return
+        }
+        if connectionManager == nil || (_connectionType != nil && connectionType != _connectionType) {
+            connectionManager = createConnectionManager(type: _connectionType ?? .bluetooth)
+        }
+        guard connectionManager != nil else {
+            logger.error("no connectionManager defined")
+            return
+        }
+        connectionManager!.connect()
+    }
+
+    func disconnect() {
+        guard connectionManager != nil else {
+            logger.error("no connectionManager defined")
+            return
+        }
+        connectionManager?.disconnect()
+    }
+
     // MARK: - ConnectionManager Parsing
 
     internal func onConnectionMessage(type messageType: UKConnectionMessageType, data: Data, at offset: inout Data.Index) {
@@ -24,7 +65,7 @@ public extension UKMission {
             parseIsConnectedToWifi(data: data, at: &offset)
 
         case .getSensorDataConfigurations, .setSensorDataConfigurations:
-            parseSensorDataConfigurations(data, at: &offset)
+            sensorDataConfigurations.parse(data, at: &offset)
 
         case .sensorData:
             sensorData.parse(data, at: &offset)
