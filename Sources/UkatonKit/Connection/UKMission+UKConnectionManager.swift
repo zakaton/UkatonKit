@@ -24,13 +24,13 @@ public extension UKMission {
             parseIsConnectedToWifi(data: data, at: &offset)
 
         case .getSensorDataConfigurations, .setSensorDataConfigurations:
-            sensorDataConfigurations.parse(data, at: &offset)
+            parseSensorDataConfigurations(data, at: &offset)
 
         case .sensorData:
             sensorData.parse(data, at: &offset)
 
         case .motionCalibration:
-            motionCalibrationData.parse(data, at: &offset)
+            parseMotionCalibration(data, at: &offset)
 
         default:
             logger.error("uncaught connection message type \(messageType.name)")
@@ -59,7 +59,7 @@ public extension UKMission {
         try connectionManager.sendMessage(type: messageType, data: data)
     }
 
-    // MARK: - DeviceInformationManager Interface
+    // MARK: - Device Information
 
     func setDeviceType(_ newDeviceType: UKDeviceType) throws {
         try sendMessage(type: .setDeviceType, data: newDeviceType.rawValue.data)
@@ -69,7 +69,7 @@ public extension UKMission {
         try sendMessage(type: .setName, data: newName.data)
     }
 
-    // MARK: - WifiManager Interface
+    // MARK: - Wifi Information
 
     func setWifiSsid(_ newWifiSsid: String) throws {
         try sendMessage(type: .setWifiSsid, data: newWifiSsid.data)
@@ -83,11 +83,17 @@ public extension UKMission {
         try sendMessage(type: .setWifiShouldConnect, data: newWifiShouldConnect.data)
     }
 
-    // MARK: - SensorDataConfigurationsManager Interface
+    // MARK: - Sensor Data Configurations
+
+    func setSensorDataConfigurations(_ newSensorDataConfigurations: UKSensorDataConfigurations) throws {
+        try sendMessage(type: .setSensorDataConfigurations, data: newSensorDataConfigurations.data(deviceType: deviceType))
+    }
+
+    // MARK: - Haptics
 
     // TODO: - FILL
-
-    // MARK: - HapticsManager Interface
+    func triggerHapticsWaveform() {}
 
     // TODO: - FILL
+    func triggerHapticsSequence() {}
 }

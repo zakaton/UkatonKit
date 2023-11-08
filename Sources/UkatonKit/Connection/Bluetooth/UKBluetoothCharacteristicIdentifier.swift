@@ -25,7 +25,7 @@ enum UKBluetoothCharacteristicIdentifier: String, CaseIterable, UKBluetoothConta
     case wifiIsConnected = "7004"
     case wifiIpAddress = "7005"
 
-    case hapticsVibration = "d000"
+    case triggerHapticsVibration = "d000"
 
     init?(characteristic: CBCharacteristic) {
         guard let characteristicIdentifier = Self.allCases.first(where: { $0.uuid == characteristic.uuid }) else {
@@ -59,8 +59,8 @@ enum UKBluetoothCharacteristicIdentifier: String, CaseIterable, UKBluetoothConta
             return .wifiIsConnected
         case .wifiIpAddress:
             return .getWifiIpAddress
-        case .hapticsVibration:
-            return .setHapticsVibration
+        case .triggerHapticsVibration:
+            return .triggerHapticsVibration
         }
     }
 
@@ -81,8 +81,8 @@ enum UKBluetoothCharacteristicIdentifier: String, CaseIterable, UKBluetoothConta
         case .getWifiShouldConnect, .setWifiShouldConnect:
             .wifiShouldConnect
 
-        case .setHapticsVibration:
-            .hapticsVibration
+        case .triggerHapticsVibration:
+            .triggerHapticsVibration
 
         // TODO: - FILL
 

@@ -1,3 +1,6 @@
+test sensordataconfig
+sensorData
+
 SensorDataDemo
 OrientationDemo
     toggle Quaternion/LinearAcceleration data

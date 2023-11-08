@@ -14,41 +14,6 @@ public class UKMission: ObservableObject {
         self.isNone = isNone
     }
 
-    // MARK: - Components
-
-    @Published public var motionCalibrationData: UKMotionCalibrationDataManager = .init()
-    @Published public var sensorDataConfigurations: UKSensorDataConfigurationsManager = .init()
-    @Published public var sensorData: UKSensorDataManager = .init()
-
-    // MARK: - Device Information
-
-    @Published public internal(set) var name: String = "undefined"
-    @Published public internal(set) var deviceType: UKDeviceType = .motionModule {
-        didSet {
-            let _self = self
-            logger.debug("updated device type: \(_self.deviceType.name)")
-            sensorDataConfigurations.deviceType = deviceType
-            sensorData.deviceType = deviceType
-        }
-    }
-
-    @Published public internal(set) var batteryLevel: UKBatteryLevel = .zero
-
-    // MARK: - Wifi Information
-
-    @Published public internal(set) var wifiSsid: String = ""
-    @Published public internal(set) var wifiPassword: String = ""
-    @Published public internal(set) var shouldConnectToWifi: Bool = false
-    @Published public internal(set) var isConnectedToWifi: Bool = false {
-        didSet {
-            if !isConnectedToWifi {
-                ipAddress = nil
-            }
-        }
-    }
-
-    @Published public internal(set) var ipAddress: String? = nil
-
     // MARK: - Connection
 
     private var peripheral: CBPeripheral?
@@ -128,6 +93,55 @@ public class UKMission: ObservableObject {
         }
         connectionManager?.disconnect()
     }
+
+    // MARK: - Device Information
+
+    @Published public internal(set) var name: String = "undefined"
+    @Published public internal(set) var deviceType: UKDeviceType = .motionModule {
+        didSet {
+            let _self = self
+            logger.debug("updated device type: \(_self.deviceType.name)")
+            sensorData.deviceType = deviceType
+        }
+    }
+
+    @Published public internal(set) var batteryLevel: UKBatteryLevel = .zero
+
+    // MARK: - Wifi Information
+
+    @Published public internal(set) var wifiSsid: String = ""
+    @Published public internal(set) var wifiPassword: String = ""
+    @Published public internal(set) var shouldConnectToWifi: Bool = false
+    @Published public internal(set) var isConnectedToWifi: Bool = false {
+        didSet {
+            if !isConnectedToWifi {
+                ipAddress = nil
+            }
+        }
+    }
+
+    @Published public internal(set) var ipAddress: String? = nil
+
+    // MARK: - Motion Calibration
+
+    @Published public internal(set) var motionCalibration: UKMotionCalibration = {
+        var _calibration: UKMotionCalibration = [:]
+        UKMotionCalibrationType.allCases.forEach { motionCalibrationType in
+            _calibration[motionCalibrationType] = .none
+        }
+        return _calibration
+    }()
+
+    public internal(set) var isFullyCalibrated: Bool = false
+
+    // MARK: - Sensor Data Configurations
+
+    @Published public internal(set) var sensorDataConfigurations: UKSensorDataConfigurations = .init()
+
+    // MARK: - Sensor Data
+
+    // TODO: - replace with local version
+    @Published public var sensorData: UKSensorDataManager = .init()
 
     // MARK: - Initialization
 

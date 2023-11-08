@@ -21,7 +21,7 @@ enum UKUdpMessageType: UInt8 {
     
     case sensorData
     
-    case setHapticsVibration
+    case triggerHapticsVibration
     case setRemoteReceivePort
     
     init?(connectionMessageType: UKConnectionMessageType) {
@@ -41,8 +41,8 @@ enum UKUdpMessageType: UInt8 {
         case .setSensorDataConfigurations:
             .setSensorDataConfigurations
             
-        case .setHapticsVibration:
-            .setHapticsVibration
+        case .triggerHapticsVibration:
+            .triggerHapticsVibration
         
         default:
             nil
@@ -59,7 +59,7 @@ enum UKUdpMessageType: UInt8 {
     var shouldIncludeDataSize: Bool {
         switch self {
         case .setDeviceName,
-             .setHapticsVibration,
+             .triggerHapticsVibration,
              .setSensorDataConfigurations:
             true
         default:
