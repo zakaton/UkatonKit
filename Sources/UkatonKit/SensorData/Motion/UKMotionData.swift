@@ -11,6 +11,24 @@ extension BinaryFloatingPoint {
 }
 
 public typealias Quaternion = simd_quatd
+public extension Quaternion {
+    var string: String {
+        .init(format: "w: %5.3f, x: %5.3f, y: %5.3f, z: %5.3f", vector.w, vector.x, vector.y, vector.z)
+    }
+}
+
+public extension Rotation3D {
+    var string: String {
+        let euler = eulerAngles(order: .zxy)
+        return .init(format: "p: %5.2f, y: %5.2f, r: %5.2f", euler.angles.x, euler.angles.y, euler.angles.z)
+    }
+}
+
+public extension Vector3D {
+    var string: String {
+        .init(format: "x: %5.3f, y: %5.3f, z: %5.3f", x, y, z)
+    }
+}
 
 @StaticLogger
 public struct UKMotionData: UKSensorDataComponent {
