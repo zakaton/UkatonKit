@@ -69,8 +69,7 @@ enum UKUdpMessageType: UInt8 {
     
     var includesDataSize: Bool {
         switch self {
-        case .getDeviceName, .setDeviceName,
-             .getSensorDataConfigurations, .setSensorDataConfigurations:
+        case .getDeviceName, .setDeviceName, .sensorData:
             true
         default:
             false
@@ -96,6 +95,9 @@ enum UKUdpMessageType: UInt8 {
             .getSensorDataConfigurations
         case .setSensorDataConfigurations:
             .setSensorDataConfigurations
+            
+        case .sensorData:
+            .sensorData
             
         default:
             nil

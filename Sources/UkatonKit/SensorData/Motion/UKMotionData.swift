@@ -10,6 +10,8 @@ extension BinaryFloatingPoint {
     }
 }
 
+public typealias Quaternion = simd_quatd
+
 @StaticLogger
 public struct UKMotionData: UKSensorDataComponent {
     // MARK: - Device Type
@@ -31,8 +33,6 @@ public struct UKMotionData: UKSensorDataComponent {
 
     // MARK: - Data
 
-    public typealias Quaternion = simd_quatd
-
     public private(set) var acceleration: Vector3D = .init()
     public private(set) var gravity: Vector3D = .init()
     public private(set) var linearAcceleration: Vector3D = .init()
@@ -41,7 +41,7 @@ public struct UKMotionData: UKSensorDataComponent {
     public private(set) var quaternion: Quaternion = .init()
     public private(set) var rotation: Rotation3D = .init()
 
-    public private(set) var timestamps: [UKMotionDataType: UKTimestamp] = .init()
+    public private(set) var timestamps: [UKMotionDataType: UKTimestamp] = .zero
 
     // MARK: - Parsing
 

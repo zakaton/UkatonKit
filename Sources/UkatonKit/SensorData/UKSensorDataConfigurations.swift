@@ -4,28 +4,13 @@ import UkatonMacros
 
 public typealias UKSensorDataRate = UInt16
 
-extension UKSensorDataRate {
-    var roundedToTens: UKSensorDataRate {
-        return self - (self % 10)
-    }
-}
-
 public typealias UKMotionDataRates = [UKMotionDataType: UKSensorDataRate]
 public typealias UKPressureDataRates = [UKPressureDataType: UKSensorDataRate]
 
 @StaticLogger
 public struct UKSensorDataConfigurations {
-    public var motion: UKMotionDataRates = .zero {
-        didSet {
-            motion.forEach { key, value in motion[key] = value.roundedToTens }
-        }
-    }
-
-    public var pressure: UKPressureDataRates = .zero {
-        didSet {
-            pressure.forEach { key, value in pressure[key] = value.roundedToTens }
-        }
-    }
+    public var motion: UKMotionDataRates = .zero
+    public var pressure: UKPressureDataRates = .zero
 
     public init() {}
 

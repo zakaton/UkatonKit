@@ -32,7 +32,7 @@ public struct UKPressureData: UKSensorDataComponent {
     public private(set) var mass: Double = .zero
     public private(set) var heelToToe: Float64 = .zero
 
-    public private(set) var timestamps: [UKPressureDataType: UKTimestamp] = .init()
+    public private(set) var timestamps: [UKPressureDataType: UKTimestamp] = .zero
 
     // MARK: - Parsing
 

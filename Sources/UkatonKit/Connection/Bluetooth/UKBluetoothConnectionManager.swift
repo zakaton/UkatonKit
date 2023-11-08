@@ -200,7 +200,6 @@ class UKBluetoothConnectionManager: NSObject, UKConnectionManager, ObservableObj
 
     func onReceived(data: Data, from characteristic: CBCharacteristic, withIdentifier characteristicIdentifier: UKBluetoothCharacteristicIdentifier) {
         logger.debug("received \(data.count) bytes from characteristic \(characteristicIdentifier.name)")
-
         onMessageReceived(type: characteristicIdentifier.connectionMessageType, data: data)
     }
 

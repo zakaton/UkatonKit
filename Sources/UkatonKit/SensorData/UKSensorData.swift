@@ -36,7 +36,7 @@ public struct UKSensorData {
     // MARK: - Timestamp
 
     private var timestamp: UKTimestamp = 0
-    public private(set) var lastTimeReceivedSensorData: UKTimestamp = 0
+    private(set) var lastTimeReceivedSensorData: UKTimestamp = 0
 
     private var timestampOffset: UKTimestamp = 0
     private var rawTimestamp: UInt16 = 0 {
