@@ -4,6 +4,17 @@ import UkatonMacros
 
 public typealias UKTimestamp = UInt64
 
+public extension UKTimestamp {
+    var string: String {
+        let totalSeconds = self / 1000
+        let minutes = totalSeconds / 60
+        let seconds = totalSeconds % 60
+        let remainingMilliseconds = self % 1000
+
+        return .init(format: "%02d:%02d:%02d", minutes, seconds, remainingMilliseconds)
+    }
+}
+
 protocol UKSensorDataComponent {
     var deviceType: UKDeviceType? { get set }
     mutating func parse(_ data: Data, at offset: inout Data.Index, until finalOffset: Data.Index, timestamp: UKTimestamp)
