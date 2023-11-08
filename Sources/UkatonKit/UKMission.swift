@@ -16,9 +16,9 @@ public class UKMission: ObservableObject {
 
     // MARK: - Components
 
-    public var motionCalibrationData: UKMotionCalibrationDataManager = .init()
-    public var sensorDataConfigurations: UKSensorDataConfigurationsManager = .init()
-    public var sensorData: UKSensorDataManager = .init()
+    @Published public var motionCalibrationData: UKMotionCalibrationDataManager = .init()
+    @Published public var sensorDataConfigurations: UKSensorDataConfigurationsManager = .init()
+    @Published public var sensorData: UKSensorDataManager = .init()
 
     // MARK: - Device Information
 

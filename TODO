@@ -1,17 +1,14 @@
-DeviceView
-    list of demo views
-    
-SensorData View
-    text data
-3DView
+SensorDataDemo
+OrientationDemo
     toggle Quaternion/LinearAcceleration data
-GraphView
+GraphDemo
     line graphs
-HapticsView
+PressureDemo
+    picture of insole, with pressure sensors
+HapticsDemo
     manual trigger
     create presets
+    
+Missions Tab (enabled if a left/right insole is connected)
 BalanceGameView
     like wii fit
-    
-Missions Tab
-    gets first left/right connected insoles

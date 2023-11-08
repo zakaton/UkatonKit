@@ -8,7 +8,12 @@ public typealias UKMotionDataRates = [UKMotionDataType: UKSensorDataRate]
 public typealias UKPressureDataRates = [UKPressureDataType: UKSensorDataRate]
 
 public struct UKSensorDataConfigurations: Equatable {
-    public var motion: UKMotionDataRates = .init()
+    public var motion: UKMotionDataRates = {
+        var motion: UKMotionDataRates = [:]
+        UKMotionDataType.allCases.forEach { motion[$0] = 0 }
+        return motion
+    }()
+
     public var pressure: UKPressureDataRates = .init()
 
     public static func ==(lhs: Self, rhs: Self) -> Bool {
@@ -39,24 +44,16 @@ public struct UKSensorDataConfigurationsManager {
         return _configurationManagers
     }()
 
-    public var configurations: UKSensorDataConfigurations {
-        get {
-            .init(motion: motion, pressure: pressure)
-        }
-        set {
-            motion = newValue.motion
-            pressure = newValue.pressure
-        }
-    }
+    var configurations: UKSensorDataConfigurations = .init()
 
     // MARK: - Subscripting
 
-    var motion: UKMotionDataRates {
+    public var motion: UKMotionDataRates {
         get { .from(genericSensorDataRates: self[.motion]) }
         set { self[.motion] = newValue.toGenericSensorDataRates() }
     }
 
-    var pressure: UKPressureDataRates {
+    public var pressure: UKPressureDataRates {
         get { .from(genericSensorDataRates: self[.pressure]) }
         set { self[.pressure] = newValue.toGenericSensorDataRates() }
     }
@@ -73,23 +70,23 @@ public struct UKSensorDataConfigurationsManager {
 
     subscript(motionDataType: UKMotionDataType) -> UKSensorDataRate {
         get {
-            self[motionDataType as UKSensorDataType]
+            self[motionDataType as (any UKSensorDataType)]
         }
         set(newValue) {
-            self[motionDataType as UKSensorDataType] = newValue
+            self[motionDataType as (any UKSensorDataType)] = newValue
         }
     }
 
     subscript(pressureDataType: UKPressureDataType) -> UKSensorDataRate {
         get {
-            self[pressureDataType as UKSensorDataType]
+            self[pressureDataType as (any UKSensorDataType)]
         }
         set(newValue) {
-            self[pressureDataType as UKSensorDataType] = newValue
+            self[pressureDataType as (any UKSensorDataType)] = newValue
         }
     }
 
-    private subscript(sensorDataType: UKSensorDataType) -> UKSensorDataRate {
+    private subscript(sensorDataType: any UKSensorDataType) -> UKSensorDataRate {
         get {
             configurationManagers[sensorDataType.sensorType]![sensorDataType.rawValue]
         }
@@ -150,14 +147,5 @@ public struct UKSensorDataConfigurationsManager {
     mutating func parse(_ data: Data) {
         var offset: Data.Index = 0
         parse(data, at: &offset)
-    }
-
-    mutating func reset() {
-        deviceType = nil
-        for sensorType in configurationManagers.keys {
-            configurationManagers[sensorType]?.reset()
-        }
-        shouldSerialize = false
-        areConfigurationsNonZero = false
     }
 }

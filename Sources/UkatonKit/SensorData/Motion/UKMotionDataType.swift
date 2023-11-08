@@ -1,6 +1,6 @@
 import UkatonMacros
 
-@EnumName
+@EnumName(accessLevel: "public")
 public enum UKMotionDataType: UInt8, CaseIterable, UKSensorDataType {
     case acceleration
     case gravity
@@ -9,5 +9,5 @@ public enum UKMotionDataType: UInt8, CaseIterable, UKSensorDataType {
     case magnetometer
     case quaternion
 
-    var sensorType: UKSensorType { .motion }
+    public var sensorType: UKSensorType { .motion }
 }
