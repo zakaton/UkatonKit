@@ -54,10 +54,13 @@ public struct UKPressureValues {
     // MARK: - Raw Values
 
     static let numberOfPressureSensors: Int = 16
-    var numberOfPressureSensors: Int { Self.numberOfPressureSensors }
-    private var rawValues: [UKPressureValue] = .init(repeating: .init(), count: numberOfPressureSensors)
+    public var numberOfPressureSensors: Int { Self.numberOfPressureSensors }
+    public private(set) var rawValues: [UKPressureValue] = .init(repeating: .init(), count: numberOfPressureSensors)
+    public var string: String {
+        rawValues.map { String($0.rawValue) }.joined(separator: ",")
+    }
 
-    public subscript(index: Int) -> UKPressureValue {
+    public subscript(index: Data.Index) -> UKPressureValue {
         rawValues[index]
     }
 
@@ -107,7 +110,7 @@ public struct UKPressureValues {
         mass = Double(rawValueSum) * scalar / Double(numberOfPressureSensors)
 
         let _self = self
-        logger.debug("pressure sensors: \(_self.rawValues.debugDescription)")
+        logger.debug("pressure sensors: \(_self.rawValues.map { $0.rawValue })")
         logger.debug("centerOfMass: \(_self.centerOfMass.debugDescription)")
         logger.debug("heelToToe: \(_self.heelToToe.debugDescription)")
         logger.debug("mass: \(_self.mass)")

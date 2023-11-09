@@ -3,6 +3,14 @@ import OSLog
 import simd
 import UkatonMacros
 
+public typealias Vector2D = simd_double2
+
+public extension Vector2D {
+    var string: String {
+        .init(format: "x: %5.3f, y: %5.3f", x, y)
+    }
+}
+
 @StaticLogger
 public struct UKPressureData: UKSensorDataComponent {
     // MARK: - Device Type
@@ -25,8 +33,6 @@ public struct UKPressureData: UKSensorDataComponent {
 
     // MARK: - Data
 
-    public typealias Vector2D = simd_double2
-
     public private(set) var pressureValues: UKPressureValues = .init()
     public private(set) var centerOfMass: Vector2D = .init()
     public private(set) var mass: Double = .zero
@@ -47,9 +53,16 @@ public struct UKPressureData: UKSensorDataComponent {
             switch pressureDataType {
             case .pressureSingleByte, .pressureDoubleByte:
                 pressureValues.parse(data, at: &offset, for: pressureDataType)
+
                 centerOfMass = pressureValues.centerOfMass
+                timestamps[.centerOfMass] = timestamp
+
                 mass = pressureValues.mass
+                timestamps[.mass] = timestamp
+
                 heelToToe = pressureValues.heelToToe
+                timestamps[.heelToToe] = timestamp
+
             case .centerOfMass:
                 centerOfMass = parseCenterOfMass(data: data, at: &offset)
                 let _self = self
