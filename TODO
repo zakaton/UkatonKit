@@ -1,7 +1,6 @@
 OrientationDemo
-    toggle Quaternion/LinearAcceleration data
-GraphDemo
-    line graphs
+    Quaternion/RotationRate
+    Acceleration/LineerAcceleration
 PressureDemo
     picture of insole, with pressure sensors
 HapticsDemo
@@ -9,5 +8,7 @@ HapticsDemo
     create presets
     
 Missions Tab (enabled if a left/right insole is connected)
-BalanceGameView
+PairPressureDemo
+    just 2 insoles with additional pressure
+BalanceGameDemo
     like wii fit

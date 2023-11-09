@@ -20,7 +20,7 @@ public extension Quaternion {
 public extension Rotation3D {
     var string: String {
         let euler = eulerAngles(order: .zxy)
-        return .init(format: "p: %5.2f, y: %5.2f, r: %5.2f", euler.angles.x, euler.angles.y, euler.angles.z)
+        return .init(format: "p: %6.3f, y: %6.3f, r: %6.3f", euler.angles.x, euler.angles.y, euler.angles.z)
     }
 }
 
@@ -106,14 +106,12 @@ public struct UKMotionData: UKSensorDataComponent {
         let z = Double(rawZ)
 
         var rawVector: RawVector = switch deviceType {
-        case .motionModule:
-            RawVector(arrayLiteral: -y, -z, -x)
+        case .motionModule, nil:
+            RawVector(arrayLiteral: -x, -z, -y)
         case .leftInsole:
             RawVector(arrayLiteral: -z, x, -y)
         case .rightInsole:
             RawVector(arrayLiteral: z, x, y)
-        case nil:
-            RawVector(arrayLiteral: x, y, z)
         }
         rawVector *= scalar
 
@@ -135,14 +133,12 @@ public struct UKMotionData: UKSensorDataComponent {
         let z = Double(rawZ).degreesToRadians
 
         var rawAngles: RawAngles = switch deviceType {
-        case .motionModule:
-            RawAngles(arrayLiteral: y, -z, x)
+        case .motionModule, nil:
+            RawAngles(arrayLiteral: -x, -z, y)
         case .leftInsole:
             RawAngles(arrayLiteral: -z, y, -x)
         case .rightInsole:
             RawAngles(arrayLiteral: z, y, x)
-        case nil:
-            RawAngles(arrayLiteral: x, y, z)
         }
         rawAngles *= scalar
 
