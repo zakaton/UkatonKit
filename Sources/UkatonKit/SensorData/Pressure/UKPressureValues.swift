@@ -57,7 +57,7 @@ public struct UKPressureValues {
     public var numberOfPressureSensors: Int { Self.numberOfPressureSensors }
     public private(set) var rawValues: [UKPressureValue] = .init(repeating: .init(), count: numberOfPressureSensors)
     public var string: String {
-        rawValues.map { String($0.rawValue) }.joined(separator: ",")
+        rawValues.map { String(format: "%\(isSingleByte ? "3" : "4")d", $0.rawValue) }.joined(separator: ",")
     }
 
     public subscript(index: Data.Index) -> UKPressureValue {
@@ -74,11 +74,15 @@ public struct UKPressureValues {
 
     // MARK: - Parsing
 
+    public private(set) var latestPressureDataType: UKPressureDataType = .pressureSingleByte
+    public private(set) var isSingleByte: Bool = true
     mutating func parse(_ data: Data, at offset: inout Data.Index, for pressureDataType: UKPressureDataType) {
+        latestPressureDataType = pressureDataType
+
         let scalar = scalars[pressureDataType]!
 
         var rawValueSum = 0
-        let isSingleByte = pressureDataType == .pressureSingleByte
+        isSingleByte = pressureDataType == .pressureSingleByte
 
         for index in 0 ..< numberOfPressureSensors {
             if isSingleByte {

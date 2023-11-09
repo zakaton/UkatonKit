@@ -10,7 +10,18 @@ public typealias UKPressureDataRates = [UKPressureDataType: UKSensorDataRate]
 @StaticLogger
 public struct UKSensorDataConfigurations {
     public var motion: UKMotionDataRates = .zero
-    public var pressure: UKPressureDataRates = .zero
+    public var pressure: UKPressureDataRates = .zero {
+        didSet {
+            if let singleByte = pressure[.pressureSingleByte], let doubleByte = pressure[.pressureDoubleByte], singleByte > 0, doubleByte > 0 {
+                if let oldSingleByte = oldValue[.pressureSingleByte], oldSingleByte > 0 {
+                    pressure[.pressureSingleByte] = 0
+                }
+                else {
+                    pressure[.pressureDoubleByte] = 0
+                }
+            }
+        }
+    }
 
     public init() {}
 

@@ -26,7 +26,7 @@ public extension Rotation3D {
 
 public extension Vector3D {
     var string: String {
-        .init(format: "x: %5.3f, y: %5.3f, z: %5.3f", x, y, z)
+        .init(format: "x: %6.3f, y: %6.3f, z: %6.3f", x, y, z)
     }
 }
 

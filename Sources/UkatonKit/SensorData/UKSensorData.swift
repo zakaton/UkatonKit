@@ -11,7 +11,7 @@ public extension UKTimestamp {
         let seconds = totalSeconds % 60
         let remainingMilliseconds = self % 1000
 
-        return .init(format: "%02d:%02d:%02d", minutes, seconds, remainingMilliseconds)
+        return .init(format: "%02d:%02d:%03d", minutes, seconds, remainingMilliseconds)
     }
 }
 

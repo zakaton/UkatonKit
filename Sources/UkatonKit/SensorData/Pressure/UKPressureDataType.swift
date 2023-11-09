@@ -9,4 +9,12 @@ public enum UKPressureDataType: UInt8, CaseIterable, UKSensorDataType {
     case heelToToe
 
     public var sensorType: UKSensorType { .pressure }
+    public var isPressure: Bool {
+        switch self {
+        case .pressureSingleByte, .pressureDoubleByte:
+            true
+        default:
+            false
+        }
+    }
 }
