@@ -128,11 +128,11 @@ public extension UKMission {
     // MARK: - Sensor Data Configurations
 
     func setSensorDataConfigurations(_ newSensorDataConfigurations: UKSensorDataConfigurations) throws {
-        try sendMessage(type: .setSensorDataConfigurations, data: newSensorDataConfigurations.data(deviceType: deviceType))
+        try sendMessage(type: .setSensorDataConfigurations, data: newSensorDataConfigurations.data(deviceType: deviceType, relativeTo: sensorDataConfigurations))
     }
 
     func resendSensorDataConfigurations() throws {
-        try setSensorDataConfigurations(sensorDataConfigurations)
+        try sendMessage(type: .setSensorDataConfigurations, data: sensorDataConfigurations.data(deviceType: deviceType))
     }
 
     func resetSensorDataConfigurations() throws {

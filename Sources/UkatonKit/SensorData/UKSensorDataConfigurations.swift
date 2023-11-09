@@ -7,10 +7,24 @@ public typealias UKSensorDataRate = UInt16
 public typealias UKMotionDataRates = [UKMotionDataType: UKSensorDataRate]
 public typealias UKPressureDataRates = [UKPressureDataType: UKSensorDataRate]
 
+extension Dictionary where Value == UKSensorDataRate {
+    static func - (lhs: Self, rhs: Self) -> Self {
+        var difference = Self()
+
+        for (key, value) in lhs {
+            if rhs[key] != value {
+                difference[key] = value
+            }
+        }
+
+        return difference
+    }
+}
+
 @StaticLogger
 public struct UKSensorDataConfigurations {
-    public var motion: UKMotionDataRates = .zero
-    public var pressure: UKPressureDataRates = .zero {
+    public var motion: UKMotionDataRates
+    public var pressure: UKPressureDataRates {
         didSet {
             if let singleByte = pressure[.pressureSingleByte], let doubleByte = pressure[.pressureDoubleByte], singleByte > 0, doubleByte > 0 {
                 if let oldSingleByte = oldValue[.pressureSingleByte], oldSingleByte > 0 {
@@ -23,7 +37,15 @@ public struct UKSensorDataConfigurations {
         }
     }
 
-    public init() {}
+    public init() {
+        motion = .zero
+        pressure = .zero
+    }
+
+    init(motion: UKMotionDataRates, pressure: UKPressureDataRates) {
+        self.motion = motion
+        self.pressure = pressure
+    }
 
     // MARK: - Serialization
 
@@ -32,6 +54,7 @@ public struct UKSensorDataConfigurations {
 
         UKSensorType.allCases.filter { deviceType.hasSensorType($0) }.forEach { sensorType in
             var subData: Data = .init()
+
             switch sensorType {
             case .motion:
                 subData = motion.data
@@ -45,6 +68,10 @@ public struct UKSensorDataConfigurations {
             }
         }
         return data
+    }
+
+    func data(deviceType: UKDeviceType, relativeTo reference: Self) -> Data {
+        (self - reference).data(deviceType: deviceType)
     }
 
     // MARK: - Parsing
@@ -83,5 +110,11 @@ public struct UKSensorDataConfigurations {
 
     var isZero: Bool {
         motion.isZero && pressure.isZero
+    }
+
+    // MARK: - Difference
+
+    static func - (lhs: Self, rhs: Self) -> Self {
+        .init(motion: lhs.motion - rhs.motion, pressure: lhs.pressure - rhs.pressure)
     }
 }

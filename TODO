@@ -1,3 +1,5 @@
+make SensorData a class with @Published properties (includes timestamp)
+
 OrientationDemo
     Quaternion/RotationRate
     Acceleration/LineerAcceleration
