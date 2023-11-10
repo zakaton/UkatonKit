@@ -132,10 +132,10 @@ public extension UKMission {
     }
 
     func resendSensorDataConfigurations() throws {
-        try sendMessage(type: .setSensorDataConfigurations, data: sensorDataConfigurations.data(deviceType: deviceType))
+        try sendMessage(type: .setSensorDataConfigurations, data: sensorDataConfigurations.withoutZeros.data(deviceType: deviceType))
     }
 
-    func resetSensorDataConfigurations() throws {
+    func clearSensorDataConfigurations() throws {
         let newSensorDataConfiguratons: UKSensorDataConfigurations = .init()
         try setSensorDataConfigurations(newSensorDataConfiguratons)
     }

@@ -19,6 +19,10 @@ extension Dictionary where Value == UKSensorDataRate {
 
         return difference
     }
+
+    var withoutZeros: Self {
+        filter { $1 > 0 }
+    }
 }
 
 @StaticLogger
@@ -116,5 +120,11 @@ public struct UKSensorDataConfigurations {
 
     static func - (lhs: Self, rhs: Self) -> Self {
         .init(motion: lhs.motion - rhs.motion, pressure: lhs.pressure - rhs.pressure)
+    }
+
+    // MARK: - without zeros
+
+    var withoutZeros: Self {
+        .init(motion: motion.withoutZeros, pressure: pressure.withoutZeros)
     }
 }

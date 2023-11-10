@@ -1,8 +1,10 @@
-make SensorData a class with @Published properties (includes timestamp)
-
 OrientationDemo
-    Quaternion/RotationRate
-    Acceleration/LineerAcceleration
+    Quaternion/RotationRate segmented control
+    Acceleration/LineerAcceleration segmented control
+    reset orientaton toggle
+    rotation3D
+    acceleration/linearAcceleration
+    fix orientation
 PressureDemo
     picture of insole, with pressure sensors
 HapticsDemo

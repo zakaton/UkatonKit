@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 import OSLog
 import simd
@@ -40,6 +41,13 @@ public struct UKPressureData: UKSensorDataComponent {
 
     public private(set) var timestamps: [UKPressureDataType: UKTimestamp] = .zero
 
+    // MARK: - PassthroughSubjects
+
+    public let pressureValuesSubject = PassthroughSubject<(pressureValues: UKPressureValues, timestamp: UKTimestamp), Never>()
+    public let centerOfMassSubject = PassthroughSubject<(centerOfMass: Vector2D, timestamp: UKTimestamp), Never>()
+    public let massSubject = PassthroughSubject<(mass: Double, timestamp: UKTimestamp), Never>()
+    public let heelToToeSubject = PassthroughSubject<(heelToToe: Float64, timestamp: UKTimestamp), Never>()
+
     // MARK: - Parsing
 
     mutating func parse(_ data: Data, at offset: inout Data.Index, until finalOffset: Data.Index, timestamp: UKTimestamp) {
@@ -53,26 +61,33 @@ public struct UKPressureData: UKSensorDataComponent {
             switch pressureDataType {
             case .pressureSingleByte, .pressureDoubleByte:
                 pressureValues.parse(data, at: &offset, for: pressureDataType)
+                pressureValuesSubject.send((pressureValues, timestamp))
 
                 centerOfMass = pressureValues.centerOfMass
                 timestamps[.centerOfMass] = timestamp
+                centerOfMassSubject.send((centerOfMass, timestamp))
 
                 mass = pressureValues.mass
                 timestamps[.mass] = timestamp
+                massSubject.send((mass, timestamp))
 
                 heelToToe = pressureValues.heelToToe
                 timestamps[.heelToToe] = timestamp
+                heelToToeSubject.send((heelToToe, timestamp))
 
             case .centerOfMass:
                 centerOfMass = parseCenterOfMass(data: data, at: &offset)
+                centerOfMassSubject.send((centerOfMass, timestamp))
                 let _self = self
                 logger.debug("\(pressureDataType.name): \(_self.centerOfMass.debugDescription)")
             case .mass:
                 mass = Double(parseMass(data: data, at: &offset)) * scalars[pressureDataType]!
+                massSubject.send((mass, timestamp))
                 let _self = self
                 logger.debug("\(pressureDataType.name): \(_self.mass.debugDescription)")
             case .heelToToe:
                 heelToToe = parseHeelToToe(data: data, at: &offset)
+                heelToToeSubject.send((heelToToe, timestamp))
                 let _self = self
                 logger.debug("\(pressureDataType.name): \(_self.heelToToe.debugDescription)")
             }

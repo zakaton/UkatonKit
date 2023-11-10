@@ -107,7 +107,7 @@ public class UKMission: ObservableObject {
 
     @Published public internal(set) var motionCalibration: UKMotionCalibration = .zero
 
-    public internal(set) var isFullyCalibrated: Bool = false
+    @Published public internal(set) var isFullyCalibrated: Bool = false
 
     // MARK: - Sensor Data Configurations
 
