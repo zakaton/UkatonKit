@@ -1,6 +1,4 @@
 OrientationDemo
-    Quaternion/RotationRate segmented control
-    Acceleration/LineerAcceleration segmented control
     reset orientaton toggle
     rotation3D
     acceleration/linearAcceleration
