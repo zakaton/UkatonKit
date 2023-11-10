@@ -200,11 +200,11 @@ public struct UKMotionData: UKSensorDataComponent {
         var eulerAngles = Rotation3D(eulerAngles: .init(angles: rawAngles, order: .xyz))
         _correctionQuaternions[.motionModule] = eulerAngles.quaternion
 
-        rawAngles = .init(arrayLiteral: -(.pi / 2.0), .pi / 2.0, 0.0)
+        rawAngles = .init(arrayLiteral: -(.pi / 2.0), 0.0, -(.pi / 2.0))
         eulerAngles = Rotation3D(eulerAngles: .init(angles: rawAngles, order: .xyz))
         _correctionQuaternions[.leftInsole] = eulerAngles.quaternion
 
-        rawAngles = .init(arrayLiteral: -(.pi / 2.0), -(.pi / 2.0), 0.0)
+        rawAngles = .init(arrayLiteral: -(.pi / 2.0), 0.0, .pi / 2.0)
         eulerAngles = Rotation3D(eulerAngles: .init(angles: rawAngles, order: .xyz))
         _correctionQuaternions[.rightInsole] = eulerAngles.quaternion
 
