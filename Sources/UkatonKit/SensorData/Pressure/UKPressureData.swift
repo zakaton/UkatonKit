@@ -4,9 +4,16 @@ import OSLog
 import simd
 import UkatonMacros
 
-public typealias Vector2D = simd_double2
+public typealias UKPressureCenterOfMass = simd_double2
+public typealias UKPressureMass = Double
+public typealias UKPressureHeelToToe = Float64
 
-public extension Vector2D {
+typealias UKPressureRawMass = UInt32
+
+typealias UKPressureScalar = Double
+typealias UKPressureScalars = [UKPressureDataType: UKPressureScalar]
+
+public extension UKPressureCenterOfMass {
     var string: String {
         .init(format: "x: %5.3f, y: %5.3f", x, y)
     }
@@ -26,27 +33,26 @@ public struct UKPressureData: UKSensorDataComponent {
 
     // MARK: - Data Scalar
 
-    typealias Scalars = [UKPressureDataType: Double]
-    static let scalars: Scalars = [
+    static let scalars: UKPressureScalars = [
         .mass: pow(2.0, -16.0)
     ]
-    var scalars: Scalars { Self.scalars }
+    var scalars: UKPressureScalars { Self.scalars }
 
     // MARK: - Data
 
     public private(set) var pressureValues: UKPressureValues = .init()
-    public private(set) var centerOfMass: Vector2D = .init()
-    public private(set) var mass: Double = .zero
-    public private(set) var heelToToe: Float64 = .zero
+    public private(set) var centerOfMass: UKPressureCenterOfMass = .init()
+    public private(set) var mass: UKPressureMass = .zero
+    public private(set) var heelToToe: UKPressureHeelToToe = .zero
 
     public private(set) var timestamps: [UKPressureDataType: UKTimestamp] = .zero
 
     // MARK: - PassthroughSubjects
 
     public let pressureValuesSubject = PassthroughSubject<(pressureValues: UKPressureValues, timestamp: UKTimestamp), Never>()
-    public let centerOfMassSubject = PassthroughSubject<(centerOfMass: Vector2D, timestamp: UKTimestamp), Never>()
-    public let massSubject = PassthroughSubject<(mass: Double, timestamp: UKTimestamp), Never>()
-    public let heelToToeSubject = PassthroughSubject<(heelToToe: Float64, timestamp: UKTimestamp), Never>()
+    public let centerOfMassSubject = PassthroughSubject<(centerOfMass: UKPressureCenterOfMass, timestamp: UKTimestamp), Never>()
+    public let massSubject = PassthroughSubject<(mass: UKPressureMass, timestamp: UKTimestamp), Never>()
+    public let heelToToeSubject = PassthroughSubject<(heelToToe: UKPressureHeelToToe, timestamp: UKTimestamp), Never>()
 
     // MARK: - Parsing
 
@@ -96,18 +102,18 @@ public struct UKPressureData: UKSensorDataComponent {
         }
     }
 
-    private mutating func parseCenterOfMass(data: Data, at offset: inout Data.Index) -> Vector2D {
+    private mutating func parseCenterOfMass(data: Data, at offset: inout Data.Index) -> UKPressureCenterOfMass {
         .init(
             x: Double(Float32.parse(from: data, at: &offset)),
             y: Double(Float32.parse(from: data, at: &offset))
         )
     }
 
-    private mutating func parseMass(data: Data, at offset: inout Data.Index) -> UInt32 {
+    private mutating func parseMass(data: Data, at offset: inout Data.Index) -> UKPressureRawMass {
         .parse(from: data, at: &offset)
     }
 
-    private mutating func parseHeelToToe(data: Data, at offset: inout Data.Index) -> Float64 {
+    private mutating func parseHeelToToe(data: Data, at offset: inout Data.Index) -> UKPressureHeelToToe {
         .parse(from: data, at: &offset)
     }
 }

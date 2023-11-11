@@ -4,8 +4,11 @@ import simd
 import UkatonMacros
 
 @StaticLogger
-public struct UKPressureValues {
-    static let pressurePositions: [UKPressureValue.Vector2D] = [
+public struct UKPressureValues: RandomAccessCollection {
+    public var startIndex: Int { 0 }
+    public var endIndex: Int { numberOfPressureSensors }
+
+    static let pressurePositions: [UKPressurePosition] = [
         .init(x: 0.6385579634772724, y: 0.12185506415310729),
         .init(x: 0.3549331417480725, y: 0.15901519981589698),
         .init(x: 0.7452523671145329, y: 0.20937944459744443),
@@ -44,12 +47,11 @@ public struct UKPressureValues {
 
     // MARK: - Data Scalar
 
-    typealias Scalars = [UKPressureDataType: Double]
-    static let scalars: Scalars = [
+    static let scalars: UKPressureScalars = [
         .pressureSingleByte: pow(2.0, -8.0),
         .pressureDoubleByte: pow(2.0, -12.0)
     ]
-    var scalars: Scalars { Self.scalars }
+    var scalars: UKPressureScalars { Self.scalars }
 
     // MARK: - Raw Values
 
@@ -66,9 +68,7 @@ public struct UKPressureValues {
 
     // MARK: - Derived Values
 
-    public typealias Vector2D = simd_double2
-
-    public private(set) var centerOfMass: Vector2D = .zero
+    public private(set) var centerOfMass: UKPressureCenterOfMass = .zero
     public private(set) var mass: Double = .zero
     public private(set) var heelToToe: Float64 = .zero
 

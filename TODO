@@ -1,11 +1,9 @@
-OrientationDemo
-    reset quaternion
 PressureDemo
-    picture of insole, with pressure sensors
+    heelToToe
+    CenterOfMass
 HapticsDemo
     manual trigger
     create presets
-    
 Missions Tab (enabled if a left/right insole is connected)
 PairPressureDemo
     just 2 insoles with additional pressure

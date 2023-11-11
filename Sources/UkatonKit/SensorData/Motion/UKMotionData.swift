@@ -39,8 +39,9 @@ public struct UKMotionData: UKSensorDataComponent {
 
     // MARK: - Data Scalar
 
-    typealias Scalars = [UKMotionDataType: Double]
-    static let scalars: Scalars = [
+    typealias UKMotionScalar = Double
+    typealias UKMotionScalars = [UKMotionDataType: UKMotionScalar]
+    static let scalars: UKMotionScalars = [
         .acceleration: pow(2.0, -8.0),
         .gravity: pow(2.0, -8.0),
         .linearAcceleration: pow(2.0, -8.0),
@@ -48,7 +49,7 @@ public struct UKMotionData: UKSensorDataComponent {
         .magnetometer: pow(2.0, -4.0),
         .quaternion: pow(2.0, -14.0)
     ]
-    var scalars: Scalars { Self.scalars }
+    var scalars: UKMotionScalars { Self.scalars }
 
     // MARK: - Data
 
@@ -113,7 +114,7 @@ public struct UKMotionData: UKSensorDataComponent {
 
     // MARK: - Vector
 
-    private typealias RawVector = simd_double3
+    private typealias UKRawMotionVector3D = simd_double3
     private func parseVector(data: Data, at offset: inout Data.Index, scalar: Double) -> Vector3D {
         let rawX: Int16 = .parse(from: data, at: &offset)
         let rawY: Int16 = .parse(from: data, at: &offset)
@@ -123,13 +124,13 @@ public struct UKMotionData: UKSensorDataComponent {
         let y = Double(rawY)
         let z = Double(rawZ)
 
-        var rawVector: RawVector = switch deviceType {
+        var rawVector: UKRawMotionVector3D = switch deviceType {
         case .motionModule, nil:
-            RawVector(arrayLiteral: x, -z, -y)
+            UKRawMotionVector3D(arrayLiteral: x, -z, -y)
         case .leftInsole:
-            RawVector(arrayLiteral: z, y, x)
+            UKRawMotionVector3D(arrayLiteral: z, y, x)
         case .rightInsole:
-            RawVector(arrayLiteral: -z, y, -x)
+            UKRawMotionVector3D(arrayLiteral: -z, y, -x)
         }
         rawVector *= scalar
 
@@ -140,7 +141,7 @@ public struct UKMotionData: UKSensorDataComponent {
 
     // MARK: - Rotation
 
-    private typealias RawAngles = simd_double3
+    private typealias UKRawEulerAngles = simd_double3
     private func parseRotation(data: Data, at offset: inout Data.Index, scalar: Double) -> Rotation3D {
         let rawX: Int16 = .parse(from: data, at: &offset)
         let rawY: Int16 = .parse(from: data, at: &offset)
@@ -150,13 +151,13 @@ public struct UKMotionData: UKSensorDataComponent {
         let y = Double(rawY).degreesToRadians
         let z = Double(rawZ).degreesToRadians
 
-        var rawAngles: RawAngles = switch deviceType {
+        var rawAngles: UKRawEulerAngles = switch deviceType {
         case .motionModule, nil:
-            RawAngles(arrayLiteral: -x, z, y)
+            UKRawEulerAngles(arrayLiteral: -x, z, y)
         case .leftInsole:
-            RawAngles(arrayLiteral: -z, -y, -x)
+            UKRawEulerAngles(arrayLiteral: -z, -y, -x)
         case .rightInsole:
-            RawAngles(arrayLiteral: z, -y, x)
+            UKRawEulerAngles(arrayLiteral: z, -y, x)
         }
         rawAngles *= scalar
 
@@ -196,7 +197,7 @@ public struct UKMotionData: UKSensorDataComponent {
     static let correctionQuaternions: [UKDeviceType: Quaternion] = {
         var _correctionQuaternions: [UKDeviceType: Quaternion] = [:]
 
-        var rawAngles: RawAngles = .init(arrayLiteral: 0.0, 0.0, 0.0)
+        var rawAngles: UKRawEulerAngles = .init(arrayLiteral: 0.0, 0.0, 0.0)
         var eulerAngles = Rotation3D(eulerAngles: .init(angles: rawAngles, order: .xyz))
         _correctionQuaternions[.motionModule] = eulerAngles.quaternion
 
