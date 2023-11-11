@@ -1,10 +1,5 @@
 OrientationDemo
-    fix orientation for left/right insole
-    reset orientaton toggle
-    reset cameraview toggle
-    rotation3D
-    linearAcceleration
-    acceleration
+    reset quaternion
 PressureDemo
     picture of insole, with pressure sensors
 HapticsDemo

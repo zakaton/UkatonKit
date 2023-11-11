@@ -125,11 +125,11 @@ public struct UKMotionData: UKSensorDataComponent {
 
         var rawVector: RawVector = switch deviceType {
         case .motionModule, nil:
-            RawVector(arrayLiteral: -x, -z, -y)
+            RawVector(arrayLiteral: x, -z, -y)
         case .leftInsole:
-            RawVector(arrayLiteral: -z, x, -y)
+            RawVector(arrayLiteral: z, y, x)
         case .rightInsole:
-            RawVector(arrayLiteral: z, x, y)
+            RawVector(arrayLiteral: -z, y, -x)
         }
         rawVector *= scalar
 
@@ -152,11 +152,11 @@ public struct UKMotionData: UKSensorDataComponent {
 
         var rawAngles: RawAngles = switch deviceType {
         case .motionModule, nil:
-            RawAngles(arrayLiteral: -x, -z, y)
+            RawAngles(arrayLiteral: -x, z, y)
         case .leftInsole:
-            RawAngles(arrayLiteral: -z, y, -x)
+            RawAngles(arrayLiteral: -z, -y, -x)
         case .rightInsole:
-            RawAngles(arrayLiteral: z, y, x)
+            RawAngles(arrayLiteral: z, -y, x)
         }
         rawAngles *= scalar
 
