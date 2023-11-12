@@ -66,6 +66,7 @@ public extension UKMission {
 
         case .getSensorDataConfigurations, .setSensorDataConfigurations:
             sensorDataConfigurations.parse(data, at: &offset)
+            sensorDataConfigurationsSubject.send(sensorDataConfigurations)
             updateCheckSensorDataTimer()
 
         case .sensorData:
@@ -140,11 +141,13 @@ public extension UKMission {
         try setSensorDataConfigurations(newSensorDataConfiguratons)
     }
 
-    // MARK: - Haptics
+    // MARK: - Vibration
 
-    // TODO: - FILL
-    func triggerHapticsWaveform() {}
+    func vibrate(waveforms: [UKVibrationWaveform]) throws {
+        try sendMessage(type: .triggerVibration, data: serializeVibration(waveforms: waveforms))
+    }
 
-    // TODO: - FILL
-    func triggerHapticsSequence() {}
+    func vibrate(sequence: [UKVibrationSequenceSegment]) throws {
+        try sendMessage(type: .triggerVibration, data: serializeVibration(sequence: sequence))
+    }
 }

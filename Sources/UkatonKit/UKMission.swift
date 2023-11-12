@@ -1,3 +1,4 @@
+import Combine
 import CoreBluetooth
 import Foundation
 import OSLog
@@ -96,11 +97,13 @@ public class UKMission: ObservableObject {
         didSet {
             if !isConnectedToWifi {
                 ipAddress = nil
+                ipAddressSubject.send(nil)
             }
         }
     }
 
     @Published public internal(set) var ipAddress: String? = nil
+    public let ipAddressSubject = PassthroughSubject<String?, Never>()
 
     // MARK: - Motion Calibration
 
@@ -111,6 +114,7 @@ public class UKMission: ObservableObject {
     // MARK: - Sensor Data Configurations
 
     @Published public internal(set) var sensorDataConfigurations: UKSensorDataConfigurations = .init()
+    public let sensorDataConfigurationsSubject = PassthroughSubject<UKSensorDataConfigurations, Never>()
     var checkSensorDataTimer: Timer? = nil
 
     // MARK: - Sensor Data

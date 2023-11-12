@@ -104,15 +104,15 @@ final class UkatonKitTests: XCTestCase {
         XCTAssertEqual(mission.motionCalibration, motionCalibration, "calibrations don't match")
     }
 
-    // MARK: - Haptics
+    // MARK: - Vibration
 
-    func testSerializeHapticsWaveforms() {
-        let waveformSerialization = mission.serializeHaptics(waveforms: [.longDoubleSharpTick80, .doubleClick100])
+    func testSerializevibrationWaveforms() {
+        let waveformSerialization = mission.serializeVibration(waveforms: [.longDoubleSharpTick80, .doubleClick100])
         print(waveformSerialization.bytes)
     }
 
-    func testSerializeHapticsSequence() {
-        let sequenceSerialization = mission.serializeHaptics(sequence: [.init(intensity: 1, delay: 20)])
+    func testSerializevibrationSequence() {
+        let sequenceSerialization = mission.serializeVibration(sequence: [.init(intensity: 1, delay: 20)])
         print(sequenceSerialization.bytes)
     }
 

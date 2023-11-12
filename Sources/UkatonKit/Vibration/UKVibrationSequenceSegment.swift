@@ -19,7 +19,7 @@ public struct UKVibrationSequenceSegment {
         }
     }
 
-    var flat: [UInt8] {
+    var bytes: [UInt8] {
         [UInt8(intensity * 126), UInt8(delay / 10)]
     }
 

@@ -1,11 +1,21 @@
-PressureDemo
-    heelToToe
-    CenterOfMass
-HapticsDemo
-    manual trigger
-    create presets
+fix sensordata menu
+get wifi ssid
+
+Waveforms
+    add/remove waveform vibration
+    add/remove waveform
+Sequence
+    add/remove sequence vibration
+    add/remove segment
+
 Missions Tab (enabled if a left/right insole is connected)
 PairPressureDemo
     just 2 insoles with additional pressure
 BalanceGameDemo
     like wii fit
+
+test on watch
+test on tv
+test on vision pro
+
+Safari Extension
