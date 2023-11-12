@@ -1,12 +1,4 @@
-fix sensordata menu
-get wifi ssid
-
-Waveforms
-    add/remove waveform vibration
-    add/remove waveform
-Sequence
-    add/remove sequence vibration
-    add/remove segment
+change data/battery @Published to Subject
 
 Missions Tab (enabled if a left/right insole is connected)
 PairPressureDemo

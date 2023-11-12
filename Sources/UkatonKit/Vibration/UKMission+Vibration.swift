@@ -2,25 +2,38 @@ import Foundation
 import UkatonMacros
 
 @EnumName
-enum UKVibrationType: UInt8 {
+public enum UKVibrationType: UInt8 {
+    case waveformEffect
     case waveform
-    case sequence
+
+    public var maxSequenceLength: Int {
+        switch self {
+        case .waveformEffect:
+            8
+        case .waveform:
+            20
+        }
+    }
+}
+
+protocol UKVibrationSequenceSegment {
+    var data: Data { get }
 }
 
 extension UKMission {
-    func serializeVibration(waveforms: [UKVibrationWaveform]) -> Data {
-        var byteArray: [UInt8] = [UKVibrationType.waveform.rawValue]
-        byteArray += waveforms.map { $0.rawValue }
-        logger.debug("serialized waveforms vibration: \(byteArray.debugDescription)")
-        let data = Data(byteArray)
-        return data
+    func serializeVibration(waveformEffects: [UKVibrationWaveformEffect]) -> Data {
+        serializeVibration(type: .waveformEffect, sequence: waveformEffects)
     }
 
-    func serializeVibration(sequence: [UKVibrationSequenceSegment]) -> Data {
-        var byteArray: [UInt8] = [UKVibrationType.sequence.rawValue]
-        byteArray += sequence.flatMap { $0.bytes }
-        logger.debug("serialized sequence vibration: \(byteArray.debugDescription)")
-        let data = Data(byteArray)
+    func serializeVibration(waveforms: [UKVibrationWaveform]) -> Data {
+        serializeVibration(type: .waveform, sequence: waveforms)
+    }
+
+    fileprivate func serializeVibration(type: UKVibrationType, sequence: [UKVibrationSequenceSegment]) -> Data {
+        var data: Data = .init()
+        data.append(contentsOf: [type.rawValue])
+        data += sequence.prefix(type.maxSequenceLength).flatMap { $0.data }
+        logger.debug("serialized \(type.name) vibration: \(data.debugDescription)")
         return data
     }
 }

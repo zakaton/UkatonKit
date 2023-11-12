@@ -143,11 +143,19 @@ public extension UKMission {
 
     // MARK: - Vibration
 
+    func vibrate(waveformEffects: [UKVibrationWaveformEffect]) throws {
+        try sendMessage(type: .triggerVibration, data: serializeVibration(waveformEffects: waveformEffects))
+    }
+
+    func vibrate(waveformEffect: UKVibrationWaveformEffect) throws {
+        try vibrate(waveformEffects: [waveformEffect])
+    }
+
     func vibrate(waveforms: [UKVibrationWaveform]) throws {
         try sendMessage(type: .triggerVibration, data: serializeVibration(waveforms: waveforms))
     }
 
-    func vibrate(sequence: [UKVibrationSequenceSegment]) throws {
-        try sendMessage(type: .triggerVibration, data: serializeVibration(sequence: sequence))
+    func vibrate(waveform: UKVibrationWaveform) throws {
+        try vibrate(waveforms: [waveform])
     }
 }
