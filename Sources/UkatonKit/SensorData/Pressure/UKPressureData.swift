@@ -23,14 +23,7 @@ public extension UKPressureCenterOfMass {
 public struct UKPressureData: UKSensorDataComponent {
     // MARK: - Device Type
 
-    var deviceType: UKDeviceType? = nil {
-        didSet {
-            if oldValue != deviceType {
-                // TODO: - FIX
-                pressureValuesSubject.value.value.deviceType = deviceType
-            }
-        }
-    }
+    var deviceType: UKDeviceType = .motionModule
 
     // MARK: - Data Scalar
 
@@ -65,16 +58,14 @@ public struct UKPressureData: UKSensorDataComponent {
 
             switch pressureDataType {
             case .pressureSingleByte, .pressureDoubleByte:
-                // TODO: - FIX
-                // let newPressureValues = UKPressureValues.parse(deviceType, data, at: &offset, for: pressureDataType)
-                pressureValuesSubject.value.value.parse(data, at: &offset, for: pressureDataType)
-                pressureValuesSubject.send((pressureValues, timestamp))
+                let newPressureValues: UKPressureValues = .init(data: data, at: &offset, for: pressureDataType, as: deviceType)
+                pressureValuesSubject.send((newPressureValues, timestamp))
 
-                centerOfMassSubject.send((pressureValues.centerOfMass, timestamp))
+                centerOfMassSubject.send((newPressureValues.centerOfMass, timestamp))
 
-                massSubject.send((pressureValues.mass, timestamp))
+                massSubject.send((newPressureValues.mass, timestamp))
 
-                heelToToeSubject.send((pressureValues.heelToToe, timestamp))
+                heelToToeSubject.send((newPressureValues.heelToToe, timestamp))
 
             case .centerOfMass:
                 let newCenterOfMass = parseCenterOfMass(data: data, at: &offset)

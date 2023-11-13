@@ -16,7 +16,7 @@ public extension UKTimestamp {
 }
 
 protocol UKSensorDataComponent {
-    var deviceType: UKDeviceType? { get set }
+    var deviceType: UKDeviceType { get set }
     mutating func parse(_ data: Data, at offset: inout Data.Index, until finalOffset: Data.Index, timestamp: UKTimestamp)
 }
 
@@ -29,12 +29,10 @@ public struct UKSensorData {
 
     // MARK: - Device Type
 
-    var deviceType: UKDeviceType? = nil {
+    var deviceType: UKDeviceType = .motionModule {
         didSet {
-            if oldValue != deviceType {
-                motion.deviceType = deviceType
-                pressure.deviceType = deviceType
-            }
+            motion.deviceType = deviceType
+            pressure.deviceType = deviceType
         }
     }
 

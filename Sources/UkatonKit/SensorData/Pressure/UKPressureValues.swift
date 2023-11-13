@@ -29,24 +29,6 @@ public struct UKPressureValues: RandomAccessCollection {
         .init(x: 0.19891268215790772, y: 0.9133470907575008)
     ]
 
-    // MARK: - DeviceType
-
-    var deviceType: UKDeviceType? = nil {
-        didSet {
-            if let deviceType, deviceType != oldValue {
-                if deviceType.isInsole == true {
-                    for index in 0 ..< numberOfPressureSensors {
-                        rawValues[index].position = Self.pressurePositions[index]
-                        if deviceType.insoleSide == .right {
-                            rawValues[index].position.x = 1 - rawValues[index].position.x
-                        }
-                    }
-                    logger.debug("updated pressure value positions")
-                }
-            }
-        }
-    }
-
     // MARK: - Data Scalar
 
     static let scalars: UKPressureScalars = [
@@ -78,8 +60,15 @@ public struct UKPressureValues: RandomAccessCollection {
 
     public private(set) var latestPressureDataType: UKPressureDataType = .pressureSingleByte
     public private(set) var isSingleByte: Bool = true
-    mutating func parse(_ data: Data, at offset: inout Data.Index, for pressureDataType: UKPressureDataType) {
+    init(data: Data, at offset: inout Data.Index, for pressureDataType: UKPressureDataType, as deviceType: UKDeviceType) {
         latestPressureDataType = pressureDataType
+
+        for index in 0 ..< numberOfPressureSensors {
+            rawValues[index].position = Self.pressurePositions[index]
+            if deviceType.insoleSide == .right {
+                rawValues[index].position.x = 1 - rawValues[index].position.x
+            }
+        }
 
         let scalar = scalars[pressureDataType]!
 

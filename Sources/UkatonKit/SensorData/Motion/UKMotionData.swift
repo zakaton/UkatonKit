@@ -35,7 +35,7 @@ public extension Vector3D {
 public struct UKMotionData: UKSensorDataComponent {
     // MARK: - Device Type
 
-    var deviceType: UKDeviceType? = nil
+    var deviceType: UKDeviceType = .motionModule
 
     // MARK: - Data Scalar
 
@@ -122,7 +122,7 @@ public struct UKMotionData: UKSensorDataComponent {
         let z = Double(rawZ)
 
         var rawVector: UKRawMotionVector3D = switch deviceType {
-        case .motionModule, nil:
+        case .motionModule:
             UKRawMotionVector3D(arrayLiteral: x, -z, -y)
         case .leftInsole:
             UKRawMotionVector3D(arrayLiteral: z, y, x)
@@ -149,7 +149,7 @@ public struct UKMotionData: UKSensorDataComponent {
         let z = Double(rawZ).degreesToRadians
 
         var rawAngles: UKRawEulerAngles = switch deviceType {
-        case .motionModule, nil:
+        case .motionModule:
             UKRawEulerAngles(arrayLiteral: -x, z, y)
         case .leftInsole:
             UKRawEulerAngles(arrayLiteral: -z, -y, -x)
@@ -181,7 +181,7 @@ public struct UKMotionData: UKSensorDataComponent {
         quaternion *= scalar
         quaternion = quaternion.normalized
 
-        if deviceType?.isInsole == true {
+        if deviceType.isInsole {
             quaternion *= correctionQuaternion
         }
 
@@ -190,7 +190,7 @@ public struct UKMotionData: UKSensorDataComponent {
         return quaternion
     }
 
-    private var correctionQuaternion: Quaternion { Self.correctionQuaternions[deviceType ?? .motionModule]! }
+    private var correctionQuaternion: Quaternion { Self.correctionQuaternions[deviceType]! }
     static let correctionQuaternions: [UKDeviceType: Quaternion] = {
         var _correctionQuaternions: [UKDeviceType: Quaternion] = [:]
 
