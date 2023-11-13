@@ -53,25 +53,23 @@ public struct UKMotionData: UKSensorDataComponent {
 
     // MARK: - Data
 
-    public private(set) var acceleration: Vector3D = .init()
-    public private(set) var gravity: Vector3D = .init()
-    public private(set) var linearAcceleration: Vector3D = .init()
-    public private(set) var rotationRate: Rotation3D = .init()
-    public private(set) var magnetometer: Vector3D = .init()
-    public private(set) var quaternion: Quaternion = .init()
-    public private(set) var rotation: Rotation3D = .init()
+    public var acceleration: Vector3D { accelerationSubject.value.acceleration }
+    public var gravity: Vector3D { gravitySubject.value.gravity }
+    public var linearAcceleration: Vector3D { linearAccelerationSubject.value.linearAcceleration }
+    public var rotationRate: Rotation3D { rotationRateSubject.value.rotationRate }
+    public var magnetometer: Vector3D { magnetometerSubject.value.magnetometer }
+    public var quaternion: Quaternion { quaternionSubject.value.quaternion }
+    public var rotation: Rotation3D { rotationSubject.value.rotation }
 
-    public private(set) var timestamps: [UKMotionDataType: UKTimestamp] = .zero
+    // MARK: - CurrentValueSubjects
 
-    // MARK: - PassthroughSubjects
-
-    public let accelerationSubject = PassthroughSubject<(acceleration: Vector3D, timestamp: UKTimestamp), Never>()
-    public let gravitySubject = PassthroughSubject<(gravity: Vector3D, timestamp: UKTimestamp), Never>()
-    public let linearAccelerationSubject = PassthroughSubject<(linearAcceleration: Vector3D, timestamp: UKTimestamp), Never>()
-    public let rotationRateSubject = PassthroughSubject<(rotationRate: Rotation3D, timestamp: UKTimestamp), Never>()
-    public let magnetometerSubject = PassthroughSubject<(magnetometer: Vector3D, timestamp: UKTimestamp), Never>()
-    public let quaternionSubject = PassthroughSubject<(quaternion: Quaternion, timestamp: UKTimestamp), Never>()
-    public let rotationSubject = PassthroughSubject<(rotation: Rotation3D, timestamp: UKTimestamp), Never>()
+    public let accelerationSubject = CurrentValueSubject<(acceleration: Vector3D, timestamp: UKTimestamp), Never>((.init(), 0))
+    public let gravitySubject = CurrentValueSubject<(gravity: Vector3D, timestamp: UKTimestamp), Never>((.init(), 0))
+    public let linearAccelerationSubject = CurrentValueSubject<(linearAcceleration: Vector3D, timestamp: UKTimestamp), Never>((.init(), 0))
+    public let rotationRateSubject = CurrentValueSubject<(rotationRate: Rotation3D, timestamp: UKTimestamp), Never>((.init(), 0))
+    public let magnetometerSubject = CurrentValueSubject<(magnetometer: Vector3D, timestamp: UKTimestamp), Never>((.init(), 0))
+    public let quaternionSubject = CurrentValueSubject<(quaternion: Quaternion, timestamp: UKTimestamp), Never>((.init(), 0))
+    public let rotationSubject = CurrentValueSubject<(rotation: Rotation3D, timestamp: UKTimestamp), Never>((.init(), 0))
 
     // MARK: - Parsing
 
@@ -87,28 +85,27 @@ public struct UKMotionData: UKSensorDataComponent {
 
             switch motionDataType {
             case .acceleration:
-                acceleration = parseVector(data: data, at: &offset, scalar: scalar)
-                accelerationSubject.send((acceleration, timestamp))
+                let newAcceleration = parseVector(data: data, at: &offset, scalar: scalar)
+                accelerationSubject.send((newAcceleration, timestamp))
             case .gravity:
-                gravity = parseVector(data: data, at: &offset, scalar: scalar)
-                gravitySubject.send((gravity, timestamp))
+                let newGravity = parseVector(data: data, at: &offset, scalar: scalar)
+                gravitySubject.send((newGravity, timestamp))
             case .linearAcceleration:
-                linearAcceleration = parseVector(data: data, at: &offset, scalar: scalar)
-                linearAccelerationSubject.send((linearAcceleration, timestamp))
+                let newLinearAcceleration = parseVector(data: data, at: &offset, scalar: scalar)
+                linearAccelerationSubject.send((newLinearAcceleration, timestamp))
             case .rotationRate:
-                rotationRate = parseRotation(data: data, at: &offset, scalar: scalar)
-                rotationRateSubject.send((rotationRate, timestamp))
+                let newRotationRate = parseRotation(data: data, at: &offset, scalar: scalar)
+                rotationRateSubject.send((newRotationRate, timestamp))
             case .magnetometer:
-                magnetometer = parseVector(data: data, at: &offset, scalar: scalar)
-                magnetometerSubject.send((magnetometer, timestamp))
+                let newMagnetometer = parseVector(data: data, at: &offset, scalar: scalar)
+                magnetometerSubject.send((newMagnetometer, timestamp))
             case .quaternion:
-                quaternion = parseQuaternion(data: data, at: &offset, scalar: scalar)
-                quaternionSubject.send((quaternion, timestamp))
-                rotation = Rotation3D(quaternion)
-                rotationSubject.send((rotation, timestamp))
-            }
+                let newQuaternion = parseQuaternion(data: data, at: &offset, scalar: scalar)
+                quaternionSubject.send((newQuaternion, timestamp))
 
-            timestamps[motionDataType] = timestamp
+                let newRotation = Rotation3D(newQuaternion)
+                rotationSubject.send((newRotation, timestamp))
+            }
         }
     }
 

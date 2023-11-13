@@ -120,7 +120,7 @@ public class UKMission: ObservableObject {
 
     // MARK: - Sensor Data
 
-    @Published public internal(set) var sensorData: UKSensorData = .init()
+    public internal(set) var sensorData: UKSensorData = .init()
 }
 
 extension UKMission: Identifiable {

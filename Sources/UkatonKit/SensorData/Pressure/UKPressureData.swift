@@ -26,7 +26,7 @@ public struct UKPressureData: UKSensorDataComponent {
     var deviceType: UKDeviceType? = nil {
         didSet {
             if oldValue != deviceType {
-                pressureValues.deviceType = deviceType
+                pressureValuesSubject.value.pressureValues.deviceType = deviceType
             }
         }
     }
@@ -40,19 +40,19 @@ public struct UKPressureData: UKSensorDataComponent {
 
     // MARK: - Data
 
-    public private(set) var pressureValues: UKPressureValues = .init()
-    public private(set) var centerOfMass: UKPressureCenterOfMass = .init()
-    public private(set) var mass: UKPressureMass = .zero
-    public private(set) var heelToToe: UKPressureHeelToToe = .zero
+    public var pressureValues: UKPressureValues { pressureValuesSubject.value.pressureValues }
+    public var centerOfMass: UKPressureCenterOfMass { centerOfMassSubject.value.centerOfMass }
+    public var mass: UKPressureMass { massSubject.value.mass }
+    public var heelToToe: UKPressureHeelToToe { heelToToeSubject.value.heelToToe }
 
     public private(set) var timestamps: [UKPressureDataType: UKTimestamp] = .zero
 
-    // MARK: - PassthroughSubjects
+    // MARK: - CurrentValueSubjects
 
-    public let pressureValuesSubject = PassthroughSubject<(pressureValues: UKPressureValues, timestamp: UKTimestamp), Never>()
-    public let centerOfMassSubject = PassthroughSubject<(centerOfMass: UKPressureCenterOfMass, timestamp: UKTimestamp), Never>()
-    public let massSubject = PassthroughSubject<(mass: UKPressureMass, timestamp: UKTimestamp), Never>()
-    public let heelToToeSubject = PassthroughSubject<(heelToToe: UKPressureHeelToToe, timestamp: UKTimestamp), Never>()
+    public let pressureValuesSubject = CurrentValueSubject<(pressureValues: UKPressureValues, timestamp: UKTimestamp), Never>((.init(), 0))
+    public let centerOfMassSubject = CurrentValueSubject<(centerOfMass: UKPressureCenterOfMass, timestamp: UKTimestamp), Never>((.init(), 0))
+    public let massSubject = CurrentValueSubject<(mass: UKPressureMass, timestamp: UKTimestamp), Never>((.zero, 0))
+    public let heelToToeSubject = CurrentValueSubject<(heelToToe: UKPressureHeelToToe, timestamp: UKTimestamp), Never>((.zero, 0))
 
     // MARK: - Parsing
 
@@ -66,39 +66,28 @@ public struct UKPressureData: UKSensorDataComponent {
 
             switch pressureDataType {
             case .pressureSingleByte, .pressureDoubleByte:
-                pressureValues.parse(data, at: &offset, for: pressureDataType)
+                pressureValuesSubject.value.pressureValues.parse(data, at: &offset, for: pressureDataType)
                 pressureValuesSubject.send((pressureValues, timestamp))
 
-                centerOfMass = pressureValues.centerOfMass
-                timestamps[.centerOfMass] = timestamp
-                centerOfMassSubject.send((centerOfMass, timestamp))
+                centerOfMassSubject.send((pressureValues.centerOfMass, timestamp))
 
-                mass = pressureValues.mass
-                timestamps[.mass] = timestamp
-                massSubject.send((mass, timestamp))
+                massSubject.send((pressureValues.mass, timestamp))
 
-                heelToToe = pressureValues.heelToToe
-                timestamps[.heelToToe] = timestamp
-                heelToToeSubject.send((heelToToe, timestamp))
+                heelToToeSubject.send((pressureValues.heelToToe, timestamp))
 
             case .centerOfMass:
-                centerOfMass = parseCenterOfMass(data: data, at: &offset)
-                centerOfMassSubject.send((centerOfMass, timestamp))
-                let _self = self
-                logger.debug("\(pressureDataType.name): \(_self.centerOfMass.debugDescription)")
+                let newCenterOfMass = parseCenterOfMass(data: data, at: &offset)
+                centerOfMassSubject.send((newCenterOfMass, timestamp))
+                logger.debug("\(pressureDataType.name): \(newCenterOfMass.debugDescription)")
             case .mass:
-                mass = Double(parseMass(data: data, at: &offset)) * scalars[pressureDataType]!
-                massSubject.send((mass, timestamp))
-                let _self = self
-                logger.debug("\(pressureDataType.name): \(_self.mass.debugDescription)")
+                let newMass = Double(parseMass(data: data, at: &offset)) * scalars[pressureDataType]!
+                massSubject.send((newMass, timestamp))
+                logger.debug("\(pressureDataType.name): \(newMass.debugDescription)")
             case .heelToToe:
-                heelToToe = parseHeelToToe(data: data, at: &offset)
-                heelToToeSubject.send((heelToToe, timestamp))
-                let _self = self
-                logger.debug("\(pressureDataType.name): \(_self.heelToToe.debugDescription)")
+                let newHeelToToe = parseHeelToToe(data: data, at: &offset)
+                heelToToeSubject.send((newHeelToToe, timestamp))
+                logger.debug("\(pressureDataType.name): \(newHeelToToe.debugDescription)")
             }
-
-            timestamps[pressureDataType] = timestamp
         }
     }
 
