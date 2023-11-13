@@ -53,23 +53,23 @@ public struct UKMotionData: UKSensorDataComponent {
 
     // MARK: - Data
 
-    public var acceleration: Vector3D { accelerationSubject.value.acceleration }
-    public var gravity: Vector3D { gravitySubject.value.gravity }
-    public var linearAcceleration: Vector3D { linearAccelerationSubject.value.linearAcceleration }
-    public var rotationRate: Rotation3D { rotationRateSubject.value.rotationRate }
-    public var magnetometer: Vector3D { magnetometerSubject.value.magnetometer }
-    public var quaternion: Quaternion { quaternionSubject.value.quaternion }
-    public var rotation: Rotation3D { rotationSubject.value.rotation }
+    public var acceleration: Vector3D { accelerationSubject.value.value }
+    public var gravity: Vector3D { gravitySubject.value.value }
+    public var linearAcceleration: Vector3D { linearAccelerationSubject.value.value }
+    public var rotationRate: Rotation3D { rotationRateSubject.value.value }
+    public var magnetometer: Vector3D { magnetometerSubject.value.value }
+    public var quaternion: Quaternion { quaternionSubject.value.value }
+    public var rotation: Rotation3D { rotationSubject.value.value }
 
     // MARK: - CurrentValueSubjects
 
-    public let accelerationSubject = CurrentValueSubject<(acceleration: Vector3D, timestamp: UKTimestamp), Never>((.init(), 0))
-    public let gravitySubject = CurrentValueSubject<(gravity: Vector3D, timestamp: UKTimestamp), Never>((.init(), 0))
-    public let linearAccelerationSubject = CurrentValueSubject<(linearAcceleration: Vector3D, timestamp: UKTimestamp), Never>((.init(), 0))
-    public let rotationRateSubject = CurrentValueSubject<(rotationRate: Rotation3D, timestamp: UKTimestamp), Never>((.init(), 0))
-    public let magnetometerSubject = CurrentValueSubject<(magnetometer: Vector3D, timestamp: UKTimestamp), Never>((.init(), 0))
-    public let quaternionSubject = CurrentValueSubject<(quaternion: Quaternion, timestamp: UKTimestamp), Never>((.init(), 0))
-    public let rotationSubject = CurrentValueSubject<(rotation: Rotation3D, timestamp: UKTimestamp), Never>((.init(), 0))
+    public let accelerationSubject = CurrentValueSubject<(value: Vector3D, timestamp: UKTimestamp), Never>((.init(), 0))
+    public let gravitySubject = CurrentValueSubject<(value: Vector3D, timestamp: UKTimestamp), Never>((.init(), 0))
+    public let linearAccelerationSubject = CurrentValueSubject<(value: Vector3D, timestamp: UKTimestamp), Never>((.init(), 0))
+    public let rotationRateSubject = CurrentValueSubject<(value: Rotation3D, timestamp: UKTimestamp), Never>((.init(), 0))
+    public let magnetometerSubject = CurrentValueSubject<(value: Vector3D, timestamp: UKTimestamp), Never>((.init(), 0))
+    public let quaternionSubject = CurrentValueSubject<(value: Quaternion, timestamp: UKTimestamp), Never>((.init(), 0))
+    public let rotationSubject = CurrentValueSubject<(value: Rotation3D, timestamp: UKTimestamp), Never>((.init(), 0))
 
     // MARK: - Parsing
 

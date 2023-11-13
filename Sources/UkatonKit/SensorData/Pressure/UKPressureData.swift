@@ -26,7 +26,8 @@ public struct UKPressureData: UKSensorDataComponent {
     var deviceType: UKDeviceType? = nil {
         didSet {
             if oldValue != deviceType {
-                pressureValuesSubject.value.pressureValues.deviceType = deviceType
+                // TODO: - FIX
+                pressureValuesSubject.value.value.deviceType = deviceType
             }
         }
     }
@@ -40,19 +41,17 @@ public struct UKPressureData: UKSensorDataComponent {
 
     // MARK: - Data
 
-    public var pressureValues: UKPressureValues { pressureValuesSubject.value.pressureValues }
-    public var centerOfMass: UKPressureCenterOfMass { centerOfMassSubject.value.centerOfMass }
-    public var mass: UKPressureMass { massSubject.value.mass }
-    public var heelToToe: UKPressureHeelToToe { heelToToeSubject.value.heelToToe }
-
-    public private(set) var timestamps: [UKPressureDataType: UKTimestamp] = .zero
+    public var pressureValues: UKPressureValues { pressureValuesSubject.value.value }
+    public var centerOfMass: UKPressureCenterOfMass { centerOfMassSubject.value.value }
+    public var mass: UKPressureMass { massSubject.value.value }
+    public var heelToToe: UKPressureHeelToToe { heelToToeSubject.value.value }
 
     // MARK: - CurrentValueSubjects
 
-    public let pressureValuesSubject = CurrentValueSubject<(pressureValues: UKPressureValues, timestamp: UKTimestamp), Never>((.init(), 0))
-    public let centerOfMassSubject = CurrentValueSubject<(centerOfMass: UKPressureCenterOfMass, timestamp: UKTimestamp), Never>((.init(), 0))
-    public let massSubject = CurrentValueSubject<(mass: UKPressureMass, timestamp: UKTimestamp), Never>((.zero, 0))
-    public let heelToToeSubject = CurrentValueSubject<(heelToToe: UKPressureHeelToToe, timestamp: UKTimestamp), Never>((.zero, 0))
+    public let pressureValuesSubject = CurrentValueSubject<(value: UKPressureValues, timestamp: UKTimestamp), Never>((.init(), 0))
+    public let centerOfMassSubject = CurrentValueSubject<(value: UKPressureCenterOfMass, timestamp: UKTimestamp), Never>((.init(), 0))
+    public let massSubject = CurrentValueSubject<(value: UKPressureMass, timestamp: UKTimestamp), Never>((.zero, 0))
+    public let heelToToeSubject = CurrentValueSubject<(value: UKPressureHeelToToe, timestamp: UKTimestamp), Never>((.zero, 0))
 
     // MARK: - Parsing
 
@@ -66,7 +65,9 @@ public struct UKPressureData: UKSensorDataComponent {
 
             switch pressureDataType {
             case .pressureSingleByte, .pressureDoubleByte:
-                pressureValuesSubject.value.pressureValues.parse(data, at: &offset, for: pressureDataType)
+                // TODO: - FIX
+                // let newPressureValues = UKPressureValues.parse(deviceType, data, at: &offset, for: pressureDataType)
+                pressureValuesSubject.value.value.parse(data, at: &offset, for: pressureDataType)
                 pressureValuesSubject.send((pressureValues, timestamp))
 
                 centerOfMassSubject.send((pressureValues.centerOfMass, timestamp))

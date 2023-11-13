@@ -1,6 +1,5 @@
-change @Published to Subject
-    configurations
-    sensor data
+update pressure data demos
+pressureValues cleaner update (and remove deviceType up)
 
 Missions Tab (enabled if a left/right insole is connected)
 PairPressureDemo

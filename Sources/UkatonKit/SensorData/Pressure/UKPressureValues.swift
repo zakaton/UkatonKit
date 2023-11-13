@@ -8,6 +8,8 @@ public struct UKPressureValues: RandomAccessCollection {
     public var startIndex: Int { 0 }
     public var endIndex: Int { numberOfPressureSensors }
 
+    public init() {}
+
     static let pressurePositions: [UKPressurePosition] = [
         .init(x: 0.6385579634772724, y: 0.12185506415310729),
         .init(x: 0.3549331417480725, y: 0.15901519981589698),
