@@ -37,6 +37,7 @@ public class UKMission: ObservableObject {
     // MARK: - Connection
 
     var peripheral: CBPeripheral?
+    var missionsManager: UKMissionsManager { .shared }
 
     var connectionManager: (any UKConnectionManager)? {
         willSet {
@@ -63,10 +64,10 @@ public class UKMission: ObservableObject {
     @Published public private(set) var connectionStatus: UKConnectionStatus = .notConnected {
         didSet {
             if connectionStatus == .connected {
-                UKMissionsManager.shared.add(self)
+                missionsManager.add(self)
             }
             else if connectionStatus == .notConnected {
-                UKMissionsManager.shared.remove(self)
+                missionsManager.remove(self)
             }
         }
     }

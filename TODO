@@ -1,4 +1,6 @@
-Missions Tab (enabled if a left/right insole is connected)
+MissionsPair
+    pressure sensor data
+
 PairPressureDemo
     just 2 insoles with additional pressure
 BalanceGameDemo
