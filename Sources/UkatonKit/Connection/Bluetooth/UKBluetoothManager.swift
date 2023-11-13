@@ -36,7 +36,7 @@ public class UKBluetoothManager: NSObject, ObservableObject {
     private var shouldScanForDevicesWhenPoweredOn: Bool = false
     public func scanForDevices() {
         if centralManager.state == .poweredOn {
-            discoveredDevices.removeAll(where: { $0.mission?.connectionStatus == .notConnected })
+            discoveredDevices.removeAll(where: { $0.mission.connectionStatus == .notConnected })
             centralManager.scanForPeripherals(withServices: [UKBluetoothServiceIdentifier.main.uuid], options: [CBCentralManagerScanOptionAllowDuplicatesKey: true])
             isScanning = true
             startTimer()
@@ -91,7 +91,7 @@ public class UKBluetoothManager: NSObject, ObservableObject {
 
     @objc func checkDevices() {
         discoveredDevices.removeAll(where: {
-            $0.mission?.connectionStatus == .notConnected && $0.lastTimeInteracted.timeIntervalSinceNow < -4
+            $0.mission.connectionStatus == .notConnected && $0.lastTimeInteracted.timeIntervalSinceNow < -4
         })
     }
 }

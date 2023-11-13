@@ -18,7 +18,7 @@ public struct UKDiscoveredBluetoothDevice {
     // MARK: - Peripheral Getters
 
     public var name: String = "undefined"
-    public private(set) var mission: UKMission?
+    public private(set) var mission: UKMission = .none
 
     // MARK: - Parsing Advertisement Data
 
@@ -81,16 +81,16 @@ public struct UKDiscoveredBluetoothDevice {
     // MARK: - connect
 
     public mutating func connect(type connectionType: UKConnectionType) {
-        if self.mission == nil {
+        if self.mission == .none {
             self.mission = .init(discoveredBluetoothDevice: self)
         }
-        self.mission!.connect(type: connectionType)
+        self.mission.connect(type: connectionType)
     }
 
     public mutating func disconnect() {
-        if self.mission != nil {
+        if self.mission != .none {
             self.lastTimeInteracted = Date.now
-            self.mission!.disconnect()
+            self.mission.disconnect()
         }
     }
 }
