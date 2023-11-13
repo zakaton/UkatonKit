@@ -25,7 +25,7 @@ public class UKMission: ObservableObject {
             self.deviceType = discoveredBluetoothDevice.type
             self.isConnectedToWifi = discoveredBluetoothDevice.isConnectedToWifi
             if self.isConnectedToWifi == true {
-                self.ipAddress = discoveredBluetoothDevice.ipAddress
+                self.ipAddressSubject.send(discoveredBluetoothDevice.ipAddress)
                 self.shouldConnectToWifi = true
             }
             self.peripheral = discoveredBluetoothDevice.peripheral
@@ -86,7 +86,8 @@ public class UKMission: ObservableObject {
         }
     }
 
-    @Published public internal(set) var batteryLevel: UKBatteryLevel = .zero
+    public let batteryLevelSubject = CurrentValueSubject<UKBatteryLevel, Never>(.zero)
+    public var batteryLevel: UKBatteryLevel { batteryLevelSubject.value }
 
     // MARK: - Wifi Information
 
@@ -96,25 +97,25 @@ public class UKMission: ObservableObject {
     @Published public internal(set) var isConnectedToWifi: Bool = false {
         didSet {
             if !isConnectedToWifi {
-                ipAddress = nil
                 ipAddressSubject.send(nil)
             }
         }
     }
 
-    @Published public internal(set) var ipAddress: String? = nil
-    public let ipAddressSubject = PassthroughSubject<String?, Never>()
+    public let ipAddressSubject = CurrentValueSubject<String?, Never>(nil)
+    public var ipAddress: String? { ipAddressSubject.value }
 
     // MARK: - Motion Calibration
 
-    @Published public internal(set) var motionCalibration: UKMotionCalibration = .zero
-
-    @Published public internal(set) var isFullyCalibrated: Bool = false
+    public let motionCalibrationSubject = CurrentValueSubject<UKMotionCalibration, Never>(.zero)
+    public var motionCalibration: UKMotionCalibration { motionCalibrationSubject.value }
+    public let isMotionFullyCalibratedSubject = CurrentValueSubject<Bool, Never>(false)
+    public var isMotionFullyCalibrated: Bool { isMotionFullyCalibratedSubject.value }
 
     // MARK: - Sensor Data Configurations
 
-    @Published public internal(set) var sensorDataConfigurations: UKSensorDataConfigurations = .init()
-    public let sensorDataConfigurationsSubject = PassthroughSubject<UKSensorDataConfigurations, Never>()
+    public let sensorDataConfigurationsSubject = CurrentValueSubject<UKSensorDataConfigurations, Never>(.init())
+    public var sensorDataConfigurations: UKSensorDataConfigurations { sensorDataConfigurationsSubject.value }
     var checkSensorDataTimer: Timer? = nil
 
     // MARK: - Sensor Data

@@ -80,7 +80,8 @@ public struct UKSensorDataConfigurations {
 
     // MARK: - Parsing
 
-    mutating func parse(_ data: Data, at offset: inout Data.Index) {
+    init(from data: Data, at offset: inout Data.Index) {
+        self.init()
         UKSensorType.allCases.forEach { sensorType in
             sensorType.forEachDataType { dataType in
                 if offset + 2 <= data.count {
@@ -105,9 +106,9 @@ public struct UKSensorDataConfigurations {
         }
     }
 
-    mutating func parse(_ data: Data) {
+    init(from data: Data) {
         var offset: Data.Index = 0
-        parse(data, at: &offset)
+        self.init(from: data, at: &offset)
     }
 
     // MARK: - isZero

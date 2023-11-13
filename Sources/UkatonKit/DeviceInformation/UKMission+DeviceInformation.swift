@@ -45,7 +45,7 @@ extension UKMission {
         if offset < data.count {
             let newBatteryLevel: UKBatteryLevel = data.parse(at: &offset)
             logger.debug("new battery level: \(newBatteryLevel)")
-            batteryLevel = newBatteryLevel
+            batteryLevelSubject.send(newBatteryLevel)
         }
     }
 

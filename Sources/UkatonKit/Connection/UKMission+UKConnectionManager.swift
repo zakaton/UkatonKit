@@ -65,8 +65,8 @@ public extension UKMission {
             parseIsConnectedToWifi(data: data, at: &offset)
 
         case .getSensorDataConfigurations, .setSensorDataConfigurations:
-            sensorDataConfigurations.parse(data, at: &offset)
-            sensorDataConfigurationsSubject.send(sensorDataConfigurations)
+            let newSensorDataConfigurations: UKSensorDataConfigurations = .init(from: data, at: &offset)
+            sensorDataConfigurationsSubject.send(newSensorDataConfigurations)
             updateCheckSensorDataTimer()
 
         case .sensorData:

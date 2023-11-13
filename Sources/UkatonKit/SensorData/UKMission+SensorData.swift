@@ -24,7 +24,7 @@ extension UKMission {
 
     func updateCheckSensorDataTimer() {
         if connectionType?.requiresWifi == true {
-            if sensorDataConfigurations.isZero {
+            if sensorDataConfigurationsSubject.value.isZero {
                 stopCheckingSensorData()
             }
             else {

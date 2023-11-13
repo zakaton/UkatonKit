@@ -1,4 +1,6 @@
-change data/battery @Published to Subject
+change @Published to Subject
+    configurations
+    sensor data
 
 Missions Tab (enabled if a left/right insole is connected)
 PairPressureDemo
