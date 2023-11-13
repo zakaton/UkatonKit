@@ -4,20 +4,25 @@ import OSLog
 import simd
 import UkatonMacros
 
-public typealias UKPressureCenterOfMass = simd_double2
-public typealias UKPressureMass = Double
-public typealias UKPressureHeelToToe = Float64
+public typealias UKCenterOfMass = simd_double2
+public typealias UKMass = Double
+public typealias UKHeelToToe = Float64
 
 typealias UKPressureRawMass = UInt32
 
 typealias UKPressureScalar = Double
 typealias UKPressureScalars = [UKPressureDataType: UKPressureScalar]
 
-public extension UKPressureCenterOfMass {
+public extension UKCenterOfMass {
     var string: String {
         .init(format: "x: %5.3f, y: %5.3f", x, y)
     }
 }
+
+public typealias UKPressureValuesData = (value: UKPressureValues, timestamp: UKTimestamp)
+public typealias UKCenterOfMassData = (value: UKCenterOfMass, timestamp: UKTimestamp)
+public typealias UKMassData = (value: UKMass, timestamp: UKTimestamp)
+public typealias UKHeelToToeData = (value: UKHeelToToe, timestamp: UKTimestamp)
 
 @StaticLogger
 public struct UKPressureData: UKSensorDataComponent {
@@ -35,16 +40,16 @@ public struct UKPressureData: UKSensorDataComponent {
     // MARK: - Data
 
     public var pressureValues: UKPressureValues { pressureValuesSubject.value.value }
-    public var centerOfMass: UKPressureCenterOfMass { centerOfMassSubject.value.value }
-    public var mass: UKPressureMass { massSubject.value.value }
-    public var heelToToe: UKPressureHeelToToe { heelToToeSubject.value.value }
+    public var centerOfMass: UKCenterOfMass { centerOfMassSubject.value.value }
+    public var mass: UKMass { massSubject.value.value }
+    public var heelToToe: UKHeelToToe { heelToToeSubject.value.value }
 
     // MARK: - CurrentValueSubjects
 
-    public let pressureValuesSubject = CurrentValueSubject<(value: UKPressureValues, timestamp: UKTimestamp), Never>((.init(), 0))
-    public let centerOfMassSubject = CurrentValueSubject<(value: UKPressureCenterOfMass, timestamp: UKTimestamp), Never>((.init(), 0))
-    public let massSubject = CurrentValueSubject<(value: UKPressureMass, timestamp: UKTimestamp), Never>((.zero, 0))
-    public let heelToToeSubject = CurrentValueSubject<(value: UKPressureHeelToToe, timestamp: UKTimestamp), Never>((.zero, 0))
+    public let pressureValuesSubject = CurrentValueSubject<UKPressureValuesData, Never>((.init(), 0))
+    public let centerOfMassSubject = CurrentValueSubject<UKCenterOfMassData, Never>((.init(), 0))
+    public let massSubject = CurrentValueSubject<UKMassData, Never>((.zero, 0))
+    public let heelToToeSubject = CurrentValueSubject<UKHeelToToeData, Never>((.zero, 0))
 
     // MARK: - Parsing
 
@@ -83,7 +88,7 @@ public struct UKPressureData: UKSensorDataComponent {
         }
     }
 
-    private mutating func parseCenterOfMass(data: Data, at offset: inout Data.Index) -> UKPressureCenterOfMass {
+    private mutating func parseCenterOfMass(data: Data, at offset: inout Data.Index) -> UKCenterOfMass {
         .init(
             x: Double(Float32.parse(from: data, at: &offset)),
             y: Double(Float32.parse(from: data, at: &offset))
@@ -94,7 +99,7 @@ public struct UKPressureData: UKSensorDataComponent {
         .parse(from: data, at: &offset)
     }
 
-    private mutating func parseHeelToToe(data: Data, at offset: inout Data.Index) -> UKPressureHeelToToe {
+    private mutating func parseHeelToToe(data: Data, at offset: inout Data.Index) -> UKHeelToToe {
         .parse(from: data, at: &offset)
     }
 }

@@ -9,10 +9,18 @@ public enum UKInsoleSide: UInt8, CaseIterable {
     case right
 }
 
+typealias UKInsoleCancellables = [UKInsoleSide: Set<AnyCancellable>]
+
 @Singleton
 @StaticLogger
 public class UKMissionPair: ObservableObject {
     // MARK: - Missions
+
+    private var cancellables: UKInsoleCancellables = {
+        var _cancelleables: UKInsoleCancellables = [:]
+        UKInsoleSide.allCases.forEach { _cancelleables[$0] = .init() }
+        return _cancelleables
+    }()
 
     private var missions: [UKInsoleSide: UKMission] = [:]
     public private(set) subscript(side: UKInsoleSide) -> UKMission? {
@@ -20,8 +28,20 @@ public class UKMissionPair: ObservableObject {
             missions[side]
         }
         set {
-            // TODO: - add listeners
+            guard newValue != missions[side] else { return }
+
+            if missions[side] != nil {
+                let mission = missions[side]!
+                cancellables[side]!.removeAll()
+            }
+
             missions[side] = newValue
+
+            if let mission = newValue {
+                mission.sensorData.pressure.pressureValuesSubject.sink(receiveValue: {
+                    self.onPressureValuesData(side: side, data: $0)
+                }).store(in: &cancellables[side]!)
+            }
 
             let newHasBothInsoles = UKInsoleSide.allCases.allSatisfy { missions[$0] != nil }
             if newHasBothInsoles != hasBothInsoles {
@@ -55,4 +75,8 @@ public class UKMissionPair: ObservableObject {
     }
 
     // MARK: - SensorData
+
+    func onPressureValuesData(side: UKInsoleSide, data: (UKPressureValues, UKTimestamp)) {
+        // TODO: - calculate
+    }
 }

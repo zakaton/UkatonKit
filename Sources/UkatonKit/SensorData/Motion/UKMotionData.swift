@@ -11,8 +11,8 @@ extension BinaryFloatingPoint {
     }
 }
 
-public typealias Quaternion = simd_quatd
-public extension Quaternion {
+public typealias UKQuaternion = simd_quatd
+public extension UKQuaternion {
     var string: String {
         .init(format: "w: %5.3f, x: %5.3f, y: %5.3f, z: %5.3f", vector.w, vector.x, vector.y, vector.z)
     }
@@ -30,6 +30,14 @@ public extension Vector3D {
         .init(format: "x: %6.3f, y: %6.3f, z: %6.3f", x, y, z)
     }
 }
+
+public typealias UKAccelerationData = (value: Vector3D, timestamp: UKTimestamp)
+public typealias UKGravityData = (value: Vector3D, timestamp: UKTimestamp)
+public typealias UKLinearAccelerationData = (value: Vector3D, timestamp: UKTimestamp)
+public typealias UKRotationRateData = (value: Rotation3D, timestamp: UKTimestamp)
+public typealias UKMagnetometerData = (value: Vector3D, timestamp: UKTimestamp)
+public typealias UKQuaternionData = (value: UKQuaternion, timestamp: UKTimestamp)
+public typealias UKRotationData = (value: Rotation3D, timestamp: UKTimestamp)
 
 @StaticLogger
 public struct UKMotionData: UKSensorDataComponent {
@@ -58,18 +66,18 @@ public struct UKMotionData: UKSensorDataComponent {
     public var linearAcceleration: Vector3D { linearAccelerationSubject.value.value }
     public var rotationRate: Rotation3D { rotationRateSubject.value.value }
     public var magnetometer: Vector3D { magnetometerSubject.value.value }
-    public var quaternion: Quaternion { quaternionSubject.value.value }
+    public var quaternion: UKQuaternion { quaternionSubject.value.value }
     public var rotation: Rotation3D { rotationSubject.value.value }
 
     // MARK: - CurrentValueSubjects
 
-    public let accelerationSubject = CurrentValueSubject<(value: Vector3D, timestamp: UKTimestamp), Never>((.init(), 0))
-    public let gravitySubject = CurrentValueSubject<(value: Vector3D, timestamp: UKTimestamp), Never>((.init(), 0))
-    public let linearAccelerationSubject = CurrentValueSubject<(value: Vector3D, timestamp: UKTimestamp), Never>((.init(), 0))
-    public let rotationRateSubject = CurrentValueSubject<(value: Rotation3D, timestamp: UKTimestamp), Never>((.init(), 0))
-    public let magnetometerSubject = CurrentValueSubject<(value: Vector3D, timestamp: UKTimestamp), Never>((.init(), 0))
-    public let quaternionSubject = CurrentValueSubject<(value: Quaternion, timestamp: UKTimestamp), Never>((.init(), 0))
-    public let rotationSubject = CurrentValueSubject<(value: Rotation3D, timestamp: UKTimestamp), Never>((.init(), 0))
+    public let accelerationSubject = CurrentValueSubject<UKAccelerationData, Never>((.init(), 0))
+    public let gravitySubject = CurrentValueSubject<UKGravityData, Never>((.init(), 0))
+    public let linearAccelerationSubject = CurrentValueSubject<UKLinearAccelerationData, Never>((.init(), 0))
+    public let rotationRateSubject = CurrentValueSubject<UKRotationRateData, Never>((.init(), 0))
+    public let magnetometerSubject = CurrentValueSubject<UKMagnetometerData, Never>((.init(), 0))
+    public let quaternionSubject = CurrentValueSubject<UKQuaternionData, Never>((.init(), 0))
+    public let rotationSubject = CurrentValueSubject<UKRotationData, Never>((.init(), 0))
 
     // MARK: - Parsing
 
@@ -166,7 +174,7 @@ public struct UKMotionData: UKSensorDataComponent {
 
     // MARK: - Quaternion
 
-    private func parseQuaternion(data: Data, at offset: inout Data.Index, scalar: Double) -> Quaternion {
+    private func parseQuaternion(data: Data, at offset: inout Data.Index, scalar: Double) -> UKQuaternion {
         let rawW: Int16 = .parse(from: data, at: &offset)
         let rawX: Int16 = .parse(from: data, at: &offset)
         let rawY: Int16 = .parse(from: data, at: &offset)
@@ -177,7 +185,7 @@ public struct UKMotionData: UKSensorDataComponent {
         let y = Double(rawY)
         let z = Double(rawZ)
 
-        var quaternion: Quaternion = .init(ix: x, iy: -z, iz: -y, r: -w)
+        var quaternion: UKQuaternion = .init(ix: x, iy: -z, iz: -y, r: -w)
         quaternion *= scalar
         quaternion = quaternion.normalized
 
@@ -190,9 +198,9 @@ public struct UKMotionData: UKSensorDataComponent {
         return quaternion
     }
 
-    private var correctionQuaternion: Quaternion { Self.correctionQuaternions[deviceType]! }
-    static let correctionQuaternions: [UKDeviceType: Quaternion] = {
-        var _correctionQuaternions: [UKDeviceType: Quaternion] = [:]
+    private var correctionQuaternion: UKQuaternion { Self.correctionQuaternions[deviceType]! }
+    static let correctionQuaternions: [UKDeviceType: UKQuaternion] = {
+        var _correctionQuaternions: [UKDeviceType: UKQuaternion] = [:]
 
         var rawAngles: UKRawEulerAngles = .init(arrayLiteral: 0.0, 0.0, 0.0)
         var eulerAngles = Rotation3D(eulerAngles: .init(angles: rawAngles, order: .xyz))
