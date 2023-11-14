@@ -3,6 +3,8 @@ import OSLog
 import simd
 import UkatonMacros
 
+typealias UKRawPressureValueSum = UInt32
+
 @StaticLogger
 public struct UKPressureValues: RandomAccessCollection {
     public var startIndex: Int { 0 }
@@ -53,13 +55,14 @@ public struct UKPressureValues: RandomAccessCollection {
     // MARK: - Derived Values
 
     public private(set) var centerOfMass: UKCenterOfMass = .zero
-    public private(set) var mass: Double = .zero
-    public private(set) var heelToToe: Float64 = .zero
+    public private(set) var mass: UKMass = .zero
+    public private(set) var heelToToe: UKHeelToToe = .zero
 
     // MARK: - Parsing
 
     public private(set) var latestPressureDataType: UKPressureDataType = .pressureSingleByte
     public private(set) var isSingleByte: Bool = true
+    private(set) var rawValueSum: UKRawPressureValueSum = 0
     init(data: Data, at offset: inout Data.Index, for pressureDataType: UKPressureDataType, as deviceType: UKDeviceType) {
         latestPressureDataType = pressureDataType
 
@@ -71,30 +74,27 @@ public struct UKPressureValues: RandomAccessCollection {
         }
 
         let scalar = scalars[pressureDataType]!
-
-        var rawValueSum = 0
         isSingleByte = pressureDataType == .pressureSingleByte
 
+        rawValueSum = 0
         for index in 0 ..< numberOfPressureSensors {
             if isSingleByte {
-                rawValues[index].rawValue = UInt16(UInt8.parse(from: data, at: &offset))
+                rawValues[index].rawValue = UKRawPressureValue(UInt8.parse(from: data, at: &offset))
             }
             else {
-                rawValues[index].rawValue = UInt16.parse(from: data, at: &offset)
+                rawValues[index].rawValue = UKRawPressureValue(UInt16.parse(from: data, at: &offset))
             }
 
-            rawValueSum += Int(rawValues[index].rawValue)
-            rawValues[index].normalizedValue = Double(rawValues[index].rawValue) * scalar
+            rawValueSum += UKRawPressureValueSum(rawValues[index].rawValue)
+            rawValues[index].normalizedValue = UKNormalizedPressureValue(rawValues[index].rawValue) * scalar
         }
-
-        logger.debug("rawValueSum: \(rawValueSum)")
 
         centerOfMass = .zero
         heelToToe = .zero
 
         if rawValueSum > 0 {
             for index in 0 ..< numberOfPressureSensors {
-                rawValues[index].weightedValue = Double(rawValues[index].rawValue) / Double(rawValueSum)
+                rawValues[index].weightedValue = UKWeightedPressureValue(rawValues[index].rawValue) / UKWeightedPressureValue(rawValueSum)
                 centerOfMass += rawValues[index].position * rawValues[index].weightedValue
             }
 
@@ -105,6 +105,7 @@ public struct UKPressureValues: RandomAccessCollection {
         mass = Double(rawValueSum) * scalar / Double(numberOfPressureSensors)
 
         let _self = self
+        logger.debug("rawValueSum: \(_self.rawValueSum)")
         logger.debug("pressure sensors: \(_self.rawValues.map { $0.rawValue })")
         logger.debug("centerOfMass: \(_self.centerOfMass.debugDescription)")
         logger.debug("heelToToe: \(_self.heelToToe.debugDescription)")

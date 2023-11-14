@@ -1,10 +1,17 @@
-MissionsPair
-    add pressure data
+calibration - calculates the range of the center of mass
 
+Demos list
+
+SensorDataDemo
+    just a single picker for pressure data
 PairPressureDemo
     just 2 insoles with additional pressure
-BalanceGameDemo
-    like wii fit
+2D demo
+    a circle representing the center of mass
+BalanceGameDemo 1D
+    2 vertical bars
+BalanceGameDemo 2D
+    move dot to certain spots
 
 test on watch
 test on tv

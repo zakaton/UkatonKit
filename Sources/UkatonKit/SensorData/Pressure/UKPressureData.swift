@@ -90,8 +90,8 @@ public struct UKPressureData: UKSensorDataComponent {
 
     private mutating func parseCenterOfMass(data: Data, at offset: inout Data.Index) -> UKCenterOfMass {
         .init(
-            x: Double(Float32.parse(from: data, at: &offset)),
-            y: Double(Float32.parse(from: data, at: &offset))
+            x: .init(Float32.parse(from: data, at: &offset)),
+            y: .init(Float32.parse(from: data, at: &offset))
         )
     }
 

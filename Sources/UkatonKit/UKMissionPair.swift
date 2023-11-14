@@ -44,14 +44,14 @@ public class UKMissionPair: ObservableObject {
             }
 
             let newHasBothInsoles = UKInsoleSide.allCases.allSatisfy { missions[$0] != nil }
-            if newHasBothInsoles != hasBothInsoles {
-                hasBothInsolesSubject.send(newHasBothInsoles)
+            if newHasBothInsoles != isConnected {
+                isConnectedSubject.send(newHasBothInsoles)
             }
         }
     }
 
-    var hasBothInsoles: Bool { hasBothInsolesSubject.value }
-    public let hasBothInsolesSubject = CurrentValueSubject<Bool, Never>(false)
+    var isConnected: Bool { isConnectedSubject.value }
+    public let isConnectedSubject = CurrentValueSubject<Bool, Never>(false)
 
     public func add(mission: UKMission, overwrite: Bool = false) {
         if let insoleSide = mission.deviceType.insoleSide {
@@ -74,9 +74,42 @@ public class UKMissionPair: ObservableObject {
         }
     }
 
-    // MARK: - SensorData
+    // MARK: - Data
 
-    func onPressureValuesData(side: UKInsoleSide, data: (UKPressureValues, UKTimestamp)) {
-        // TODO: - calculate
+    public var centerOfMass: UKCenterOfMass { centerOfMassSubject.value.value }
+    public var mass: UKMass { massSubject.value.value }
+
+    // MARK: - CurrentValueSubjects
+
+    public let centerOfMassSubject = CurrentValueSubject<UKCenterOfMassData, Never>((.init(), 0))
+    public let massSubject = CurrentValueSubject<UKMassData, Never>((.zero, 0))
+
+    // MARK: - Parsing
+
+    func onPressureValuesData(side: UKInsoleSide, data: UKPressureValuesData) {
+        if isConnected {
+            var newCenterOfMass: UKCenterOfMass = .init()
+            var rawPressureValueSum: UKRawPressureValueSum = 0
+
+            missions.forEach { _, mission in
+                rawPressureValueSum += mission.sensorData.pressure.pressureValues.rawValueSum
+            }
+
+            logger.debug("rawPressureValueSum: \(rawPressureValueSum)")
+
+            if rawPressureValueSum > 0 {
+                missions.forEach { side, mission in
+                    let rawValueSumWeight = Double(mission.sensorData.pressure.pressureValues.rawValueSum) / Double(rawPressureValueSum)
+
+                    newCenterOfMass.y += mission.sensorData.pressure.centerOfMass.y * rawValueSumWeight
+                    if side == .right {
+                        newCenterOfMass.x = rawValueSumWeight
+                    }
+                }
+
+                logger.debug("center of mass: \(newCenterOfMass.debugDescription)")
+                centerOfMassSubject.send((newCenterOfMass, data.timestamp))
+            }
+        }
     }
 }
