@@ -4,7 +4,8 @@ import OSLog
 import UkatonMacros
 
 @EnumName
-public enum UKInsoleSide: UInt8, CaseIterable {
+public enum UKInsoleSide: UInt8, CaseIterable, Identifiable {
+    public var id: UInt8 { rawValue }
     case left
     case right
 }
@@ -84,28 +85,59 @@ public class UKMissionPair: ObservableObject {
     public let centerOfMassSubject = CurrentValueSubject<UKCenterOfMassData, Never>((.init(), 0))
     public let massSubject = CurrentValueSubject<UKMassData, Never>((.zero, 0))
 
+    // MARK: - Normalization
+
+    var lowerCenterOfMass: UKCenterOfMass = .init(x: .infinity, y: .infinity)
+    var upperCenterOfMass: UKCenterOfMass = .init(x: -.infinity, y: -.infinity)
+    public func resetNormalization() {
+        lowerCenterOfMass = .init(x: .infinity, y: .infinity)
+        upperCenterOfMass = .init(x: -.infinity, y: -.infinity)
+    }
+
+    func updateCenterOfMassRange(with centerOfMass: UKCenterOfMass) {
+        lowerCenterOfMass.x = min(lowerCenterOfMass.x, centerOfMass.x)
+        lowerCenterOfMass.y = min(lowerCenterOfMass.y, centerOfMass.y)
+
+        upperCenterOfMass.x = max(upperCenterOfMass.x, centerOfMass.x)
+        upperCenterOfMass.y = max(upperCenterOfMass.y, centerOfMass.y)
+    }
+
+    func normalizeCenterOfMass(_ centerOfMass: inout UKCenterOfMass) {
+        centerOfMass.x = getInterpolation(of: centerOfMass.x, between: lowerCenterOfMass.x, and: upperCenterOfMass.x)
+        centerOfMass.y = getInterpolation(of: centerOfMass.y, between: lowerCenterOfMass.x, and: upperCenterOfMass.y)
+    }
+
     // MARK: - Parsing
 
+    var bothPressureValues: [UKInsoleSide: UKPressureValues] = [:]
+    var hasBothPressureValues: Bool {
+        bothPressureValues.count == UKInsoleSide.allCases.count
+    }
+
     func onPressureValuesData(side: UKInsoleSide, data: UKPressureValuesData) {
-        if isConnected {
+        bothPressureValues[side] = data.value
+        if isConnected, hasBothPressureValues {
             var newCenterOfMass: UKCenterOfMass = .init()
             var rawPressureValueSum: UKRawPressureValueSum = 0
 
-            missions.forEach { _, mission in
-                rawPressureValueSum += mission.sensorData.pressure.pressureValues.rawValueSum
+            bothPressureValues.forEach { _, pressureValues in
+                rawPressureValueSum += pressureValues.rawValueSum
             }
 
             logger.debug("rawPressureValueSum: \(rawPressureValueSum)")
 
             if rawPressureValueSum > 0 {
-                missions.forEach { side, mission in
-                    let rawValueSumWeight = Double(mission.sensorData.pressure.pressureValues.rawValueSum) / Double(rawPressureValueSum)
+                bothPressureValues.forEach { side, pressureValues in
+                    let rawValueSumWeight = Double(pressureValues.rawValueSum) / Double(rawPressureValueSum)
 
-                    newCenterOfMass.y += mission.sensorData.pressure.centerOfMass.y * rawValueSumWeight
+                    newCenterOfMass.y += pressureValues.centerOfMass.y * rawValueSumWeight
                     if side == .right {
                         newCenterOfMass.x = rawValueSumWeight
                     }
                 }
+
+                updateCenterOfMassRange(with: newCenterOfMass)
+                normalizeCenterOfMass(&newCenterOfMass)
 
                 logger.debug("center of mass: \(newCenterOfMass.debugDescription)")
                 centerOfMassSubject.send((newCenterOfMass, data.timestamp))

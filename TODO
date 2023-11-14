@@ -1,20 +1,17 @@
-calibration - calculates the range of the center of mass
-
-Demos list
-
-SensorDataDemo
-    just a single picker for pressure data
+PairMotionDemo
+    just 2 motion demos side-by-side
 PairPressureDemo
     just 2 insoles with additional pressure
-2D demo
+Center of Mass demo
     a circle representing the center of mass
 BalanceGameDemo 1D
     2 vertical bars
 BalanceGameDemo 2D
     move dot to certain spots
+    
+Safari Extension
 
 test on watch
 test on tv
 test on vision pro
 
-Safari Extension
