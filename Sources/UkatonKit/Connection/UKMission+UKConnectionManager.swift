@@ -75,6 +75,9 @@ public extension UKMission {
         case .motionCalibration:
             parseMotionCalibration(data, at: &offset)
 
+        case .bluetoothRSSI:
+            parseBluetoothRSSI(data, at: &offset)
+
         default:
             logger.error("uncaught connection message type \(messageType.name)")
         }

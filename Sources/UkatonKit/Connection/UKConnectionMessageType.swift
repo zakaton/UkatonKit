@@ -14,4 +14,5 @@ enum UKConnectionMessageType: CaseIterable {
     case wifiIsConnected
     case getWifiIpAddress
     case triggerVibration
+    case bluetoothRSSI
 }

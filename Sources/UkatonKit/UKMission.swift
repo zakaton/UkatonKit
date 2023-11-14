@@ -90,6 +90,14 @@ public class UKMission: ObservableObject {
     public let batteryLevelSubject = CurrentValueSubject<UKBatteryLevel, Never>(.zero)
     public var batteryLevel: UKBatteryLevel { batteryLevelSubject.value }
 
+    // MARK: - RSSI
+
+    public let rssiSubject = CurrentValueSubject<Int, Never>(.zero)
+    public var rssi: Int { rssiSubject.value }
+    public let isReadingRSSISubject = CurrentValueSubject<Bool, Never>(false)
+    public var isReadingRSSI: Bool { isReadingRSSISubject.value }
+    var readRssiTimer: Timer? = nil
+
     // MARK: - Wifi Information
 
     @Published public internal(set) var wifiSsid: String = ""

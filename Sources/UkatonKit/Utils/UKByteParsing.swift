@@ -1,6 +1,6 @@
 import Foundation
 
-// MARK: - Number to Data
+// MARK: - Data to Object
 
 extension Data {
     func parse<T>(at offset: inout Data.Index) -> T {
@@ -11,6 +11,8 @@ extension Data {
         return value
     }
 }
+
+// MARK: Data to Number
 
 extension FixedWidthInteger {
     static func parse(from data: Data, at offset: inout Data.Index, littleEndian: Bool = true) -> Self {
@@ -41,7 +43,7 @@ extension Float64 {
     }
 }
 
-// MARK: - Data to Number
+// MARK: - Number to Data
 
 extension Numeric {
     var data: Data {

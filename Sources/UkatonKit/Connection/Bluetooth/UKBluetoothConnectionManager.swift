@@ -217,4 +217,10 @@ class UKBluetoothConnectionManager: NSObject, UKConnectionManager, ObservableObj
             }
         }
     }
+
+    func peripheral(_ peripheral: CBPeripheral, didReadRSSI RSSI: NSNumber, error: Error?) {
+        let rssiInt = RSSI.intValue
+        logger.debug("received rssi \(rssiInt.description)")
+        onMessageReceived(type: .bluetoothRSSI, data: rssiInt.data)
+    }
 }
