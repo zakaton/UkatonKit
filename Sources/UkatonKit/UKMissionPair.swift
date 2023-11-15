@@ -123,7 +123,7 @@ public class UKMissionPair: ObservableObject {
 
     func normalizeCenterOfMass(_ centerOfMass: inout UKCenterOfMass) {
         centerOfMass.x = getInterpolation(of: centerOfMass.x, between: lowerCenterOfMass.x, and: upperCenterOfMass.x)
-        centerOfMass.y = getInterpolation(of: centerOfMass.y, between: lowerCenterOfMass.x, and: upperCenterOfMass.y)
+        centerOfMass.y = getInterpolation(of: centerOfMass.y, between: lowerCenterOfMass.y, and: upperCenterOfMass.y)
     }
 
     // MARK: - Parsing
@@ -159,7 +159,6 @@ public class UKMissionPair: ObservableObject {
                 normalizeCenterOfMass(&newCenterOfMass)
 
                 logger.debug("center of mass: \(newCenterOfMass.debugDescription)")
-                print(newCenterOfMass.y)
                 centerOfMassSubject.send((newCenterOfMass, data.timestamp))
             }
         }
