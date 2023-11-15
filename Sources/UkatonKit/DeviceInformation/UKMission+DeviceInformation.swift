@@ -54,3 +54,13 @@ extension UKMission {
         parseBatteryLevel(data: data, at: &offset)
     }
 }
+
+public extension UKMission {
+    func setDeviceType(_ newDeviceType: UKDeviceType) throws {
+        try sendMessage(type: .setDeviceType, data: newDeviceType.rawValue.data)
+    }
+
+    func setName(_ newName: String) throws {
+        try sendMessage(type: .setName, data: newName.data)
+    }
+}

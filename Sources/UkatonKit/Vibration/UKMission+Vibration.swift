@@ -37,3 +37,21 @@ extension UKMission {
         return data
     }
 }
+
+public extension UKMission {
+    func vibrate(waveformEffects: [UKVibrationWaveformEffect]) throws {
+        try sendMessage(type: .triggerVibration, data: serializeVibration(waveformEffects: waveformEffects))
+    }
+
+    func vibrate(waveformEffect: UKVibrationWaveformEffect) throws {
+        try vibrate(waveformEffects: [waveformEffect])
+    }
+
+    func vibrate(waveforms: [UKVibrationWaveform]) throws {
+        try sendMessage(type: .triggerVibration, data: serializeVibration(waveforms: waveforms))
+    }
+
+    func vibrate(waveform: UKVibrationWaveform) throws {
+        try vibrate(waveforms: [waveform])
+    }
+}

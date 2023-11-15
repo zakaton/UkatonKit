@@ -23,7 +23,7 @@ public class UKMissionPair: ObservableObject {
         return _cancelleables
     }()
 
-    private var missions: [UKInsoleSide: UKMission] = [:]
+    private(set) var missions: [UKInsoleSide: UKMission] = [:]
     public private(set) subscript(side: UKInsoleSide) -> UKMission? {
         get {
             missions[side]
@@ -39,8 +39,12 @@ public class UKMissionPair: ObservableObject {
             missions[side] = newValue
 
             if let mission = newValue {
-                mission.sensorData.pressure.pressureValuesSubject.sink(receiveValue: {
-                    self.onPressureValuesData(side: side, data: $0)
+                mission.sensorData.pressure.pressureValuesSubject.sink(receiveValue: { [weak self] in
+                    self?.onPressureValuesData(side: side, data: $0)
+                }).store(in: &cancellables[side]!)
+                mission.sensorDataConfigurationsSubject.sink(receiveValue: { [weak self] newSensorDataConfigurations in
+                    // TODO: - what's a better way to indicate configuration? (what if left is enabled but right isn't?)
+                    self?.sensorDataConfigurationsSubject.send(newSensorDataConfigurations)
                 }).store(in: &cancellables[side]!)
             }
 
@@ -51,8 +55,12 @@ public class UKMissionPair: ObservableObject {
         }
     }
 
+    // MARK: - Connection
+
     var isConnected: Bool { isConnectedSubject.value }
     public let isConnectedSubject = CurrentValueSubject<Bool, Never>(false)
+
+    // MARK: - Add/Remove
 
     public func add(mission: UKMission, overwrite: Bool = false) {
         if let insoleSide = mission.deviceType.insoleSide {
@@ -75,14 +83,17 @@ public class UKMissionPair: ObservableObject {
         }
     }
 
-    // MARK: - Data
+    // MARK: Sensor Data Configurations
+
+    public let sensorDataConfigurationsSubject = CurrentValueSubject<UKSensorDataConfigurations, Never>(.init())
+    public var sensorDataConfigurations: UKSensorDataConfigurations { sensorDataConfigurationsSubject.value }
+
+    // MARK: - Pressure Data
 
     public var centerOfMass: UKCenterOfMass { centerOfMassSubject.value.value }
-    public var mass: UKMass { massSubject.value.value }
-
-    // MARK: - CurrentValueSubjects
-
     public let centerOfMassSubject = CurrentValueSubject<UKCenterOfMassData, Never>((.init(), 0))
+
+    public var mass: UKMass { massSubject.value.value }
     public let massSubject = CurrentValueSubject<UKMassData, Never>((.zero, 0))
 
     // MARK: - Normalization

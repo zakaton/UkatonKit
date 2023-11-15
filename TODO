@@ -1,7 +1,7 @@
-rssi
-
+SensorDataConfigurable
+    SensorDataConfigurations?
 Center of Mass demo
-    a circle representing the center of mass
+    enable/disable sensors (UI?)
 BalanceGameDemo 1D
     2 vertical bars
 BalanceGameDemo 2D
@@ -12,4 +12,3 @@ Safari Extension
 test on watch
 test on tv
 test on vision pro
-

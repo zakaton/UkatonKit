@@ -78,3 +78,17 @@ extension UKMission {
         parseIpAddress(data: data, at: &offset, until: data.count)
     }
 }
+
+public extension UKMission {
+    func setWifiSsid(_ newWifiSsid: String) throws {
+        try sendMessage(type: .setWifiSsid, data: newWifiSsid.data)
+    }
+
+    func setWifiPassword(_ newWifiPassword: String) throws {
+        try sendMessage(type: .setWifiPassword, data: newWifiPassword.data)
+    }
+
+    func setWifiShouldConnect(_ newWifiShouldConnect: Bool) throws {
+        try sendMessage(type: .setWifiShouldConnect, data: newWifiShouldConnect.data)
+    }
+}
