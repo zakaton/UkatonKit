@@ -1,13 +1,14 @@
-navigationtitle issues
-back issues
+single NavigationStack
+    have a navigationpath for each tab
+    selection binding for tabview changes the navigationstack path and what it points to
+
+test on watch
+test on tv
+test on vision pro
+
+Safari Extension
 
 BalanceGameDemo 1D
     2 vertical bars
 BalanceGameDemo 2D
     move dot to certain spots
-    
-Safari Extension
-
-test on watch
-test on tv
-test on vision pro
