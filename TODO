@@ -1,7 +1,5 @@
-SensorDataConfigurable
-    SensorDataConfigurations?
 Center of Mass demo
-    enable/disable sensors (UI?)
+    fix y issue
 BalanceGameDemo 1D
     2 vertical bars
 BalanceGameDemo 2D

@@ -42,9 +42,10 @@ public class UKMissionPair: ObservableObject {
                 mission.sensorData.pressure.pressureValuesSubject.sink(receiveValue: { [weak self] in
                     self?.onPressureValuesData(side: side, data: $0)
                 }).store(in: &cancellables[side]!)
-                mission.sensorDataConfigurationsSubject.sink(receiveValue: { [weak self] newSensorDataConfigurations in
-                    // TODO: - what's a better way to indicate configuration? (what if left is enabled but right isn't?)
-                    self?.sensorDataConfigurationsSubject.send(newSensorDataConfigurations)
+                mission.sensorDataConfigurationsSubject.sink(receiveValue: { [weak self] in
+                    // TODO: - what's a better way to indicate configuration?
+                    self?.sensorDataConfigurationsSubject.send($0)
+                    // self?.sensorDataConfigurationsSubject.send(self!.minSensorDataConfiguraions)
                 }).store(in: &cancellables[side]!)
             }
 
@@ -87,6 +88,13 @@ public class UKMissionPair: ObservableObject {
 
     public let sensorDataConfigurationsSubject = CurrentValueSubject<UKSensorDataConfigurations, Never>(.init())
     public var sensorDataConfigurations: UKSensorDataConfigurations { sensorDataConfigurationsSubject.value }
+    var minSensorDataConfiguraions: UKSensorDataConfigurations {
+        guard let leftMission = missions[.left], let rightMission = missions[.right] else {
+            logger.error("missions aren't connected")
+            return .init()
+        }
+        return .min(leftMission.sensorDataConfigurations, rightMission.sensorDataConfigurations)
+    }
 
     // MARK: - Pressure Data
 
@@ -100,7 +108,7 @@ public class UKMissionPair: ObservableObject {
 
     var lowerCenterOfMass: UKCenterOfMass = .init(x: .infinity, y: .infinity)
     var upperCenterOfMass: UKCenterOfMass = .init(x: -.infinity, y: -.infinity)
-    public func resetNormalization() {
+    public func recalibratePressure() {
         lowerCenterOfMass = .init(x: .infinity, y: .infinity)
         upperCenterOfMass = .init(x: -.infinity, y: -.infinity)
     }
@@ -151,6 +159,7 @@ public class UKMissionPair: ObservableObject {
                 normalizeCenterOfMass(&newCenterOfMass)
 
                 logger.debug("center of mass: \(newCenterOfMass.debugDescription)")
+                print(newCenterOfMass.y)
                 centerOfMassSubject.send((newCenterOfMass, data.timestamp))
             }
         }

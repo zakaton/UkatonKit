@@ -7,7 +7,7 @@ public typealias UKSensorDataRate = UInt16
 public typealias UKMotionDataRates = [UKMotionDataType: UKSensorDataRate]
 public typealias UKPressureDataRates = [UKPressureDataType: UKSensorDataRate]
 
-extension Dictionary where Value == UKSensorDataRate {
+extension Dictionary where Key: CaseIterable & RawRepresentable, Key.RawValue: Numeric, Value == UKSensorDataRate {
     static func - (lhs: Self, rhs: Self) -> Self {
         var difference = Self()
 
@@ -18,6 +18,16 @@ extension Dictionary where Value == UKSensorDataRate {
         }
 
         return difference
+    }
+
+    static func min(_ lhs: Self, _ rhs: Self) -> Self {
+        var minValue: Self = .zero
+
+        for (key, _) in minValue {
+            minValue[key] = Swift.min(lhs[key]!, rhs[key]!)
+        }
+
+        return minValue
     }
 
     var withoutZeros: Self {
@@ -127,5 +137,11 @@ public struct UKSensorDataConfigurations {
 
     var withoutZeros: Self {
         .init(motion: motion.withoutZeros, pressure: pressure.withoutZeros)
+    }
+
+    // MARK: - min
+
+    public static func min(_ lhs: UKSensorDataConfigurations, _ rhs: UKSensorDataConfigurations) -> UKSensorDataConfigurations {
+        .init(motion: .min(lhs.motion, rhs.motion), pressure: .min(lhs.pressure, rhs.pressure))
     }
 }
