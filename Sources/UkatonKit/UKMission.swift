@@ -93,7 +93,6 @@ public class UKMission: ObservableObject {
     // MARK: - RSSI
 
     public let rssiSubject = CurrentValueSubject<Int, Never>(.zero)
-    public var rssi: Int { rssiSubject.value }
     public let isReadingRSSISubject = CurrentValueSubject<Bool, Never>(false)
     public var isReadingRSSI: Bool { isReadingRSSISubject.value }
     var readRssiTimer: Timer? = nil
