@@ -51,15 +51,14 @@ public class UKMissionPair: ObservableObject {
 
             let newHasBothInsoles = UKInsoleSide.allCases.allSatisfy { missions[$0] != nil }
             if newHasBothInsoles != isConnected {
-                isConnectedSubject.send(newHasBothInsoles)
+                isConnected = newHasBothInsoles
             }
         }
     }
 
     // MARK: - Connection
 
-    var isConnected: Bool { isConnectedSubject.value }
-    public let isConnectedSubject = CurrentValueSubject<Bool, Never>(false)
+    @Published public private(set) var isConnected: Bool = false
 
     // MARK: - Add/Remove
 

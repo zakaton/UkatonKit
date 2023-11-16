@@ -1,6 +1,5 @@
 watch
-    cleaner row
-    demos
+    cleanup
 
 test on appleTV
 test on vision pro
