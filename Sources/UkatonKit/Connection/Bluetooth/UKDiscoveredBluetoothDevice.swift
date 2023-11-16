@@ -32,7 +32,7 @@ public struct UKDiscoveredBluetoothDevice {
             self.timestamp = advertisementData["kCBAdvDataTimestamp"] as! Double
 
             var offset: Data.Index = 0
-            self.type = .init(rawValue: rawServiceData[offset])!
+            self.deviceType = .init(rawValue: rawServiceData[offset])!
             offset += 1
             self.isConnectedToWifi = rawServiceData[offset] != 0
             offset += 1
@@ -49,7 +49,7 @@ public struct UKDiscoveredBluetoothDevice {
 
     // MARK: - Parsed Properties
 
-    public private(set) var type: UKDeviceType = .motionModule
+    public private(set) var deviceType: UKDeviceType = .motionModule
     public private(set) var isConnectedToWifi: Bool = false
     public private(set) var ipAddress: String?
     public private(set) var timestamp: Double = .nan {
@@ -92,6 +92,12 @@ public struct UKDiscoveredBluetoothDevice {
             self.lastTimeInteracted = Date.now
             self.mission.disconnect()
         }
+    }
+
+    // MARK: Metadata
+
+    public var metadata: UKDeviceMetadata {
+        self.mission.isNone ? self : self.mission
     }
 }
 

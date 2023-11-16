@@ -1,13 +1,18 @@
+watch
+    cleaner row
+    demos
+
+test on appleTV
+test on vision pro
+ 
 single NavigationStack
     have a navigationpath for each tab
     selection binding for tabview changes the navigationstack path and what it points to
 
-test on watch
-test on tv
-test on vision pro
-
 Safari Extension
 
+Graph demo
+    bar graphs for various sensor data types...
 BalanceGameDemo 1D
     2 vertical bars
 BalanceGameDemo 2D

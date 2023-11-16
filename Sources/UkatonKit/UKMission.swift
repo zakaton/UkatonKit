@@ -22,7 +22,7 @@ public class UKMission: ObservableObject {
     convenience init(discoveredBluetoothDevice: UKDiscoveredBluetoothDevice) {
         defer {
             self.name = discoveredBluetoothDevice.name
-            self.deviceType = discoveredBluetoothDevice.type
+            self.deviceType = discoveredBluetoothDevice.deviceType
             self.isConnectedToWifi = discoveredBluetoothDevice.isConnectedToWifi
             if self.isConnectedToWifi == true {
                 self.ipAddressSubject.send(discoveredBluetoothDevice.ipAddress)
