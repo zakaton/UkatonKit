@@ -1,6 +1,5 @@
 watch
     pressure sensordata
-        precision for some values
         rawvalues
     motion
     pressure
