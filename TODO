@@ -1,6 +1,4 @@
 watch
-    pressure sensordata
-        rawvalues
     motion
     pressure
     vibration
