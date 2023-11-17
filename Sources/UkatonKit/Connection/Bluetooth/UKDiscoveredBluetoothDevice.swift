@@ -20,7 +20,7 @@ public struct UKDiscoveredBluetoothDevice {
     // MARK: - Peripheral Getters
 
     public var name: String = "undefined"
-    public private(set) var mission: UKMission = .none
+    public var mission: UKMission = .none
 
     // MARK: - Parsing Advertisement Data
 
@@ -99,7 +99,7 @@ public struct UKDiscoveredBluetoothDevice {
     // MARK: Metadata
 
     public var metadata: UKDeviceMetadata {
-        self.mission.isNone ? self : self.mission
+        return self.mission.isNone ? self : self.mission
     }
 }
 

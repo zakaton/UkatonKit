@@ -159,10 +159,10 @@ class UKBluetoothConnectionManager: NSObject, UKConnectionManager, ObservableObj
     func onDiscovered(characteristic: CBCharacteristic, withIdentifier characteristicIdentifier: UKBluetoothCharacteristicIdentifier) {
         logger.debug("discovered characteristic \(characteristicIdentifier.name)")
         characteristics[characteristicIdentifier] = characteristic
-        if characteristic.properties.contains(.notify) {
+        if characteristic.properties.contains(.notify), characteristicIdentifier.enableNotificationsOnConnection {
             peripheral!.setNotifyValue(true, for: characteristic)
         }
-        if characteristic.properties.contains(.read) {
+        if characteristic.properties.contains(.read), characteristicIdentifier.readOnConnection {
             peripheral!.readValue(for: characteristic)
         }
     }
@@ -212,7 +212,7 @@ class UKBluetoothConnectionManager: NSObject, UKConnectionManager, ObservableObj
     func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
         if let characteristicIdentifier: UKBluetoothCharacteristicIdentifier = .init(characteristic: characteristic) {
             logger.debug("didWriteValueFor \(characteristicIdentifier.name)")
-            if characteristicIdentifier.readOnConnection, characteristic.properties.contains(.read) {
+            if characteristic.properties.contains(.read) {
                 peripheral.readValue(for: characteristic)
             }
         }

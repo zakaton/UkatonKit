@@ -45,7 +45,7 @@ public struct UKPressureValues: RandomAccessCollection {
     public var numberOfPressureSensors: Int { Self.numberOfPressureSensors }
     public private(set) var rawValues: [UKPressureValue] = .init(repeating: .init(), count: numberOfPressureSensors)
     public var string: String {
-        rawValues.map { String(format: "%\(isSingleByte ? "3" : "4")d", $0.rawValue) }.joined(separator: ",")
+        rawValues.map { String(format: "%\(isSingleByte ? "3" : "4")d", $0.rawValue) }.joined(separator: ", ")
     }
 
     public subscript(index: Data.Index) -> UKPressureValue {

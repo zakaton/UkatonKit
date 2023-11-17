@@ -104,4 +104,11 @@ enum UKBluetoothCharacteristicIdentifier: String, CaseIterable, UKBluetoothConta
             false
         }
     }
+
+    var enableNotificationsOnConnection: Bool {
+        switch self {
+        default:
+            true
+        }
+    }
 }
