@@ -1,5 +1,6 @@
 watch
-    cleanup
+    device info
+    demos
 
 test on appleTV
 test on vision pro

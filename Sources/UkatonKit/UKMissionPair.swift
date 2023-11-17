@@ -50,9 +50,7 @@ public class UKMissionPair: ObservableObject {
             }
 
             let newHasBothInsoles = UKInsoleSide.allCases.allSatisfy { missions[$0] != nil }
-            if newHasBothInsoles != isConnected {
-                isConnected = newHasBothInsoles
-            }
+            isConnected = newHasBothInsoles
         }
     }
 
