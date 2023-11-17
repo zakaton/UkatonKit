@@ -12,22 +12,86 @@ extension BinaryFloatingPoint {
 }
 
 public typealias UKQuaternion = simd_quatd
+private let quaternionNumberFormatter: NumberFormatter = {
+    let nf = NumberFormatter()
+    nf.numberStyle = .decimal
+    nf.minimumIntegerDigits = 1
+    nf.minimumFractionDigits = 3
+    nf.maximumFractionDigits = 3
+    nf.positivePrefix = " "
+    nf.paddingCharacter = "0"
+    nf.paddingPosition = .afterSuffix
+    return nf
+}()
+
 public extension UKQuaternion {
+    fileprivate var nf: NumberFormatter { quaternionNumberFormatter }
+    var strings: [String] {
+        [
+            "w:\(nf.string(for: vector.w)!)",
+            "x:\(nf.string(for: vector.x)!)",
+            "y:\(nf.string(for: vector.y)!)",
+            "z:\(nf.string(for: vector.z)!)",
+        ]
+    }
+
     var string: String {
-        .init(format: "w: %5.3f, x: %5.3f, y: %5.3f, z: %5.3f", vector.w, vector.x, vector.y, vector.z)
+        strings.joined(separator: isWatch ? "\n" : ", ")
     }
 }
+
+private let rotation3DNumberFormatter: NumberFormatter = {
+    let nf = NumberFormatter()
+    nf.numberStyle = .decimal
+    nf.minimumIntegerDigits = 1
+    nf.minimumFractionDigits = 3
+    nf.maximumFractionDigits = 3
+    nf.positivePrefix = " "
+    nf.paddingCharacter = "0"
+    nf.paddingPosition = .afterSuffix
+    return nf
+}()
 
 public extension Rotation3D {
-    var string: String {
+    fileprivate var nf: NumberFormatter { rotation3DNumberFormatter }
+    var strings: [String] {
         let euler = eulerAngles(order: .zxy)
-        return .init(format: "p: %6.3f, y: %6.3f, r: %6.3f", euler.angles.x, euler.angles.y, euler.angles.z)
+        return [
+            "y:\(nf.string(for: euler.angles.x)!)",
+            "p:\(nf.string(for: euler.angles.y)!)",
+            "r:\(nf.string(for: euler.angles.z)!)",
+        ]
+    }
+
+    var string: String {
+        strings.joined(separator: isWatch ? "\n" : ", ")
     }
 }
 
+private let vector3DNumberFormatter: NumberFormatter = {
+    let nf = NumberFormatter()
+    nf.numberStyle = .decimal
+    nf.minimumIntegerDigits = 2
+    nf.minimumFractionDigits = 3
+    nf.maximumFractionDigits = 3
+    nf.positivePrefix = " "
+    nf.paddingCharacter = "0"
+    nf.paddingPosition = .afterSuffix
+    return nf
+}()
+
 public extension Vector3D {
+    fileprivate var nf: NumberFormatter { vector3DNumberFormatter }
+    var strings: [String] {
+        [
+            "x:\(nf.string(for: x)!)",
+            "y:\(nf.string(for: y)!)",
+            "z:\(nf.string(for: z)!)",
+        ]
+    }
+
     var string: String {
-        .init(format: "x: %6.3f, y: %6.3f, z: %6.3f", x, y, z)
+        strings.joined(separator: isWatch ? "\n" : ", ")
     }
 }
 
@@ -55,7 +119,7 @@ public struct UKMotionData: UKSensorDataComponent {
         .linearAcceleration: pow(2.0, -8.0),
         .rotationRate: pow(2.0, -9.0),
         .magnetometer: pow(2.0, -4.0),
-        .quaternion: pow(2.0, -14.0)
+        .quaternion: pow(2.0, -14.0),
     ]
     var scalars: UKMotionScalars { Self.scalars }
 

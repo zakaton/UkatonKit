@@ -1,6 +1,12 @@
 watch
-    device info
     demos
+        pressuredata
+        motion
+        pressure
+        vibration
+        motion (mp)
+        pressure (mp)
+        vibration (mp)
 
 test on appleTV
 test on vision pro

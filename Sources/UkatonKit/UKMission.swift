@@ -25,7 +25,7 @@ public class UKMission: ObservableObject {
             self.deviceType = discoveredBluetoothDevice.deviceType
             self.isConnectedToWifi = discoveredBluetoothDevice.isConnectedToWifi
             if self.isConnectedToWifi == true {
-                self.ipAddressSubject.send(discoveredBluetoothDevice.ipAddress)
+                ipAddress = discoveredBluetoothDevice.ipAddress
                 self.shouldConnectToWifi = true
             }
             self.peripheral = discoveredBluetoothDevice.peripheral
@@ -105,13 +105,12 @@ public class UKMission: ObservableObject {
     @Published public internal(set) var isConnectedToWifi: Bool = false {
         didSet {
             if !isConnectedToWifi {
-                ipAddressSubject.send(nil)
+                ipAddress = nil
             }
         }
     }
 
-    public let ipAddressSubject = CurrentValueSubject<String?, Never>(nil)
-    public var ipAddress: String? { ipAddressSubject.value }
+    @Published public internal(set) var ipAddress: String? = nil
 
     // MARK: - Motion Calibration
 

@@ -66,7 +66,7 @@ extension UKMission {
     func parseIpAddress(data: Data, at offset: inout Data.Index, until finalOffset: Data.Index) {
         let newIpAddress = data.parseString(offset: &offset, until: finalOffset)
         logger.debug("new ip address \"\(newIpAddress)\"")
-        ipAddressSubject.send(newIpAddress)
+        ipAddress = newIpAddress
     }
 
     func parseIpAddress(data: Data, at offset: inout Data.Index) {

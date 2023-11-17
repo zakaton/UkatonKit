@@ -5,6 +5,8 @@ import UkatonMacros
 
 public typealias UKBluetoothPeripheralAdvertisementData = [String: Any]
 
+public typealias UKTimestampDifference = Double
+
 @StaticLogger
 public struct UKDiscoveredBluetoothDevice {
     public static let none = UKDiscoveredBluetoothDevice()
@@ -58,7 +60,7 @@ public struct UKDiscoveredBluetoothDevice {
         }
     }
 
-    public private(set) var timestampDifference_ms: Double = .nan
+    public private(set) var timestampDifference_ms: UKTimestampDifference = .nan
 
     // MARK: - init
 
@@ -107,5 +109,29 @@ extension UKDiscoveredBluetoothDevice: Identifiable, Hashable {
 
     public static func == (lhs: UKDiscoveredBluetoothDevice, rhs: UKDiscoveredBluetoothDevice) -> Bool {
         lhs.id == rhs.id
+    }
+}
+
+// MARK: - UKTimestampDifference Number Formatter
+
+let timestampDifferenceNumberFormatter: NumberFormatter = {
+    let nf = NumberFormatter()
+    nf.numberStyle = .decimal
+    nf.usesSignificantDigits = true
+    nf.alwaysShowsDecimalSeparator = true
+    nf.minimumIntegerDigits = 1
+    nf.minimumSignificantDigits = 2
+    nf.maximumSignificantDigits = 3
+    return nf
+}()
+
+public extension UKTimestampDifference {
+    fileprivate var nf: NumberFormatter { timestampDifferenceNumberFormatter }
+    var string: String? {
+        guard var string = nf.string(for: self) else {
+            return nil
+        }
+
+        return string.padding(toLength: 5, withPad: "0", startingAt: 0)
     }
 }

@@ -2,7 +2,12 @@ import Foundation
 import OSLog
 import UkatonMacros
 
+// UInt64 modulo is weird on watchOS...
+#if os(watchOS)
+public typealias UKTimestamp = UInt32
+#else
 public typealias UKTimestamp = UInt64
+#endif
 
 public extension UKTimestamp {
     var string: String {
