@@ -16,7 +16,7 @@ enum UKBluetoothCharacteristicIdentifier: String, CaseIterable, UKBluetoothConta
 
     case motionCalibration = "5001"
 
-    case sensorDataConfiguration = "6001"
+    case sensorDataConfigurations = "6001"
     case sensorData = "6002"
 
     case wifiSsid = "7001"
@@ -45,7 +45,7 @@ enum UKBluetoothCharacteristicIdentifier: String, CaseIterable, UKBluetoothConta
             return .getDeviceType
         case .motionCalibration:
             return .motionCalibration
-        case .sensorDataConfiguration:
+        case .sensorDataConfigurations:
             return .getSensorDataConfigurations
         case .sensorData:
             return .sensorData
@@ -72,7 +72,7 @@ enum UKBluetoothCharacteristicIdentifier: String, CaseIterable, UKBluetoothConta
             .deviceType
 
         case .getSensorDataConfigurations, .setSensorDataConfigurations:
-            .sensorDataConfiguration
+            .sensorDataConfigurations
 
         case .getWifiSsid, .setWifiSsid:
             .wifiSsid
@@ -84,8 +84,6 @@ enum UKBluetoothCharacteristicIdentifier: String, CaseIterable, UKBluetoothConta
         case .triggerVibration:
             .triggerVibration
 
-        // TODO: - FILL
-
         default:
             nil
         }
@@ -96,5 +94,14 @@ enum UKBluetoothCharacteristicIdentifier: String, CaseIterable, UKBluetoothConta
         }
 
         self = serviceIdentifier
+    }
+
+    var readOnConnection: Bool {
+        switch self {
+        case .batteryLevel, .sensorDataConfigurations:
+            true
+        default:
+            false
+        }
     }
 }

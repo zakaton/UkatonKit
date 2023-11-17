@@ -212,7 +212,7 @@ class UKBluetoothConnectionManager: NSObject, UKConnectionManager, ObservableObj
     func peripheral(_ peripheral: CBPeripheral, didWriteValueFor characteristic: CBCharacteristic, error: Error?) {
         if let characteristicIdentifier: UKBluetoothCharacteristicIdentifier = .init(characteristic: characteristic) {
             logger.debug("didWriteValueFor \(characteristicIdentifier.name)")
-            if characteristic.properties.contains(.read) {
+            if characteristicIdentifier.readOnConnection, characteristic.properties.contains(.read) {
                 peripheral.readValue(for: characteristic)
             }
         }

@@ -1,6 +1,21 @@
 import Foundation
 
 public extension UKMission {
+    internal func checkConnectionStatus() {
+        guard let connectionManager else {
+            logger.warning("no connection manager defined")
+            return
+        }
+        if connectionManager.status == .connected {
+            if connectionStatus == .connecting, batteryLevel != .notSet {
+                connectionStatus = .connected
+            }
+        }
+        else {
+            connectionStatus = connectionManager.status
+        }
+    }
+
     // MARK: - Connection
 
     internal func createConnectionManager(type connectionType: UKConnectionType) -> any UKConnectionManager {
@@ -80,6 +95,10 @@ public extension UKMission {
 
         default:
             logger.error("uncaught connection message type \(messageType.name)")
+        }
+
+        if messageType.shouldCheckConnectionStatus {
+            checkConnectionStatus()
         }
     }
 

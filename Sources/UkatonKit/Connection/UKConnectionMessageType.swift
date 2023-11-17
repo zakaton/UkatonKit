@@ -15,4 +15,13 @@ enum UKConnectionMessageType: CaseIterable {
     case getWifiIpAddress
     case triggerVibration
     case bluetoothRSSI
+
+    var shouldCheckConnectionStatus: Bool {
+        switch self {
+        case .batteryLevel:
+            true
+        default:
+            false
+        }
+    }
 }

@@ -52,8 +52,8 @@ public class UKMission: ObservableObject {
                 connectionManager?.onMessageReceived = { [unowned self] type, data, offset in
                     self.onConnectionMessage(type: type, data: data, at: &offset)
                 }
-                connectionManager?.onStatusUpdated = { [unowned self] in
-                    self.connectionStatus = $0
+                connectionManager?.onStatusUpdated = { [unowned self] _ in
+                    checkConnectionStatus()
                 }
                 connectionType = connectionManager?.type
             }
@@ -61,7 +61,7 @@ public class UKMission: ObservableObject {
     }
 
     @Published public private(set) var connectionType: UKConnectionType? = nil
-    @Published public private(set) var connectionStatus: UKConnectionStatus = .notConnected {
+    @Published public internal(set) var connectionStatus: UKConnectionStatus = .notConnected {
         didSet {
             if connectionStatus == .connected {
                 missionsManager.add(self)
@@ -87,7 +87,7 @@ public class UKMission: ObservableObject {
         }
     }
 
-    public let batteryLevelSubject = CurrentValueSubject<UKBatteryLevel, Never>(.zero)
+    public let batteryLevelSubject = CurrentValueSubject<UKBatteryLevel, Never>(.notSet)
     public var batteryLevel: UKBatteryLevel { batteryLevelSubject.value }
 
     // MARK: - RSSI

@@ -1,6 +1,9 @@
 import Foundation
 
 public typealias UKBatteryLevel = UInt8
+extension UKBatteryLevel {
+    static let notSet: UKBatteryLevel = 101
+}
 
 extension UKMission {
     // MARK: - Name
