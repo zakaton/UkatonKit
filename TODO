@@ -24,3 +24,5 @@ BalanceGameDemo 1D
     2 vertical bars
 BalanceGameDemo 2D
     move dot to certain spots
+
+stop scanning when leaving the app
