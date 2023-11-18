@@ -86,9 +86,12 @@ public struct UKPressureData: UKSensorDataComponent {
             switch pressureDataType {
             case .pressureSingleByte, .pressureDoubleByte:
                 var newPressureValues: UKPressureValues = .init(data: data, at: &offset, for: pressureDataType, as: deviceType)
+
                 pressureValuesSubject.send((newPressureValues, timestamp))
 
-                updateCenterOfMassRange(with: newPressureValues.centerOfMass)
+                if newPressureValues.rawValueSum > 0 {
+                    updateCenterOfMassRange(with: newPressureValues.centerOfMass)
+                }
                 normalizeCenterOfMass(&newPressureValues.centerOfMass)
                 centerOfMassSubject.send((newPressureValues.centerOfMass, timestamp))
 
