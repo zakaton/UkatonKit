@@ -1,7 +1,3 @@
-watch
-    vibration
-        vertical stacking for sliders
-
 test on appleTV
 test on vision pro
  
@@ -11,11 +7,9 @@ single NavigationStack
 
 Safari Extension
 
-Graph demo
-    bar graphs for various sensor data types...
 BalanceGameDemo 1D
     2 vertical bars
 BalanceGameDemo 2D
     move dot to certain spots
-
-stop scanning when leaving the app
+Graph demo
+    bar graphs for various sensor data types...
