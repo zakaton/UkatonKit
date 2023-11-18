@@ -51,6 +51,28 @@ public struct UKPressureData: UKSensorDataComponent {
     public let massSubject = CurrentValueSubject<UKMassData, Never>((.zero, 0))
     public let heelToToeSubject = CurrentValueSubject<UKHeelToToeData, Never>((.zero, 0))
 
+    // MARK: - CenterOfMass Calibration
+
+    var lowerCenterOfMass: UKCenterOfMass = .init(x: .infinity, y: .infinity)
+    var upperCenterOfMass: UKCenterOfMass = .init(x: -.infinity, y: -.infinity)
+    public mutating func recalibrateCenterOfMass() {
+        lowerCenterOfMass = .init(x: .infinity, y: .infinity)
+        upperCenterOfMass = .init(x: -.infinity, y: -.infinity)
+    }
+
+    mutating func updateCenterOfMassRange(with centerOfMass: UKCenterOfMass) {
+        lowerCenterOfMass.x = min(lowerCenterOfMass.x, centerOfMass.x)
+        lowerCenterOfMass.y = min(lowerCenterOfMass.y, centerOfMass.y)
+
+        upperCenterOfMass.x = max(upperCenterOfMass.x, centerOfMass.x)
+        upperCenterOfMass.y = max(upperCenterOfMass.y, centerOfMass.y)
+    }
+
+    func normalizeCenterOfMass(_ centerOfMass: inout UKCenterOfMass) {
+        centerOfMass.x = getInterpolation(of: centerOfMass.x, between: lowerCenterOfMass.x, and: upperCenterOfMass.x)
+        centerOfMass.y = getInterpolation(of: centerOfMass.y, between: lowerCenterOfMass.y, and: upperCenterOfMass.y)
+    }
+
     // MARK: - Parsing
 
     mutating func parse(_ data: Data, at offset: inout Data.Index, until finalOffset: Data.Index, timestamp: UKTimestamp) {
@@ -63,9 +85,11 @@ public struct UKPressureData: UKSensorDataComponent {
 
             switch pressureDataType {
             case .pressureSingleByte, .pressureDoubleByte:
-                let newPressureValues: UKPressureValues = .init(data: data, at: &offset, for: pressureDataType, as: deviceType)
+                var newPressureValues: UKPressureValues = .init(data: data, at: &offset, for: pressureDataType, as: deviceType)
                 pressureValuesSubject.send((newPressureValues, timestamp))
 
+                updateCenterOfMassRange(with: newPressureValues.centerOfMass)
+                normalizeCenterOfMass(&newPressureValues.centerOfMass)
                 centerOfMassSubject.send((newPressureValues.centerOfMass, timestamp))
 
                 massSubject.send((newPressureValues.mass, timestamp))
@@ -73,7 +97,9 @@ public struct UKPressureData: UKSensorDataComponent {
                 heelToToeSubject.send((newPressureValues.heelToToe, timestamp))
 
             case .centerOfMass:
-                let newCenterOfMass = parseCenterOfMass(data: data, at: &offset)
+                var newCenterOfMass = parseCenterOfMass(data: data, at: &offset)
+                updateCenterOfMassRange(with: newCenterOfMass)
+                normalizeCenterOfMass(&newCenterOfMass)
                 centerOfMassSubject.send((newCenterOfMass, timestamp))
                 logger.debug("\(pressureDataType.name): \(newCenterOfMass.debugDescription)")
             case .mass:

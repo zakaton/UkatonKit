@@ -105,7 +105,7 @@ public class UKMissionPair: ObservableObject {
 
     var lowerCenterOfMass: UKCenterOfMass = .init(x: .infinity, y: .infinity)
     var upperCenterOfMass: UKCenterOfMass = .init(x: -.infinity, y: -.infinity)
-    public func recalibratePressure() {
+    public func recalibrateCenterOfMass() {
         lowerCenterOfMass = .init(x: .infinity, y: .infinity)
         upperCenterOfMass = .init(x: -.infinity, y: -.infinity)
     }
@@ -161,3 +161,5 @@ public class UKMissionPair: ObservableObject {
         }
     }
 }
+
+extension UKMissionPair: UKCenterOfMassProvider {}

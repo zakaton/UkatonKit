@@ -30,7 +30,7 @@ public struct UKSensorData {
     // MARK: - Data
 
     public private(set) var motion: UKMotionData = .init()
-    public private(set) var pressure: UKPressureData = .init()
+    public internal(set) var pressure: UKPressureData = .init()
 
     // MARK: - Device Type
 

@@ -54,7 +54,7 @@ public struct UKPressureValues: RandomAccessCollection {
 
     // MARK: - Derived Values
 
-    public private(set) var centerOfMass: UKCenterOfMass = .zero
+    public internal(set) var centerOfMass: UKCenterOfMass = .zero
     public private(set) var mass: UKMass = .zero
     public private(set) var heelToToe: UKHeelToToe = .zero
 
