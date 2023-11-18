@@ -1,11 +1,12 @@
 watch
-    sensordata weel
-    motion
     pressure
+        make full width (better than nothing)
     vibration
+        vertical stacking for sliders
     motion (mp)
+        just don't show option...
     pressure (mp)
-    vibration (mp)
+        full width
 
 test on appleTV
 test on vision pro
