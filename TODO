@@ -1,5 +1,3 @@
-test on vision pro
-
 single NavigationStack
     have a navigationpath for each tab
     selection binding for tabview changes the navigationstack path and what it points to
