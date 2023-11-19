@@ -57,6 +57,11 @@ public class UKMissionPair: ObservableObject {
     // MARK: - Connection
 
     @Published public private(set) var isConnected: Bool = false
+    public var isHalfConnected: Bool {
+        guard !isConnected else { return false }
+
+        return missions[.left] != nil || missions[.right] != nil
+    }
 
     // MARK: - Add/Remove
 
