@@ -1,7 +1,9 @@
+import OSLog
 import UkatonMacros
 
 @EnumName(accessLevel: "public")
-public enum UKConnectionType {
+@StaticLogger
+public enum UKConnectionType: CaseIterable {
     case bluetooth
     case udp
 
@@ -12,5 +14,13 @@ public enum UKConnectionType {
         case .udp:
             true
         }
+    }
+
+    public init?(from name: String) {
+        guard let connectionType = Self.allCases.first(where: { $0.name == name }) else {
+            Self.logger.error("uncaught connection type for \(name)")
+            return nil
+        }
+        self = connectionType
     }
 }

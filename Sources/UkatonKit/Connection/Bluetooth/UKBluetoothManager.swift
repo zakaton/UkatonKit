@@ -32,14 +32,18 @@ public class UKBluetoothManager: NSObject, ObservableObject {
     // MARK: - Scanning
 
     @Published public var discoveredDevices: [UKDiscoveredBluetoothDevice] = []
+    public let discoveredDevicesSubject = PassthroughSubject<Void, Never>()
     @Published public private(set) var isScanning: Bool = false
+    public let isScanningSubject = CurrentValueSubject<Bool, Never>(false)
 
     private var shouldScanForDevicesWhenPoweredOn: Bool = false
     public func scanForDevices() {
         if centralManager.state == .poweredOn {
             discoveredDevices.removeAll(where: { $0.mission.connectionStatus == .notConnected })
             centralManager.scanForPeripherals(withServices: [UKBluetoothServiceIdentifier.main.uuid], options: [CBCentralManagerScanOptionAllowDuplicatesKey: true])
+            discoveredDevicesSubject.send()
             isScanning = true
+            isScanningSubject.send(isScanning)
             startTimer()
             logger.debug("scanning for devices...")
         }
@@ -53,6 +57,7 @@ public class UKBluetoothManager: NSObject, ObservableObject {
         if centralManager.isScanning {
             centralManager.stopScan()
             isScanning = false
+            isScanningSubject.send(isScanning)
             logger.debug("stopped scanning for devices")
         }
         stopTimer()
@@ -94,6 +99,7 @@ public class UKBluetoothManager: NSObject, ObservableObject {
         discoveredDevices.removeAll(where: {
             $0.mission.connectionStatus == .notConnected && $0.lastTimeInteracted.timeIntervalSinceNow < -4
         })
+        discoveredDevicesSubject.send()
     }
 }
 
@@ -120,6 +126,7 @@ extension UKBluetoothManager: CBCentralManagerDelegate {
         else {
             discoveredDevices.append(.init(peripheral: peripheral, rssi: RSSI, advertisementData: advertisementData))
         }
+        discoveredDevicesSubject.send()
     }
 
     // MARK: - Connection
