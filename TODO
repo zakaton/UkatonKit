@@ -1,5 +1,3 @@
-connect
-    connecting.../disconnecting...
 UkatonKit.js
     move scanning/etc to UkatonKit and use for both popup/content
 test page for web sdk
