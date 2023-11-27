@@ -1,24 +1,13 @@
 UkatonKit.js
-    move scanning/etc to UkatonKit and use for both popup/content
-test page for web sdk
-    detect UkatonKit
-    can toggle scan
-    can display devices
-    can connect/disconnect
-    get name/ip/etc
-    get/set config
-    get data
-    set haptics
+    monkeypatch sendMessage
+    expose devices
 
-Safari Extension (iOS, visionOS)
-    poll for new data
+BalanceGameDemo 2D
+    move dot to certain spots
+BalanceGameDemo 1D
+    2 vertical bars
+Monkey-Ball game
+Fall detection test
 
 App Clip
 Widget
-
-BalanceGameDemo 1D
-    2 vertical bars
-BalanceGameDemo 2D
-    move dot to certain spots
-Graph demo
-    bar graphs for various sensor data types...
