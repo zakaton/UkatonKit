@@ -100,10 +100,13 @@ public struct UKPressureData: UKSensorDataComponent {
                 }
                 normalizeCenterOfMass(&newPressureValues.centerOfMass)
                 centerOfMassSubject.send((newPressureValues.centerOfMass, timestamp))
+                dataSubject.send(.centerOfMass)
 
                 massSubject.send((newPressureValues.mass, timestamp))
+                dataSubject.send(.mass)
 
                 heelToToeSubject.send((newPressureValues.heelToToe, timestamp))
+                dataSubject.send(.heelToToe)
 
             case .centerOfMass:
                 var newCenterOfMass = parseCenterOfMass(data: data, at: &offset)

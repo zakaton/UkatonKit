@@ -5,6 +5,7 @@ BalanceGameDemo 1D
 Monkey-Ball game
 Fall detection test
 
+.websocket connectionType
 CMHeadphoneMotionManager
 App Clip
 Widget
