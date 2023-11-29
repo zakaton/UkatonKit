@@ -1,6 +1,8 @@
-UkatonKit.js
-    monkeypatch sendMessage
-    expose devices
+SafariWebExtensionHandler
+    listen for sensorDataConfig update
+    listen for sensorData update
+    vibrateWaveformEffects
+    vibrateWaveforms
 
 BalanceGameDemo 2D
     move dot to certain spots

@@ -108,6 +108,8 @@ enum UKBluetoothCharacteristicIdentifier: String, CaseIterable, UKBluetoothConta
 
     var enableNotificationsOnConnection: Bool {
         switch self {
+        case .motionCalibration:
+            false
         default:
             true
         }

@@ -1,3 +1,4 @@
+import Combine
 import CoreBluetooth
 import Foundation
 import OSLog
@@ -7,6 +8,7 @@ import UkatonMacros
 @StaticLogger
 public class UKMissionsManager: ObservableObject {
     @Published public private(set) var missions: [UKMission] = []
+    public let missionAddedSubject = PassthroughSubject<UKMission, Never>()
 
     let missionPair: UKMissionPair = .shared
 
@@ -18,6 +20,7 @@ public class UKMissionsManager: ObservableObject {
         else {
             missions.append(mission)
             missionPair.add(mission: mission)
+            missionAddedSubject.send(mission)
             let _self = self
             logger.debug("added mission at index \(_self.missions.count - 1)")
         }

@@ -35,6 +35,25 @@ extension Dictionary where Key: CaseIterable & RawRepresentable, Key.RawValue: N
     }
 }
 
+extension Dictionary where Key: CaseIterable & Nameable, Value == UKSensorDataRate {
+    var json: [String: UKSensorDataRate] {
+        var dictionary: [String: UKSensorDataRate] = [:]
+        Key.allCases.forEach { key in
+            dictionary[spacesToCamelCase(key.name)] = self[key]
+        }
+        return dictionary
+    }
+
+    public init(from json: [String: UKSensorDataRate]) {
+        self.init()
+        Key.allCases.forEach { key in
+            if let sensorDataRate = json[spacesToCamelCase(key.name)] {
+                self[key] = sensorDataRate
+            }
+        }
+    }
+}
+
 @StaticLogger
 public struct UKSensorDataConfigurations {
     public var motion: UKMotionDataRates
@@ -143,5 +162,30 @@ public struct UKSensorDataConfigurations {
 
     public static func min(_ lhs: UKSensorDataConfigurations, _ rhs: UKSensorDataConfigurations) -> UKSensorDataConfigurations {
         .init(motion: .min(lhs.motion, rhs.motion), pressure: .min(lhs.pressure, rhs.pressure))
+    }
+
+    // MARK: - json
+
+    public var json: [String: [String: UKSensorDataRate]] {
+        return [
+            "motion": motion.json,
+            "pressure": pressure.json
+        ]
+    }
+
+    public init(from json: [String: [String: UKSensorDataRate]]) {
+        if let motionJson = json["motion"] {
+            motion = .init(from: motionJson)
+        }
+        else {
+            motion = .init()
+        }
+
+        if let pressureJson = json["pressure"] {
+            pressure = .init(from: pressureJson)
+        }
+        else {
+            pressure = .init()
+        }
     }
 }

@@ -1,7 +1,7 @@
 import UkatonMacros
 
 @EnumName(accessLevel: "public")
-public enum UKPressureDataType: UInt8, CaseIterable, UKSensorDataType {
+public enum UKPressureDataType: UInt8, CaseIterable, UKSensorDataType, Nameable {
     case pressureSingleByte
     case pressureDoubleByte
     case centerOfMass

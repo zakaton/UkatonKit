@@ -36,3 +36,9 @@ extension Dictionary where Key: CaseIterable & RawRepresentable, Key.RawValue: N
         return zero
     }
 }
+
+// MARK: - for json
+
+public protocol Nameable {
+    var name: String { get }
+}

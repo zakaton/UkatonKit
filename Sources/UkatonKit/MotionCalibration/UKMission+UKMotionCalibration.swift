@@ -14,14 +14,14 @@ extension UKMission {
             let motionCalibrationTypeStatus = UKMotionCalibrationStatus(rawValue: data.parse(at: &offset))!
 
             newMotionCalibration[motionCalibrationType] = motionCalibrationTypeStatus
-            logger.debug("\(motionCalibrationType.name) calibration: \(motionCalibrationTypeStatus.name)")
+            // logger.debug("\(motionCalibrationType.name) calibration: \(motionCalibrationTypeStatus.name)")
 
             newIsMotionFullyCalibrated = newIsMotionFullyCalibrated && motionCalibrationTypeStatus == .high
         }
 
         motionCalibrationSubject.send(newMotionCalibration)
 
-        logger.debug("isMotionFullyCalibrated? \(newIsMotionFullyCalibrated)")
+        // logger.debug("isMotionFullyCalibrated? \(newIsMotionFullyCalibrated)")
         if newIsMotionFullyCalibrated != isMotionFullyCalibrated {
             isMotionFullyCalibratedSubject.send(newIsMotionFullyCalibrated)
         }

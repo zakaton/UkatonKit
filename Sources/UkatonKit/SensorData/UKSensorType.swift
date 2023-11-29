@@ -13,4 +13,13 @@ public enum UKSensorType: UInt8, CaseIterable {
             UKPressureDataType.allCases.forEach { body($0.rawValue) }
         }
     }
+
+    func forEachDataTypeName(_ body: (String) -> Void) {
+        switch self {
+        case .motion:
+            UKMotionDataType.allCases.forEach { body($0.name) }
+        case .pressure:
+            UKPressureDataType.allCases.forEach { body($0.name) }
+        }
+    }
 }
