@@ -111,4 +111,19 @@ public struct UKPressureValues: RandomAccessCollection {
         logger.debug("heelToToe: \(_self.heelToToe.debugDescription)")
         logger.debug("mass: \(_self.mass)")
     }
+
+    // MARK: - JSON
+
+    var json: [[String: Any]] {
+        var json: [[String: Any]] = .init()
+        forEach { value in
+            json.append([
+                "rawValue": value.rawValue,
+                "position": value.position.array,
+                "normalizedValue": value.normalizedValue,
+                "weightedValue": value.weightedValue
+            ])
+        }
+        return json
+    }
 }

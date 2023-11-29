@@ -17,6 +17,10 @@ public extension UKCenterOfMass {
     var string: String {
         .init(format: "x: %5.3f, y: %5.3f", x, y)
     }
+
+    var array: [Double] {
+        [x, y]
+    }
 }
 
 public typealias UKPressureValuesData = (value: UKPressureValues, timestamp: UKTimestamp)
@@ -45,6 +49,8 @@ public struct UKPressureData: UKSensorDataComponent {
     public var heelToToe: UKHeelToToe { heelToToeSubject.value.value }
 
     // MARK: - CurrentValueSubjects
+
+    public let dataSubject = PassthroughSubject<UKPressureDataType, Never>()
 
     public let pressureValuesSubject = CurrentValueSubject<UKPressureValuesData, Never>((.init(), 0))
     public let centerOfMassSubject = CurrentValueSubject<UKCenterOfMassData, Never>((.init(), 0))
@@ -114,6 +120,8 @@ public struct UKPressureData: UKSensorDataComponent {
                 heelToToeSubject.send((newHeelToToe, timestamp))
                 logger.debug("\(pressureDataType.name): \(newHeelToToe.debugDescription)")
             }
+
+            dataSubject.send(pressureDataType)
         }
     }
 
@@ -130,5 +138,20 @@ public struct UKPressureData: UKSensorDataComponent {
 
     private mutating func parseHeelToToe(data: Data, at offset: inout Data.Index) -> UKHeelToToe {
         .parse(from: data, at: &offset)
+    }
+
+    // MARK: - JSON
+
+    public func json(pressureDataType: UKPressureDataType) -> Any {
+        switch pressureDataType {
+        case .pressureSingleByte, .pressureDoubleByte:
+            pressureValues.json
+        case .centerOfMass:
+            centerOfMass.array
+        case .mass:
+            mass
+        case .heelToToe:
+            heelToToe
+        }
     }
 }

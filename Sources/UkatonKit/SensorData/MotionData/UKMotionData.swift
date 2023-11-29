@@ -38,6 +38,10 @@ public extension UKQuaternion {
     var string: String {
         strings.joined(separator: isWatch ? "\n" : ", ")
     }
+
+    var array: [Double] {
+        [vector.w, vector.x, vector.y, vector.z]
+    }
 }
 
 private let rotation3DNumberFormatter: NumberFormatter = {
@@ -55,16 +59,21 @@ private let rotation3DNumberFormatter: NumberFormatter = {
 public extension Rotation3D {
     fileprivate var nf: NumberFormatter { rotation3DNumberFormatter }
     var strings: [String] {
-        let euler = eulerAngles(order: .zxy)
+        let angles = eulerAngles(order: .zxy).angles
         return [
-            "y:\(nf.string(for: euler.angles.x)!)",
-            "p:\(nf.string(for: euler.angles.y)!)",
-            "r:\(nf.string(for: euler.angles.z)!)",
+            "y:\(nf.string(for: angles.x)!)",
+            "p:\(nf.string(for: angles.y)!)",
+            "r:\(nf.string(for: angles.z)!)",
         ]
     }
 
     var string: String {
         strings.joined(separator: isWatch ? "\n" : ", ")
+    }
+
+    var array: [Double] {
+        let angles = eulerAngles(order: .zxy).angles
+        return [angles.x, angles.y, angles.z]
     }
 }
 
@@ -92,6 +101,10 @@ public extension Vector3D {
 
     var string: String {
         strings.joined(separator: isWatch ? "\n" : ", ")
+    }
+
+    var array: [Double] {
+        [x, y, z]
     }
 }
 
@@ -134,6 +147,8 @@ public struct UKMotionData: UKSensorDataComponent {
     public var rotation: Rotation3D { rotationSubject.value.value }
 
     // MARK: - CurrentValueSubjects
+
+    public let dataSubject = PassthroughSubject<UKMotionDataType, Never>()
 
     public let accelerationSubject = CurrentValueSubject<UKAccelerationData, Never>((.init(), 0))
     public let gravitySubject = CurrentValueSubject<UKGravityData, Never>((.init(), 0))
@@ -178,6 +193,8 @@ public struct UKMotionData: UKSensorDataComponent {
                 let newRotation = Rotation3D(newQuaternion)
                 rotationSubject.send((newRotation, timestamp))
             }
+
+            dataSubject.send(motionDataType)
         }
     }
 
@@ -280,4 +297,23 @@ public struct UKMotionData: UKSensorDataComponent {
 
         return _correctionQuaternions
     }()
+
+    // MARK: - JSON
+
+    public func json(motionDataType: UKMotionDataType) -> Any {
+        switch motionDataType {
+        case .acceleration:
+            acceleration.array
+        case .gravity:
+            gravity.array
+        case .linearAcceleration:
+            linearAcceleration.array
+        case .rotationRate:
+            rotationRate.array
+        case .magnetometer:
+            magnetometer.array
+        case .quaternion:
+            quaternion.array
+        }
+    }
 }

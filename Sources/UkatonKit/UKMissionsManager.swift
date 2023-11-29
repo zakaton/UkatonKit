@@ -9,6 +9,7 @@ import UkatonMacros
 public class UKMissionsManager: ObservableObject {
     @Published public private(set) var missions: [UKMission] = []
     public let missionAddedSubject = PassthroughSubject<UKMission, Never>()
+    public let missionRemovedSubject = PassthroughSubject<UKMission, Never>()
 
     let missionPair: UKMissionPair = .shared
 
@@ -30,6 +31,7 @@ public class UKMissionsManager: ObservableObject {
         if let index = missions.firstIndex(of: mission) {
             missionPair.remove(mission: mission)
             missions.remove(at: index)
+            missionRemovedSubject.send(mission)
             logger.debug("removed mission at index \(index)")
         }
         else {

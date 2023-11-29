@@ -1,6 +1,5 @@
 SafariWebExtensionHandler
-    listen for sensorDataConfig update
-    listen for sensorData update
+    sensorData flags
     vibrateWaveformEffects
     vibrateWaveforms
 

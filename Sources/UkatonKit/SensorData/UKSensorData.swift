@@ -43,7 +43,7 @@ public struct UKSensorData {
 
     // MARK: - Timestamp
 
-    private var timestamp: UKTimestamp = 0
+    public private(set) var timestamp: UKTimestamp = 0
     private(set) var lastTimeReceivedSensorData: Date = .now
 
     private var timestampOffset: UKTimestamp = 0
