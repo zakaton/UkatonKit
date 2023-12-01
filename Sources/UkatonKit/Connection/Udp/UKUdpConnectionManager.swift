@@ -168,19 +168,19 @@ class UKUdpConnectionManager: UKConnectionManager {
     // MARK: - Receive Message
 
     func receiveUDP() {
-        connection.receiveMessage { [unowned self] data, _, isComplete, _ in
+        connection.receiveMessage { [weak self] data, _, isComplete, _ in
             if isComplete {
-                self.logger.debug("receive complete")
+                self?.logger.debug("receive complete")
                 if let data {
-                    self.logger.debug("received \(data.count) bytes")
+                    self?.logger.debug("received \(data.count) bytes")
                     DispatchQueue.main.async { [self] in
-                        onRawMessageReceived(data: data)
+                        self?.onRawMessageReceived(data: data)
                     }
                 } else {
-                    self.logger.debug("nil data")
+                    self?.logger.debug("nil data")
                 }
             }
-            self.receiveUDP()
+            self?.receiveUDP()
         }
     }
 
