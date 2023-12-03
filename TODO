@@ -1,11 +1,9 @@
-BalanceGameDemo 2D
-    move dot to certain spots
 BalanceGameDemo 1D
     2 vertical bars
 Monkey-Ball game
-Fall detection test
+
+CMHeadphoneMotionManager
 
 .websocket connectionType
-CMHeadphoneMotionManager
-App Clip
 Widget
+App Clip

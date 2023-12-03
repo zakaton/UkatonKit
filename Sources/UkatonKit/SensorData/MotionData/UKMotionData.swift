@@ -40,7 +40,7 @@ public extension UKQuaternion {
     }
 
     var array: [Double] {
-        [vector.w, vector.x, vector.y, vector.z]
+        [vector.x, vector.y, vector.z, vector.w]
     }
 }
 
