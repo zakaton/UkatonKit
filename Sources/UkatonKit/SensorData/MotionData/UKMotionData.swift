@@ -116,6 +116,8 @@ public typealias UKMagnetometerData = (value: Vector3D, timestamp: UKTimestamp)
 public typealias UKQuaternionData = (value: UKQuaternion, timestamp: UKTimestamp)
 public typealias UKRotationData = (value: Rotation3D, timestamp: UKTimestamp)
 
+public typealias UKGenericMotionData = (type: UKMotionDataType, timestamp: UKTimestamp)
+
 @StaticLogger
 public struct UKMotionData: UKSensorDataComponent {
     // MARK: - Device Type
@@ -148,7 +150,7 @@ public struct UKMotionData: UKSensorDataComponent {
 
     // MARK: - CurrentValueSubjects
 
-    public let dataSubject = PassthroughSubject<UKMotionDataType, Never>()
+    public let dataSubject = PassthroughSubject<UKGenericMotionData, Never>()
 
     public let accelerationSubject = CurrentValueSubject<UKAccelerationData, Never>((.init(), 0))
     public let gravitySubject = CurrentValueSubject<UKGravityData, Never>((.init(), 0))
@@ -194,7 +196,7 @@ public struct UKMotionData: UKSensorDataComponent {
                 rotationSubject.send((newRotation, timestamp))
             }
 
-            dataSubject.send(motionDataType)
+            dataSubject.send((motionDataType, timestamp))
         }
     }
 
@@ -300,7 +302,7 @@ public struct UKMotionData: UKSensorDataComponent {
 
     // MARK: - JSON
 
-    public func json(motionDataType: UKMotionDataType) -> Any {
+    public func json(for motionDataType: UKMotionDataType) -> Any {
         switch motionDataType {
         case .acceleration:
             acceleration.array

@@ -139,21 +139,21 @@ public class UKMissionPair: ObservableObject {
         bothPressureValues[side] = data.value
         if isConnected, hasBothPressureValues {
             var newCenterOfMass: UKCenterOfMass = .init()
-            var rawPressureValueSum: UKRawPressureValueSum = 0
+            var massSum: UKMass = 0
 
             bothPressureValues.forEach { _, pressureValues in
-                rawPressureValueSum += pressureValues.rawValueSum
+                massSum += pressureValues.mass
             }
 
-            logger.debug("rawPressureValueSum: \(rawPressureValueSum)")
+            logger.debug("massSum: \(massSum)")
 
-            if rawPressureValueSum > 0 {
+            if massSum > 0 {
                 bothPressureValues.forEach { side, pressureValues in
-                    let rawValueSumWeight = Double(pressureValues.rawValueSum) / Double(rawPressureValueSum)
+                    let massSumWeight = pressureValues.mass / massSum
 
-                    newCenterOfMass.y += pressureValues.centerOfMass.y * rawValueSumWeight
+                    newCenterOfMass.y += pressureValues.centerOfMass.y * massSumWeight
                     if side == .right {
-                        newCenterOfMass.x = rawValueSumWeight
+                        newCenterOfMass.x = massSumWeight
                     }
                 }
 

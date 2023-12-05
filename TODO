@@ -1,6 +1,10 @@
-BalanceGameDemo 1D
-    2 vertical bars
-Monkey-Ball game
+debug Safari Web Extension (multiple devices)
+    backend has json prepared every time sensorData is updated
+    frontend reads json and sets timestamp for lastTimeRead (can overwrite)
+
+DEMOS
+    TV
+    Safari Web Extension
 
 CMHeadphoneMotionManager
 

@@ -99,7 +99,8 @@ enum UKBluetoothCharacteristicIdentifier: String, CaseIterable, UKBluetoothConta
     var readOnConnection: Bool {
         switch self {
         case .batteryLevel, .sensorDataConfigurations,
-             .wifiSsid, .wifiPassword, .wifiShouldConnect:
+             .wifiSsid, .wifiPassword, .wifiShouldConnect,
+             .deviceName, .deviceType:
             true
         default:
             false

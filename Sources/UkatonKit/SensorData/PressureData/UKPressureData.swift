@@ -28,6 +28,8 @@ public typealias UKCenterOfMassData = (value: UKCenterOfMass, timestamp: UKTimes
 public typealias UKMassData = (value: UKMass, timestamp: UKTimestamp)
 public typealias UKHeelToToeData = (value: UKHeelToToe, timestamp: UKTimestamp)
 
+public typealias UKGenericPressureData = (type: UKPressureDataType, timestamp: UKTimestamp)
+
 @StaticLogger
 public struct UKPressureData: UKSensorDataComponent {
     // MARK: - Device Type
@@ -50,7 +52,7 @@ public struct UKPressureData: UKSensorDataComponent {
 
     // MARK: - CurrentValueSubjects
 
-    public let dataSubject = PassthroughSubject<UKPressureDataType, Never>()
+    public let dataSubject = PassthroughSubject<UKGenericPressureData, Never>()
 
     public let pressureValuesSubject = CurrentValueSubject<UKPressureValuesData, Never>((.init(), 0))
     public let centerOfMassSubject = CurrentValueSubject<UKCenterOfMassData, Never>((.init(), 0))
@@ -64,6 +66,9 @@ public struct UKPressureData: UKSensorDataComponent {
     public mutating func recalibrateCenterOfMass() {
         lowerCenterOfMass = .init(x: .infinity, y: .infinity)
         upperCenterOfMass = .init(x: -.infinity, y: -.infinity)
+
+        lowerMass = .infinity
+        upperMass = -.infinity
     }
 
     mutating func updateCenterOfMassRange(with centerOfMass: UKCenterOfMass) {
@@ -77,6 +82,20 @@ public struct UKPressureData: UKSensorDataComponent {
     func normalizeCenterOfMass(_ centerOfMass: inout UKCenterOfMass) {
         centerOfMass.x = getInterpolation(of: centerOfMass.x, between: lowerCenterOfMass.x, and: upperCenterOfMass.x)
         centerOfMass.y = getInterpolation(of: centerOfMass.y, between: lowerCenterOfMass.y, and: upperCenterOfMass.y)
+    }
+
+    // MARK: - Mass Calibration
+
+    var lowerMass: UKMass = .infinity
+    var upperMass: UKMass = -.infinity
+
+    mutating func updateMassRange(with mass: UKMass) {
+        lowerMass = min(lowerMass, mass)
+        upperMass = max(upperMass, mass)
+    }
+
+    func normalizeMass(_ mass: inout UKMass) {
+        mass = getInterpolation(of: mass, between: lowerMass, and: upperMass)
     }
 
     // MARK: - Parsing
@@ -97,16 +116,19 @@ public struct UKPressureData: UKSensorDataComponent {
 
                 if newPressureValues.rawValueSum > 0 {
                     updateCenterOfMassRange(with: newPressureValues.centerOfMass)
+                    updateMassRange(with: newPressureValues.mass)
                 }
                 normalizeCenterOfMass(&newPressureValues.centerOfMass)
+                normalizeMass(&newPressureValues.mass)
+
                 centerOfMassSubject.send((newPressureValues.centerOfMass, timestamp))
-                dataSubject.send(.centerOfMass)
+                dataSubject.send((.centerOfMass, timestamp))
 
                 massSubject.send((newPressureValues.mass, timestamp))
-                dataSubject.send(.mass)
+                dataSubject.send((.mass, timestamp))
 
                 heelToToeSubject.send((newPressureValues.heelToToe, timestamp))
-                dataSubject.send(.heelToToe)
+                dataSubject.send((.heelToToe, timestamp))
 
             case .centerOfMass:
                 var newCenterOfMass = parseCenterOfMass(data: data, at: &offset)
@@ -124,7 +146,7 @@ public struct UKPressureData: UKSensorDataComponent {
                 logger.debug("\(pressureDataType.name): \(newHeelToToe.debugDescription)")
             }
 
-            dataSubject.send(pressureDataType)
+            dataSubject.send((pressureDataType, timestamp))
         }
     }
 
@@ -145,7 +167,7 @@ public struct UKPressureData: UKSensorDataComponent {
 
     // MARK: - JSON
 
-    public func json(pressureDataType: UKPressureDataType) -> Any {
+    public func json(for pressureDataType: UKPressureDataType) -> Any {
         switch pressureDataType {
         case .pressureSingleByte, .pressureDoubleByte:
             pressureValues.json
