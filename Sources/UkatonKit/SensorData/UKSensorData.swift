@@ -26,7 +26,7 @@ protocol UKSensorDataComponent {
 }
 
 @StaticLogger
-public struct UKSensorData {
+public class UKSensorData {
     // MARK: - Data
 
     public private(set) var motion: UKMotionData = .init()
@@ -61,7 +61,7 @@ public struct UKSensorData {
 
     // MARK: - Parsing
 
-    mutating func parse(_ data: Data, at offset: inout Data.Index) {
+    func parse(_ data: Data, at offset: inout Data.Index) {
         lastTimeReceivedSensorData = Date.now
         rawTimestamp = .parse(from: data, at: &offset)
 
@@ -91,7 +91,7 @@ public struct UKSensorData {
         }
     }
 
-    mutating func parse(_ data: Data) {
+    func parse(_ data: Data) {
         var offset: Data.Index = 0
         parse(data, at: &offset)
     }

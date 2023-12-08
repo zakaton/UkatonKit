@@ -119,7 +119,7 @@ public typealias UKRotationData = (value: Rotation3D, timestamp: UKTimestamp)
 public typealias UKGenericMotionData = (type: UKMotionDataType, timestamp: UKTimestamp)
 
 @StaticLogger
-public struct UKMotionData: UKSensorDataComponent {
+public class UKMotionData: UKSensorDataComponent {
     // MARK: - Device Type
 
     var deviceType: UKDeviceType = .motionModule
@@ -162,7 +162,7 @@ public struct UKMotionData: UKSensorDataComponent {
 
     // MARK: - Parsing
 
-    mutating func parse(_ data: Data, at offset: inout Data.Index, until finalOffset: Data.Index, timestamp: UKTimestamp) {
+    func parse(_ data: Data, at offset: inout Data.Index, until finalOffset: Data.Index, timestamp: UKTimestamp) {
         while offset < finalOffset {
             let rawMotionDataType: UKMotionDataType.RawValue = data.parse(at: &offset)
             guard let motionDataType: UKMotionDataType = .init(rawValue: rawMotionDataType) else {

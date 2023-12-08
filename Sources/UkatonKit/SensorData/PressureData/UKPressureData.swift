@@ -31,7 +31,7 @@ public typealias UKHeelToToeData = (value: UKHeelToToe, timestamp: UKTimestamp)
 public typealias UKGenericPressureData = (type: UKPressureDataType, timestamp: UKTimestamp)
 
 @StaticLogger
-public struct UKPressureData: UKSensorDataComponent {
+public class UKPressureData: UKSensorDataComponent {
     // MARK: - Device Type
 
     var deviceType: UKDeviceType = .motionModule
@@ -63,7 +63,7 @@ public struct UKPressureData: UKSensorDataComponent {
 
     var lowerCenterOfMass: UKCenterOfMass = .init(x: .infinity, y: .infinity)
     var upperCenterOfMass: UKCenterOfMass = .init(x: -.infinity, y: -.infinity)
-    public mutating func recalibrateCenterOfMass() {
+    public func recalibrateCenterOfMass() {
         lowerCenterOfMass = .init(x: .infinity, y: .infinity)
         upperCenterOfMass = .init(x: -.infinity, y: -.infinity)
 
@@ -71,7 +71,7 @@ public struct UKPressureData: UKSensorDataComponent {
         upperMass = -.infinity
     }
 
-    mutating func updateCenterOfMassRange(with centerOfMass: UKCenterOfMass) {
+    func updateCenterOfMassRange(with centerOfMass: UKCenterOfMass) {
         lowerCenterOfMass.x = min(lowerCenterOfMass.x, centerOfMass.x)
         lowerCenterOfMass.y = min(lowerCenterOfMass.y, centerOfMass.y)
 
@@ -89,7 +89,7 @@ public struct UKPressureData: UKSensorDataComponent {
     var lowerMass: UKMass = .infinity
     var upperMass: UKMass = -.infinity
 
-    mutating func updateMassRange(with mass: UKMass) {
+    func updateMassRange(with mass: UKMass) {
         lowerMass = min(lowerMass, mass)
         upperMass = max(upperMass, mass)
     }
@@ -100,7 +100,7 @@ public struct UKPressureData: UKSensorDataComponent {
 
     // MARK: - Parsing
 
-    mutating func parse(_ data: Data, at offset: inout Data.Index, until finalOffset: Data.Index, timestamp: UKTimestamp) {
+    func parse(_ data: Data, at offset: inout Data.Index, until finalOffset: Data.Index, timestamp: UKTimestamp) {
         while offset < finalOffset {
             let rawPressureDataType: UKPressureDataType.RawValue = data.parse(at: &offset)
             guard let pressureDataType: UKPressureDataType = .init(rawValue: rawPressureDataType) else {
@@ -150,18 +150,18 @@ public struct UKPressureData: UKSensorDataComponent {
         }
     }
 
-    private mutating func parseCenterOfMass(data: Data, at offset: inout Data.Index) -> UKCenterOfMass {
+    func parseCenterOfMass(data: Data, at offset: inout Data.Index) -> UKCenterOfMass {
         .init(
             x: .init(Float32.parse(from: data, at: &offset)),
             y: .init(Float32.parse(from: data, at: &offset))
         )
     }
 
-    private mutating func parseMass(data: Data, at offset: inout Data.Index) -> UKPressureRawMass {
+    func parseMass(data: Data, at offset: inout Data.Index) -> UKPressureRawMass {
         .parse(from: data, at: &offset)
     }
 
-    private mutating func parseHeelToToe(data: Data, at offset: inout Data.Index) -> UKHeelToToe {
+    func parseHeelToToe(data: Data, at offset: inout Data.Index) -> UKHeelToToe {
         .parse(from: data, at: &offset)
     }
 
