@@ -1,3 +1,6 @@
 Widget
+    battery life (s/m/l)
+    device info (s/m/l)
+    device discovery (m/l)
 .websocket connectionType
 App Clip
