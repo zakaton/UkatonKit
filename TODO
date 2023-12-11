@@ -1,6 +1,13 @@
 Widget
-    battery life (s/m/l)
-    device info (s/m/l)
-    device discovery (m/l)
-.websocket connectionType
-App Clip
+    fix apple watch preview
+    intent to select 4 mission devices (no duplicates)
+    battery life
+    device info
+    device discovery
+
+NICE TO HAVE
+    .websocket connectionType
+    App Clip
+
+LATER
+    isCharging

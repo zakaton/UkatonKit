@@ -11,6 +11,10 @@ public class UKMissionsManager: ObservableObject {
     public let missionAddedSubject = PassthroughSubject<UKMission, Never>()
     public let missionRemovedSubject = PassthroughSubject<UKMission, Never>()
 
+    public func mission(for id: String) -> UKMission? {
+        missions.first(where: { $0.id == id })
+    }
+
     let missionPair: UKMissionPair = .shared
 
     func add(_ mission: UKMission) {

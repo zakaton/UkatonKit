@@ -90,6 +90,9 @@ public class UKMission: ObservableObject {
     public let batteryLevelSubject = CurrentValueSubject<UKBatteryLevel, Never>(.notSet)
     public var batteryLevel: UKBatteryLevel { batteryLevelSubject.value }
 
+    public let isChargingSubject = CurrentValueSubject<Bool, Never>(false)
+    public var isCharging: Bool { isChargingSubject.value }
+
     // MARK: - RSSI
 
     public let rssiSubject = CurrentValueSubject<Int, Never>(.zero)
