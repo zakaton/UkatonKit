@@ -1,4 +1,7 @@
+manage cancellables added/removed
+
 AppGroup
+    snapshot issue
     show batteryLife
 Widget
     battery life views
@@ -11,3 +14,4 @@ NICE TO HAVE
 
 LATER
     isCharging
+    UkatonKit.js poll for device disconnection every second
