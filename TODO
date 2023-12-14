@@ -1,6 +1,7 @@
+AppGroup
+    show batteryLife
 Widget
-    intent to select 4 mission devices (no duplicates)
-    battery life
+    battery life views
     device info
     device discovery
 
