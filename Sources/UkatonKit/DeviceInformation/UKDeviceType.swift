@@ -21,4 +21,11 @@ public enum UKDeviceType: UInt8, CaseIterable, Identifiable {
     public var availableSensorTypes: [UKSensorType] {
         UKSensorType.allCases.filter { self.hasSensorType($0) }
     }
+
+    public init?(name: String) {
+        guard let deviceType = Self.allCases.first(where: { $0.name == name }) else {
+            return nil
+        }
+        self = deviceType
+    }
 }

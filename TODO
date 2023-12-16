@@ -1,6 +1,5 @@
 AppGroup
-    snapshot issue
-    show batteryLife
+    switch to static widget
 Widget
     battery life views
     device info
