@@ -1,14 +1,13 @@
-AppGroup
-    switch to static widget
-Widget
-    battery life views
-    device info
-    device discovery
+Device Discovery
+    buttons to start/stop scanning
+Step Counting
+    just a small and circular
 
 NICE TO HAVE
     .websocket connectionType
     App Clip
-
+    clear app group when app closes on iOS/watchOS
+    
 LATER
     isCharging
     UkatonKit.js poll for device disconnection every second
