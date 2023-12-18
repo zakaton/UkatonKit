@@ -1,5 +1,7 @@
+import OSLog
 import UkatonMacros
 
+@StaticLogger
 @EnumName(accessLevel: "public")
 public enum UKDeviceType: UInt8, CaseIterable, Identifiable {
     public var id: Self { self }
@@ -22,8 +24,9 @@ public enum UKDeviceType: UInt8, CaseIterable, Identifiable {
         UKSensorType.allCases.filter { self.hasSensorType($0) }
     }
 
-    public init?(name: String) {
+    public init?(from name: String) {
         guard let deviceType = Self.allCases.first(where: { $0.name == name }) else {
+            Self.logger.error("uncaught connection type for \(name)")
             return nil
         }
         self = deviceType

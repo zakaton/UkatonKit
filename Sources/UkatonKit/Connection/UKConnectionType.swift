@@ -1,8 +1,8 @@
 import OSLog
 import UkatonMacros
 
-@EnumName(accessLevel: "public")
 @StaticLogger
+@EnumName(accessLevel: "public")
 public enum UKConnectionType: CaseIterable {
     case bluetooth
     case udp
