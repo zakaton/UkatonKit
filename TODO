@@ -1,11 +1,8 @@
-Device Discovery
-    udp issues
+LATER
+    isCharging
+    UkatonKit.js poll for device disconnection every second
 
 NICE TO HAVE
     .websocket connectionType
     App Clip
     clear app groups when app closes on iOS/watchOS
-
-LATER
-    isCharging
-    UkatonKit.js poll for device disconnection every second
