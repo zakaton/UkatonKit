@@ -1,5 +1,5 @@
 Device Discovery
-    "motion module" issue when connect/disconnecting
+    udp issues
 
 NICE TO HAVE
     .websocket connectionType

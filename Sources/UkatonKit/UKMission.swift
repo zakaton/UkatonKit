@@ -147,7 +147,7 @@ public class UKMission: ObservableObject {
 
 extension UKMission: Identifiable {
     public var id: String {
-        connectionManager?.id ?? ""
+        peripheral?.identifier.uuidString ?? connectionManager?.id ?? ""
     }
 }
 
