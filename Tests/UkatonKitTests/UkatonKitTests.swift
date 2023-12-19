@@ -107,12 +107,12 @@ final class UkatonKitTests: XCTestCase {
     // MARK: - Vibration
 
     func testSerializevibrationWaveforms() {
-        let waveformSerialization = mission.serializeVibration(waveforms: [.longDoubleSharpTick80, .doubleClick100])
+        let waveformSerialization = mission.serializeVibration(waveformEffects: [.longDoubleSharpTick80, .doubleClick100])
         print(waveformSerialization.bytes)
     }
 
     func testSerializevibrationSequence() {
-        let sequenceSerialization = mission.serializeVibration(sequence: [.init(intensity: 1, delay: 20)])
+        let sequenceSerialization = mission.serializeVibration(waveforms: [.init(intensity: 1, delay: 20)])
         print(sequenceSerialization.bytes)
     }
 

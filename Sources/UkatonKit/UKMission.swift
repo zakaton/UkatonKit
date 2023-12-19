@@ -6,6 +6,9 @@ import UkatonMacros
 
 @StaticLogger
 public class UKMission: ObservableObject {
+    public static let deviceCreatedSubject = PassthroughSubject<UKMission, Never>()
+    public static let deviceDestroyedSubject = PassthroughSubject<UKMission, Never>()
+
     // MARK: - none type
 
     public static let none = UKMission(isNone: true)
@@ -17,7 +20,13 @@ public class UKMission: ObservableObject {
 
     // MARK: - Initialization
 
-    init() {}
+    init() {
+        Self.deviceCreatedSubject.send(self)
+    }
+
+    deinit {
+        Self.deviceDestroyedSubject.send(self)
+    }
 
     convenience init(discoveredBluetoothDevice: UKDiscoveredBluetoothDevice) {
         defer {
@@ -69,8 +78,11 @@ public class UKMission: ObservableObject {
             else if connectionStatus == .notConnected {
                 missionsManager.remove(self)
             }
+            connectionStatusSubject.send(connectionStatus)
         }
     }
+
+    public let connectionStatusSubject = PassthroughSubject<UKConnectionStatus, Never>()
 
     public var isConnected: Bool {
         connectionStatus == .connected

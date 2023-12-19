@@ -26,7 +26,7 @@ public enum UKDeviceType: UInt8, CaseIterable, Identifiable {
 
     public init?(from name: String) {
         guard let deviceType = Self.allCases.first(where: { $0.name == name }) else {
-            Self.logger.error("uncaught connection type for \(name)")
+            Self.logger.error("uncaught device type for \(name)")
             return nil
         }
         self = deviceType

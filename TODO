@@ -1,12 +1,11 @@
 Device Discovery
-    list discovered devices
-    connect/disconnect
+    "motion module" issue when connect/disconnecting
 
 NICE TO HAVE
     .websocket connectionType
     App Clip
-    clear app group when app closes on iOS/watchOS
-    
+    clear app groups when app closes on iOS/watchOS
+
 LATER
     isCharging
     UkatonKit.js poll for device disconnection every second
