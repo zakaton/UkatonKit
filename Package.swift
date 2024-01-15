@@ -14,7 +14,7 @@ let package = Package(
             targets: ["UkatonKit"]),
     ],
     dependencies: [
-        .package(name: "UkatonMacros", url: "/Users/zakaton/Documents/GitHub/UkatonSwiftMacros", branch: "main"),
+        .package(name: "UkatonMacros", url: "https://github.com/zakaton/UkatonSwiftMacros.git", branch: "main"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
